@@ -84,9 +84,13 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 (setf (gethash :html *builtin-elements*) t)
 
 (defmacro define-builtin-element (element-name)
-  `(defun ,element-name (&rest attrs-and-children)
-     (multiple-value-bind (attrs children)
-         (split-attrs-and-children attrs-and-children)
+  `(progn
+     (defun ,element-name (&rest attrs-and-children)
+       (multiple-value-bind (attrs children)
+           (split-attrs-and-children attrs-and-children)
+         (make-builtin-element :tag (string-downcase (mkstr ',element-name))
+                               :attrs attrs :children children)))
+     (defun ,(alexandria:symbolicate element-name '*) (attrs children)
        (make-builtin-element :tag (string-downcase (mkstr ',element-name))
                              :attrs attrs :children children))))
 
@@ -95,6 +99,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
      ,@(mapcan (lambda (e)
                  (list `(define-builtin-element ,e)
                        `(setf (gethash (make-keyword ',e) *builtin-elements*) t)
+                       `(setf (gethash (make-keyword ,(format nil "~a*" e)) *builtin-elements*) t)
                        `(export ',e)))
                element-names)))
 
@@ -114,6 +119,16 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
       (format stream " ~{~a=~s~^ ~}" (alist-plist* (attrs-alist attrs)))
       (format stream "")))
 
+(defun self-closing-p (element)
+  (gethash (if (symbolp element)
+               element
+               (intern (string-downcase element) #.*package*))
+           #.(let ((self-closing-tags (make-hash-table)))
+               (loop :for tag :in '(area base br col embed hr img input keygen
+                                    link meta param source track wbr)
+                     :do (setf (gethash tag self-closing-tags) tag))
+               self-closing-tags)))
+
 (defmethod print-object ((element element) stream)
   (if (element-children element)
       (format stream (if (rest (element-children element))
@@ -123,7 +138,12 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
               (element-attrs element)
               (element-children element)
               (element-tag element))
-      (format stream "<~a~a>" (element-tag element) (element-attrs element))))
+      (format stream (if (self-closing-p (element-tag element))
+                         "<~a~a>"
+                         "<~a~a></~a>")
+              (element-tag element)
+              (element-attrs element)
+              (element-tag element))))
 
 (defmethod print-object ((element builtin-element-with-prefix) stream)
   (format stream "~a~%" (element-prefix element))
@@ -134,14 +154,14 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
      (multiple-value-bind (,g!attrs ,g!children)
          (split-attrs-and-children ,g!attrs-and-children)
        (let ((,g!element
-              (make-user-element :tag (string-downcase ',name) :attrs ,g!attrs
-                                 :children ,g!children)))
+               (make-user-element :tag (string-downcase ',name) :attrs ,g!attrs
+                                  :children ,g!children)))
          (setf (user-element-expander ,g!element)
                (lambda (tag attrs children)
                  (declare (ignorable tag attrs children))
                  (let ,(mapcar (lambda (arg)
                                  (list arg `(attr attrs (make-keyword ',arg))))
-                               args)
+                        args)
                    (progn ,@body))))
          ,g!element))))
 
