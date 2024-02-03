@@ -180,29 +180,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
      ,@(tree-leaves
         body
         (html-element-p x)
-        (multiple-value-bind (name id class) (collect-id-and-class x)
-          (if (or id class)
-              (make-!expanded :list (list (find-symbol (string-upcase name) :piccolo)
-                                          (coerce (append (when id (list :id id))
-                                                          (when class (list :class class)))
-                                                  'vector)))
-              (find-symbol (string-upcase name) :piccolo))))))
-
-;;; Experimental
-;; (when (find :illusion *features*)
-;;   (illusion:set-paren-reader
-;;    :piccolo
-;;    #'html-element-p
-;;    (lambda (stream indicator)
-;;      (multiple-value-bind (name id class) (collect-id-and-class indicator)
-;;        (if (or id class)
-;;            (list* (find-symbol (string-upcase name) :piccolo)
-;;                   (coerce (append (when id (list :id))
-;;                                  (when class (list :class class)))
-;;                           'vector)
-;;                   (illusion:cl-read-list stream))
-;;            (cons (find-symbol (string-upcase name) :piccolo)
-;;                  (illusion:cl-read-list stream)))))))
+        (find-symbol (string-upcase x) :piccolo))))
 
 (defmethod element-string ((element element))
   (with-output-to-string (s)
