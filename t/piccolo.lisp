@@ -1,7 +1,7 @@
 (in-package :cl-user)
-(defpackage flute.test
-  (:use :cl :flute :fiveam))
-(in-package :flute.test)
+(defpackage piccolo.test
+  (:use :cl :piccolo :fiveam))
+(in-package :piccolo.test)
 
 (def-suite builtin-element)
 (def-suite escape)
@@ -336,19 +336,19 @@
 (in-suite h-macro)
 
 (in-package :cl-user)
-(defpackage flute.h-macro.test
+(defpackage piccolo.h-macro.test
   (:use :cl :fiveam)
-  (:import-from :flute
+  (:import-from :piccolo
                 :h
                 :element-string
                 :define-element))
-(in-package :flute.h-macro.test)
+(in-package :piccolo.h-macro.test)
 
 (define-element duck (id color)
   (h (div :id (format nil "duck~a" id)
           :style (format nil "color:~a" color)
           "ga ga ga"
-          flute:children)))
+          piccolo:children)))
 
 (test h-macro
   (let ((some-var 3))

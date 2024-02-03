@@ -1,6 +1,6 @@
-# Flute
+# piccolo
 
-Flute is a beautiful, easily composable HTML5 generation library in Common Lisp. It's
+piccolo is a beautiful, easily composable HTML5 generation library in Common Lisp. It's
 
 - Simple: the most simplistic syntax, for builtin and customized elements;
 - Easy to debug: pretty print generated html snippet in REPL;
@@ -12,14 +12,14 @@ Flute is a beautiful, easily composable HTML5 generation library in Common Lisp.
 ## Install and run tests
 
 ```lisp
-(ql:quickload :flute)
-(ql:quickload :flute-test)
+(ql:quickload :piccolo)
+(ql:quickload :piccolo-test)
 ```
 
 Then define a new package specifically for HTML generation, in its definition:
 ```lisp
-(defpackage flute-user
-  (:use :cl :flute))
+(defpackage piccolo-user
+  (:use :cl :piccolo))
 ```
 If you don't want to import all symbols, see [H Macro](#h-macro), which provide a similar interface as a tranditional Lisp HTML generation library.
 
@@ -60,11 +60,11 @@ All children will be flattened as if they're given inline.
 ```
 `dog` will be defined as a function that takes `:id` and `:size` keyword arguments. `dog` returns an user-defined element object. Inside it, `children` will be replaced with the children elements you provided when creating this `dog`:
 ```
-FLUTE-USER> (defparameter *dog1* (dog :id "dog1" :size 20))
+piccolo-USER> (defparameter *dog1* (dog :id "dog1" :size 20))
 *DOG1*
-FLUTE-USER> *dog1*
+piccolo-USER> *dog1*
 <div id="dog1" class="big-dog">dog</div>
-FLUTE-USER> (dog :id "dog2" "I am a dog" *)
+piccolo-USER> (dog :id "dog2" "I am a dog" *)
 <div id="dog2" class="small-dog">
   I am a dog
   <div id="dog1" class="big-dog">dog</div>
@@ -74,14 +74,14 @@ FLUTE-USER> (dog :id "dog2" "I am a dog" *)
 
 All elements, both builtin and user defined ones are objects, although they're printed as html snippet in REPL. Their attribute can be accessed by `(element-attrs element)`. Their children can be accessed by `(element-children elements)` and tag name by `(element-tag element)`. You can modify an exising element's attrs and children. If you modify a user defined element, the body you defined in it's `define-element` also re-executed to take effect of the the attrs and children change:
 ```
-FLUTE-USER> *dog1*
+piccolo-USER> *dog1*
 <div id="dog1" class="big-dog">dog</div>
-FLUTE-USER> (setf (attr *dog1* :size) 10
-                  ;; attr is a helper method to set (flute:element-attrs *dog1*)
+piccolo-USER> (setf (attr *dog1* :size) 10
+                  ;; attr is a helper method to set (piccolo:element-attrs *dog1*)
                   (attr *dog1* :id) "dooooog1"
                   (element-children *dog1*) (list "i'm small now"))
 ("i'm small now")
-FLUTE-USER> *dog1*
+piccolo-USER> *dog1*
 <div id="dooooog1" class="small-dog">
   i'm small now
   dog
@@ -90,13 +90,13 @@ FLUTE-USER> *dog1*
 
 By default user element is printed as what it expand to. If you have a lot of user defined element nested deeply, you probably want to have a look at the high level:
 ```
-FLUTE-USER> (let ((*expand-user-element* nil))
+piccolo-USER> (let ((*expand-user-element* nil))
               (print *dog1*)
               (values))
 
 <dog id="dooooog1" size=10>i'm small now</dog>
 ; No value
-FLUTE-USER>
+piccolo-USER>
 ```
 
 ## Generate HTML
@@ -113,15 +113,15 @@ To generate that and write to file, just create a stream, then `(write element :
 ## H macro
 If you don't want to import all the symbols, you can use the `h` macro:
 ```lisp
-(defpackage flute-min
+(defpackage piccolo-min
   (:use :cl)
-  (:import-from :flute
+  (:import-from :piccolo
                 :h
                 :define-element))
 ```
 Then just wrap `h` for all html generation part. In the same examples above, it becomes:
 ``` lisp
-(in-package :flute-min)
+(in-package :piccolo-min)
 (h (html
      (head
        (link :rel "...")
@@ -138,15 +138,15 @@ Then just wrap `h` for all html generation part. In the same examples above, it 
 (define-element dog (id size)
   (if (and (realp size) (> size 10))
       (h (div :id id :class "big-dog"
-              flute:children
+              piccolo:children
               "dog"))
       (h (div :id id :class "small-dog"
-              flute:children
+              piccolo:children
               "dog"))))
 
 (defparameter *dog2* (dog :id "dog2" :size 20 "some children"))
 ```
-From version 0.2 (available in Aug 2018 Quicklisp), flute supports css style id and class attribute for builtin elements. For example `div#id-name.class1.class2`, So you can also write:
+From version 0.2 (available in Aug 2018 Quicklisp), piccolo supports css style id and class attribute for builtin elements. For example `div#id-name.class1.class2`, So you can also write:
 ```lisp
 (h (div#a.b "..."))
 ;; Provide additional class and attributes
@@ -154,7 +154,7 @@ From version 0.2 (available in Aug 2018 Quicklisp), flute supports css style id 
 ```
 
 ## Inline CSS and JavaScript
-With help of [cl-css](https://github.com/Inaimathi/cl-css) (available in Quicklisp), You can write inline CSS for the `style` attribute, in a similar syntax like flute:
+With help of [cl-css](https://github.com/Inaimathi/cl-css) (available in Quicklisp), You can write inline CSS for the `style` attribute, in a similar syntax like piccolo:
 ```lisp
 (div :style (inline-css '(:margin 5px :padding 0px)))
 ```
@@ -178,12 +178,12 @@ That's all you need to know to define elements and generate html. Please referen
 # Motivation
 Currently there're a few HTML generation library in Common Lisp, like [CL-WHO](https://edicl.github.io/cl-who/), [CL-MARKUP](https://github.com/arielnetworks/cl-markup) and [Spinneret](https://github.com/ruricolist/spinneret). They both have good features for generating standard HTML, but not very good at user element (components) that currently widely used in frontend: you need to define all of them as macros and to define components on top of these components, you'll have to make these components more complex macros to composite them. [Spinneret](https://github.com/ruricolist/spinneret) has a `deftag` feature, but `deftag` is still expand to a `defmacro`.
 
-I'd also want to modify the customer component attribute after create it and incorporate it with it's own logic (like the dog size example above), this logic should be any lisp code. This requires provide all element as object, not plain HTML text generation. With this approach, all elements have a same name function to create it, and returns element that you can modify later. These objects are virtual doms and it's very pleasant to write html code and frontend component by just composite element objects as arguments in element creation function calls. Flute's composite feature inspired by [Hiccup](https://github.com/weavejester/hiccup) and [Reagent](https://github.com/reagent-project/reagent) but more powerful -- in flute, user defined elements is real object with attributes and it's own generation logic.
+I'd also want to modify the customer component attribute after create it and incorporate it with it's own logic (like the dog size example above), this logic should be any lisp code. This requires provide all element as object, not plain HTML text generation. With this approach, all elements have a same name function to create it, and returns element that you can modify later. These objects are virtual doms and it's very pleasant to write html code and frontend component by just composite element objects as arguments in element creation function calls. piccolo's composite feature inspired by [Hiccup](https://github.com/weavejester/hiccup) and [Reagent](https://github.com/reagent-project/reagent) but more powerful -- in piccolo, user defined elements is real object with attributes and it's own generation logic.
 
 # Limitation
 With the function name approach, it's not possible to support `div.id#class1#class2` style function names. I'm working on some tweak of reader macros in [illusion](https://github.com/ailisp/illusion) library to detect this and convert it to `(div :id "id" :class "class1 class2" ...)` call
 
-The most and major limitation is we don't have a substential subset of Common Lisp in browser so flute can be used in frontend. [Parenscript](https://github.com/vsedach/Parenscript) is essentially a JavaScript semantic in Lisp like syntax. [JSCL](https://github.com/jscl-project/jscl) is promosing, but by now it seems focus on creating a CL REPL on Web and doesn't support `format` or CLOS. Also we lack enough infrastructure to build Common Lisp to JavaScript (might be an asdf plugin) and connect to a browser "Swank" via WebSocket from Emacs. I'll be working these: a full or at least substential subset of Common Lisp to JavaScript Compiler to eventually have a full frontend development environment in Common Lisp. Any help or contribution is welcome.
+The most and major limitation is we don't have a substential subset of Common Lisp in browser so piccolo can be used in frontend. [Parenscript](https://github.com/vsedach/Parenscript) is essentially a JavaScript semantic in Lisp like syntax. [JSCL](https://github.com/jscl-project/jscl) is promosing, but by now it seems focus on creating a CL REPL on Web and doesn't support `format` or CLOS. Also we lack enough infrastructure to build Common Lisp to JavaScript (might be an asdf plugin) and connect to a browser "Swank" via WebSocket from Emacs. I'll be working these: a full or at least substential subset of Common Lisp to JavaScript Compiler to eventually have a full frontend development environment in Common Lisp. Any help or contribution is welcome.
 
 # API Reference
 Here is a draft version of API Reference, draft means it will be better organized and moved to a separate HTML doc, but it's content is already quite complete.
@@ -239,9 +239,9 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;; is defined. ARGS specified the possible keyword ARGS it can take as
 ;; it's ATTRS. You can either use these ARGS as Lisp arguments in the
 ;; BODY of its definition and plug in them to the BODY it expand to.
-;; You can use FLUTE:CHILDREN to get or set it's children that you give
-;; when call function NAME, FLUTE:ATTRS to get or set it's attributes
-;; and FLUTE:TAG to get or set it's tag name.
+;; You can use piccolo:CHILDREN to get or set it's children that you give
+;; when call function NAME, piccolo:ATTRS to get or set it's attributes
+;; and piccolo:TAG to get or set it's tag name.
 
 ;; Variable *EXPAND-USER-ELEMENT*
 ;;
@@ -312,8 +312,8 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;; Macro H &BODY CHILDREN
 ;;
 ;; Like a PROGN, except it will replace all html tag SYMBOLs with the same name one
-;; in FLUTE PACKAGE, so you don't need to import all of them. As an alternative you
-;; can import all or part of html element functions in FLUTE PACKAGE to use them
+;; in piccolo PACKAGE, so you don't need to import all of them. As an alternative you
+;; can import all or part of html element functions in piccolo PACKAGE to use them
 ;; without H macro
 
 ```
@@ -324,7 +324,7 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;;
 ;; Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
 ;; If :UTF8, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
-;; in attribute keys will not be escaped since flute will always use double quote for
+;; in attribute keys will not be escaped since piccolo will always use double quote for
 ;; attribute keys.
 ;; If :ASCII, besides what escaped in :UTF8, also escape all non-ascii characters.
 ;; If :ATTR, only #\" in attribute values will be escaped.

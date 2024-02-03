@@ -1,4 +1,4 @@
-(in-package :flute)
+(in-package :piccolo)
 
 (defun plist-alist (plist)
   (loop for (k v) on plist by #'cddr

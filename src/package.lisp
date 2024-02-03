@@ -1,5 +1,5 @@
 (in-package :cl-user)
-(defpackage flute
+(defpackage piccolo
   (:use :cl)
   (:import-from :assoc-utils
                 :alist

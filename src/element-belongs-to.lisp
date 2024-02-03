@@ -1,4 +1,4 @@
-(in-package :flute)
+(in-package :piccolo)
 
 (defparameter *attribute-belongs-to*
   '((accept	input)

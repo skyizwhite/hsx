@@ -1,8 +1,8 @@
-(defsystem flute-test
+(defsystem piccolo-test
   :author "Bo Yao <icerove@gmail.com>"
   :license "MIT"
-  :depends-on (:flute :fiveam)
+  :depends-on (:piccolo :fiveam)
   :components ((:module "t"
                 :serial t
                 :components
-                ((:file "flute")))))
+                ((:file "piccolo")))))

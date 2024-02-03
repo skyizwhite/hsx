@@ -1,4 +1,4 @@
-(in-package :flute)
+(in-package :piccolo)
 
 (defclass element ()
   ((tag :initarg :tag
@@ -42,7 +42,7 @@
 (defvar *escape-html* :utf8
   "Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
 If :UTF8, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
-in attribute keys will not be escaped since flute will always use double quote for
+in attribute keys will not be escaped since piccolo will always use double quote for
 attribute keys.
 If :ASCII, besides what escaped in :UTF8, also escape all non-ascii characters.
 If :ATTR, only #\" in attribute values will be escaped.
@@ -182,26 +182,26 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
         (html-element-p x)
         (multiple-value-bind (name id class) (collect-id-and-class x)
           (if (or id class)
-              (make-!expanded :list (list (find-symbol (string-upcase name) :flute)
+              (make-!expanded :list (list (find-symbol (string-upcase name) :piccolo)
                                           (coerce (append (when id (list :id id))
                                                           (when class (list :class class)))
                                                   'vector)))
-              (find-symbol (string-upcase name) :flute))))))
+              (find-symbol (string-upcase name) :piccolo))))))
 
 ;;; Experimental
 ;; (when (find :illusion *features*)
 ;;   (illusion:set-paren-reader
-;;    :flute
+;;    :piccolo
 ;;    #'html-element-p
 ;;    (lambda (stream indicator)
 ;;      (multiple-value-bind (name id class) (collect-id-and-class indicator)
 ;;        (if (or id class)
-;;            (list* (find-symbol (string-upcase name) :flute)
+;;            (list* (find-symbol (string-upcase name) :piccolo)
 ;;                   (coerce (append (when id (list :id))
 ;;                                  (when class (list :class class)))
 ;;                           'vector)
 ;;                   (illusion:cl-read-list stream))
-;;            (cons (find-symbol (string-upcase name) :flute)
+;;            (cons (find-symbol (string-upcase name) :piccolo)
 ;;                  (illusion:cl-read-list stream)))))))
 
 (defmethod element-string ((element element))
