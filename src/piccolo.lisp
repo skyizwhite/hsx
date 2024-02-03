@@ -84,22 +84,21 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 (setf (gethash :html *builtin-elements*) t)
 
 (defmacro define-builtin-element (element-name)
-  `(progn
-     (defun ,element-name (&rest attrs-and-children)
-       (multiple-value-bind (attrs children)
-           (split-attrs-and-children attrs-and-children)
-         (make-builtin-element :tag (string-downcase (mkstr ',element-name))
-                               :attrs attrs :children children)))
-     (defun ,(alexandria:symbolicate element-name '*) (attrs children)
-       (make-builtin-element :tag (string-downcase (mkstr ',element-name))
-                             :attrs attrs :children children))))
+  (let ((%element-name (alexandria:symbolicate '% element-name)))
+    `(progn
+       (defun ,%element-name (&rest attrs-and-children)
+         (multiple-value-bind (attrs children)
+             (split-attrs-and-children attrs-and-children)
+           (make-builtin-element :tag (string-downcase (mkstr ',element-name))
+                                 :attrs attrs :children children)))
+       (defmacro ,element-name (&body attrs-and-children)
+         `(,',%element-name ,@attrs-and-children)))))
 
 (defmacro define-and-export-builtin-elements (&rest element-names)
   `(progn
      ,@(mapcan (lambda (e)
                  (list `(define-builtin-element ,e)
                        `(setf (gethash (make-keyword ',e) *builtin-elements*) t)
-                       `(setf (gethash (make-keyword ,(format nil "~a*" e)) *builtin-elements*) t)
                        `(export ',e)))
                element-names)))
 
