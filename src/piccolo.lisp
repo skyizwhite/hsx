@@ -149,20 +149,24 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
   (call-next-method))
 
 (defmacro! define-element (name (&rest args) &body body)
-  `(defun ,name (&rest ,g!attrs-and-children)
-     (multiple-value-bind (,g!attrs ,g!children)
-         (split-attrs-and-children ,g!attrs-and-children)
-       (let ((,g!element
-               (make-user-element :tag (string-downcase ',name) :attrs ,g!attrs
-                                  :children ,g!children)))
-         (setf (user-element-expander ,g!element)
-               (lambda (tag attrs children)
-                 (declare (ignorable tag attrs children))
-                 (let ,(mapcar (lambda (arg)
-                                 (list arg `(attr attrs (make-keyword ',arg))))
-                        args)
-                   (progn ,@body))))
-         ,g!element))))
+  (let ((%name (alexandria:symbolicate '% name)))
+    `(progn
+       (defun ,%name (&rest ,g!attrs-and-children)
+         (multiple-value-bind (,g!attrs ,g!children)
+             (split-attrs-and-children ,g!attrs-and-children)
+           (let ((,g!element
+                   (make-user-element :tag (string-downcase ',name) :attrs ,g!attrs
+                                      :children ,g!children)))
+             (setf (user-element-expander ,g!element)
+                   (lambda (tag attrs children)
+                     (declare (ignorable tag attrs children))
+                     (let ,(mapcar (lambda (arg)
+                                     (list arg `(attr attrs (make-keyword ',arg))))
+                                   args)
+                       (progn ,@body))))
+             ,g!element)))
+       (defmacro ,name (&body attrs-and-children)
+         `(,',%name ,@attrs-and-children)))))
 
 (defvar *expand-user-element* t)
 
