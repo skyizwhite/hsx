@@ -1,6 +1,8 @@
 # piccolo
 
-piccolo is a beautiful, easily composable HTML5 generation library in Common Lisp. It's
+piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easilly composable DSL for writing HTML with Common Lisp.
+
+It's
 
 - Simple: the most simplistic syntax, for builtin and customized elements;
 - Easy to debug: pretty print generated html snippet in REPL;
