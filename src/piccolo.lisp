@@ -75,12 +75,16 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 
 (defvar *builtin-elements* (make-hash-table))
 
-(defun html (&rest attrs-and-children)
+(defun %html (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
       (split-attrs-and-children attrs-and-children)
     (make-builtin-element-with-prefix :tag "html" :attrs attrs
                                       :children children
                                       :prefix "<!DOCTYPE html>")))
+
+(defmacro html (&body attrs-and-children)
+  `(%html ,@attrs-and-children))
+
 (setf (gethash :html *builtin-elements*) t)
 
 (defmacro define-builtin-element (element-name)
