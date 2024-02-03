@@ -1,6 +1,6 @@
 # piccolo
 
-piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easilly composable DSL for writing HTML with Common Lisp.
+piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easily composable DSL for writing HTML with Common Lisp.
 
 It's
 
@@ -147,12 +147,6 @@ Then just wrap `h` for all html generation part. In the same examples above, it 
               "dog"))))
 
 (defparameter *dog2* (dog :id "dog2" :size 20 "some children"))
-```
-From version 0.2 (available in Aug 2018 Quicklisp), piccolo supports css style id and class attribute for builtin elements. For example `div#id-name.class1.class2`, So you can also write:
-```lisp
-(h (div#a.b "..."))
-;; Provide additional class and attributes
-(h (div#a.b :class "c" :onclick "fun()"))
 ```
 
 ## Inline CSS and JavaScript
