@@ -120,32 +120,32 @@
          (div3 (div :id "3" div1 div2 "some other text"))
          (div4 (div :id "4" div3 (div :id "5" (a :href "a.html" "a")))))
     (is (string= "<!DOCTYPE html>
-<html>" (element-string html)))
-    (is (string= "<div>" (element-string div0)))
+<html></html>" (element-string html)))
+    (is (string= "<div></div>" (element-string div0)))
     (is (string= "<div>some text</div>" (element-string div1)))
-    (is (string= "<div id=\"2\">" (element-string div2)))
+    (is (string= "<div id=\"2\"></div>" (element-string div2)))
     (is (string= "<div id=\"3\">
   <div>some text</div>
-  <div id=\"2\">
+  <div id=\"2\"></div>
   some other text
 </div>" (element-string div3)))
     (is (string= "<div id=\"4\">
   <div id=\"3\">
     <div>some text</div>
-    <div id=\"2\">
+    <div id=\"2\"></div>
     some other text
   </div>
   <div id=\"5\"><a href=\"a.html\">a</a></div>
 </div>" (element-string div4)))
 
     (is (string= "<!DOCTYPE html>
-<html>" (elem-str html)))
-    (is (string= "<div>" (element-string div0)))
+<html></html>" (elem-str html)))
+    (is (string= "<div></div>" (element-string div0)))
     (is (string= "<div>some text</div>" (elem-str div1)))
-    (is (string= "<div id=\"2\">" (elem-str div2)))
-    (is (string= "<div id=\"3\"><div>some text</div><div id=\"2\">some other text</div>"
+    (is (string= "<div id=\"2\"></div>" (elem-str div2)))
+    (is (string= "<div id=\"3\"><div>some text</div><div id=\"2\"></div>some other text</div>"
                  (elem-str div3)))
-    (is (string= "<div id=\"4\"><div id=\"3\"><div>some text</div><div id=\"2\">some other text</div><div id=\"5\"><a href=\"a.html\">a</a></div></div>"
+    (is (string= "<div id=\"4\"><div id=\"3\"><div>some text</div><div id=\"2\"></div>some other text</div><div id=\"5\"><a href=\"a.html\">a</a></div></div>"
                  (elem-str div4)))))
 
 (in-suite escape)
@@ -315,22 +315,22 @@
 </div>" (element-string home)))
 
     (let ((*expand-user-element* nil))
-      (is (string= "<dog>" (element-string dog1)))
-      (is (string= "<dog size=15>" (element-string dog2)))
+      (is (string= "<dog></dog>" (element-string dog1)))
+      (is (string= "<dog size=15></dog>" (element-string dog2)))
       (is (string= "<dog><img src=\"dog.png\"></dog>" (element-string dog3)))
       (is (string= "<dog id=\"dog\" size=10>
   <img src=\"dog4.png\">
   woo
 </dog>" (element-string dog4)))
       (is (string= "<div id=\"home\">
-  <cat>
+  <cat></cat>
   <cat>
     <dog id=\"dog\" size=10>
       <img src=\"dog4.png\">
       woo
     </dog>
   </cat>
-  <dog id=\"doge\"><cat></dog>
+  <dog id=\"doge\"><cat></cat></dog>
 </div>" (element-string home))))))
 
 (in-suite h-macro)
