@@ -13,5 +13,6 @@
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op piccolo-test)))
-  :depends-on (:assoc-utils
+  :depends-on (:alexandria
+               :assoc-utils
                :let-over-lambda))
