@@ -119,7 +119,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 
 (defmethod print-object ((attrs attrs) stream)
   (if (attrs-alist attrs)
-      (format stream " ~{~a=~s~^ ~}" (alist-plist* (attrs-alist attrs)))
+      (format stream " ~{~a=~s~^ ~}" (alist-plist (attrs-alist attrs)))
       (format stream "")))
 
 (defun self-closing-p (element)
@@ -180,7 +180,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
       (call-next-method)))
 
 (defun html-element-p (x)
-  (and (symbolp x) (not (keywordp x)) (gethash (collect-name-as-keyword x) *builtin-elements*)))
+  (and (symbolp x) (not (keywordp x)) (gethash (make-keyword x) *builtin-elements*)))
 
 (defmacro h (&body body)
   `(progn

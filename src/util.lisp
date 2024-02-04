@@ -4,7 +4,7 @@
   (loop for (k v) on plist by #'cddr
      collect (cons k v)))
 
-(defun alist-plist* (alist)
+(defun alist-plist (alist)
   (mapcan (lambda (kv)
             (list (string-downcase (car kv))
                   (cdr kv)))
@@ -117,12 +117,3 @@
           (setf (attr attrs :class) (format nil "~a ~a" class other-class))
           (setf (attr attrs :class) class)))
       (values attrs children))))
-
-(defun collect-until-dot-or-sharp (string)
-  (let ((pos (position-if (lambda (c) (or (char= c #\.) (char= c #\#))) string)))
-    (if pos
-        (cons (subseq string 0 pos) (subseq string pos))
-        (cons string ""))))
-
-(defun collect-name-as-keyword (symbol)
-  (make-keyword (car (collect-until-dot-or-sharp (string symbol)))))

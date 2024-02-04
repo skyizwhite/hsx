@@ -371,22 +371,6 @@
 </div>"
          (element-string
           (h (duck :id 5 :color "blue"
-                   (img :href "duck.png"))))))
-    (is (string=
-         "<div class=\"class1 class2\" id=\"has-id\">child</div>"
-         (element-string
-          (h (div#has-id.class1.class2 "child")))))
-    (is (string=
-         "<div class=\"class1 class2\" id=\"has-id\" onclick=\"func()\">child</div>"
-         (element-string
-          (h (div#has-id.class1.class2 :onclick "func()" "child")))))
-    (is (string=
-         "<div class=\"class1 class2\" id=\"has-id\" onclick=\"func()\">child</div>"
-         (element-string
-          (h (div#has-id.class1.class2 '(:onclick "func()") "child")))))
-    (is (string=
-         "<div id=\"has-id\" class=\"class1 class2 additional-class\">child</div>"
-         (element-string
-          (h (div.class1#has-id.class2 ':class "additional-class" "child")))))))
+                   (img :href "duck.png"))))))))
 
 (run-all-tests)
