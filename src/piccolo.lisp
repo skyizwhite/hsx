@@ -19,15 +19,23 @@
               :accessor user-element-expander)))
 
 (defun make-builtin-element (&key tag attrs children)
-  (make-instance 'builtin-element :tag tag :attrs attrs
+  (make-instance 'builtin-element
+                 :tag tag
+                 :attrs attrs
                  :children (escape-children children)))
 
 (defun make-builtin-element-with-prefix (&key tag attrs children prefix)
-  (make-instance 'builtin-element-with-prefix :tag tag :attrs attrs :prefix prefix
+  (make-instance 'builtin-element-with-prefix
+                 :tag tag
+                 :attrs attrs
+                 :prefix prefix
                  :children (escape-children children)))
 
-(defun make-user-element (&rest args &key tag attrs children expander)
-  (make-instance 'user-element :tag tag :attrs attrs :expander expander
+(defun make-user-element (&key tag attrs children expander)
+  (make-instance 'user-element
+                 :tag tag
+                 :attrs attrs
+                 :expander expander
                  :children (escape-children children)))
 
 (defmethod user-element-expand-to ((element user-element))
@@ -78,7 +86,8 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 (defun %html (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
       (split-attrs-and-children attrs-and-children)
-    (make-builtin-element-with-prefix :tag "html" :attrs attrs
+    (make-builtin-element-with-prefix :tag "html"
+                                      :attrs attrs
                                       :children children
                                       :prefix "<!DOCTYPE html>")))
 
@@ -94,7 +103,8 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
          (multiple-value-bind (attrs children)
              (split-attrs-and-children attrs-and-children)
            (make-builtin-element :tag (string-downcase (mkstr ',element-name))
-                                 :attrs attrs :children children)))
+                                 :attrs attrs
+                                 :children children)))
        (defmacro ,element-name (&body attrs-and-children)
          `(,',%element-name ,@attrs-and-children)))))
 
@@ -108,14 +118,14 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 
 (define-and-export-builtin-elements
     a abbr address area article aside audio b base bdi bdo blockquote
-    body br button canvas caption cite code col colgroup data datalist
-    dd del details dfn dialog div dl dt em embed fieldset figcaption
-    figure footer form h1 h2 h3 h4 h5 h6 head header hr i iframe
-    img input ins kbd label legend li link main |map| mark meta meter nav
-    noscript object ol optgroup option output p param picture pre progress
-    q rp rt ruby s samp script section select small source span strong
-    style sub summary sup svg table tbody td template textarea tfoot th
-    thead |time| title tr track u ul var video wbr)
+  body br button canvas caption cite code col colgroup data datalist
+  dd del details dfn dialog div dl dt em embed fieldset figcaption
+  figure footer form h1 h2 h3 h4 h5 h6 head header hr i iframe
+  img input ins kbd label legend li link main |map| mark meta meter nav
+  noscript object ol optgroup option output p param picture pre progress
+  q rp rt ruby s samp script section select small source span strong
+  style sub summary sup svg table tbody td template textarea tfoot th
+  thead |time| title tr track u ul var video wbr)
 
 (defmethod print-object ((attrs attrs) stream)
   (if (attrs-alist attrs)
@@ -158,7 +168,8 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
          (multiple-value-bind (,g!attrs ,g!children)
              (split-attrs-and-children ,g!attrs-and-children)
            (let ((,g!element
-                   (make-user-element :tag (string-downcase ',name) :attrs ,g!attrs
+                   (make-user-element :tag (string-downcase ',name)
+                                      :attrs ,g!attrs
                                       :children ,g!children)))
              (setf (user-element-expander ,g!element)
                    (lambda (tag attrs children)

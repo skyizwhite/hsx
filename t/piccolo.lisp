@@ -16,7 +16,7 @@
          (div2 (div "the children text"))
          (div3 (div "text 1" "text 2"))
          (div4 (div (h1 "text 0") "text 01"
-                    (list (list "text 3" div2) div3) "text 4")))
+                 (list (list "text 3" div2) div3) "text 4")))
     (is (eql nil (attrs-alist (element-attrs div1))))
     (is (eql nil (element-children div1)))
     (is (eql nil (attrs-alist (element-attrs div2))))
@@ -158,10 +158,10 @@
 
 (defun new-a ()
   (a *a-attrs*
-     "child text 1"
-     "child text 2 <br> &"
-     (a :href "child'<>\".html" "child'<>\"" (string (code-char 128)))
-     (string (code-char 128))))
+    "child text 1"
+    "child text 2 <br> &"
+    (a :href "child'<>\".html" "child'<>\"" (string (code-char 128)))
+    (string (code-char 128))))
 
 (test escape-attr
   (let ((escaped-attrs-alist '((:id . "nothing-to-escape")
@@ -225,8 +225,8 @@
 
 (define-element cat ()
   (div :id "cat"
-       (img :src "cat.png")
-       "I'm a cat"))
+    (img :src "cat.png")
+    "I'm a cat"))
 
 (test user-element-simple
   (let ((cat (cat)))
@@ -237,11 +237,11 @@
 (define-element dog (id size)
   (if (and (realp size) (> size 10))
       (div :id id :class "big-dog"
-       children
-       "dog")
+        children
+        "dog")
       (div :id id :class "small-dog"
-       children
-       "dog")))
+        children
+        "dog")))
 
 (test user-element-with-attrs
   (let ((dog1 (dog))
@@ -281,10 +281,10 @@
          (dog3 (dog (img :src "dog.png")))
          (dog4 (dog :id "dog" :size 10 (img :src "dog4.png") "woo"))
          (home (div :id "home"
-                    (cat)
-                    ;; dog4 below is ignored because cat not accepting children
-                    (cat dog4)
-                    (dog :id "doge" (cat)))))
+                 (cat)
+                 ;; dog4 below is ignored because cat not accepting children
+                 (cat dog4)
+                 (dog :id "doge" (cat)))))
     (is (string= "<div class=\"small-dog\">dog</div>" (element-string dog1)))
     (is (string= "<div class=\"big-dog\">dog</div>" (element-string dog2)))
     (is (string= "<div class=\"small-dog\">
@@ -346,9 +346,9 @@
 
 (define-element duck (id color)
   (h (div :id (format nil "duck~a" id)
-          :style (format nil "color:~a" color)
-          "ga ga ga"
-          piccolo:children)))
+       :style (format nil "color:~a" color)
+       "ga ga ga"
+       piccolo:children)))
 
 (test h-macro
   (let ((some-var 3))
@@ -358,19 +358,20 @@
   <div id=\"b\">foo</div>
   some text
 </div>" (element-string
-          (h (div :id "a"
-                  (img :href "a.png")
-                  (div (if (> some-var 0)
-                           '(:id "b")
-                           '(:id "c"))
-                       "foo")
-                  "some text")))))
-    (is (string= "<div id=\"duck5\" style=\"color:blue\">
+         (h (div :id "a"
+              (img :href "a.png")
+              (div (if (> some-var 0)
+                       '(:id "b")
+                       '(:id "c"))
+                "foo")
+              "some text")))))
+    (is (string= 
+         "<div id=\"duck5\" style=\"color:blue\">
   ga ga ga
   <img href=\"duck.png\">
 </div>"
          (element-string
           (h (duck :id 5 :color "blue"
-                   (img :href "duck.png"))))))))
+               (img :href "duck.png"))))))))
 
 (run-all-tests)
