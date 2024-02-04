@@ -122,15 +122,14 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
       (format stream " ~{~a=~s~^ ~}" (alist-plist (attrs-alist attrs)))
       (format stream "")))
 
-(defun self-closing-p (element)
-  (gethash (if (symbolp element)
-               element
-               (intern (string-downcase element) #.*package*))
-           #.(let ((self-closing-tags (make-hash-table)))
-               (loop :for tag :in '(area base br col embed hr img input keygen
-                                    link meta param source track wbr)
-                     :do (setf (gethash tag self-closing-tags) tag))
-               self-closing-tags)))
+(defparameter *self-closing-tags*
+  '(area base br col embed hr img input keygen
+    link meta param source track wbr))
+
+(defun self-closing-p (tag)
+  (member (make-symbol (string-upcase tag))
+          *self-closing-tags*
+          :test #'string=))
 
 (defmethod print-object ((element element) stream)
   (if (element-children element)
