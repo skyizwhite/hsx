@@ -18,6 +18,9 @@
   ((expand-to :initarg :expander
               :accessor user-element-expander)))
 
+(defclass fragment (element)
+  ())
+
 (defun make-builtin-element (&key tag attrs children)
   (make-instance 'builtin-element
                  :tag tag
@@ -43,6 +46,12 @@
            (element-tag element)
            (element-attrs element)
            (element-children element)))
+
+(defun make-fragment (&key children)
+  (make-instance 'fragment
+                 :tag 'fragment
+                 :attrs (make-attrs :alist nil)
+                 :children (escape-children children)))
 
 (defstruct (attrs (:constructor %make-attrs))
   alist)
@@ -164,21 +173,22 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 (defmacro! define-element (name (&rest args) &body body)
   (let ((%name (alexandria:symbolicate '% name)))
     `(progn
-       (defun ,%name (&rest ,g!attrs-and-children)
+       (defun ,%name (&rest attrs-and-children)
          (multiple-value-bind (,g!attrs ,g!children)
-             (split-attrs-and-children ,g!attrs-and-children)
-           (let ((,g!element
-                   (make-user-element :tag (string-downcase ',name)
-                                      :attrs ,g!attrs
-                                      :children ,g!children)))
-             (setf (user-element-expander ,g!element)
-                   (lambda (tag attrs children)
-                     (declare (ignorable tag attrs children))
-                     (let ,(mapcar (lambda (arg)
-                                     (list arg `(attr attrs (make-keyword ',arg))))
-                                   args)
-                       (progn ,@body))))
-             ,g!element)))
+             (split-attrs-and-children attrs-and-children)
+           (make-user-element 
+            :tag (string-downcase ',name)
+            :attrs ,g!attrs
+            :children ,g!children
+            :expander (lambda (tag attrs ,g!exp-children)
+                        (declare (ignorable tag attrs ,g!exp-children))
+                        (let ((children (and ,g!exp-children
+                                             (make-fragment :children ,g!exp-children))))
+                          (declare (ignorable children))
+                          (let ,(mapcar (lambda (arg)
+                                          (list arg `(attr attrs (make-keyword ',arg))))
+                                        args)
+                            (progn ,@body)))))))
        (defmacro ,name (&body attrs-and-children)
          `(,',%name ,@attrs-and-children)))))
 
@@ -189,6 +199,19 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
       (print-object (user-element-expand-to element) stream)
       (call-next-method)))
 
+(defun %<> (&rest children)
+  (make-fragment :children children))
+
+(defmacro <> (&body children)
+  `(%<> ,@children))
+
+(defmethod print-object ((element fragment) stream)
+  (if (element-children element)
+      (format stream (if (rest (element-children element))
+                         "~<~@{~a~^~:@_~}~:>"
+                         "~<~a~:>")
+              (element-children element))))
+
 (defun html-element-p (x)
   (and (symbolp x) (not (keywordp x)) (gethash (make-keyword x) *builtin-elements*)))
 
@@ -196,7 +219,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
   `(progn
      ,@(modify-first-leaves
         body
-        (html-element-p x)
+        (or (html-element-p x) (string= x '<>))
         (find-symbol (string-upcase x) :piccolo))))
 
 (defmethod element-string ((element element))
