@@ -10,22 +10,23 @@
                   (cdr kv)))
           alist))
 
-(defstruct !expanded list)
-
-(defun tree-leaves%% (tree test result)
+(defun %%modify-first-leaves (tree test result)
   (if tree
-      (if (listp tree)
-          (let ((car-result (tree-leaves%% (car tree) test result))
-                (cdr-result (tree-leaves%% (cdr tree) test result)))
-            (if (!expanded-p car-result)
-                (append (!expanded-list car-result) cdr-result)
-                (cons car-result cdr-result)))
-          (if (funcall test tree)
-              (funcall result tree)
-              tree))))
+      (cons (let ((first-node (first tree)))
+              (cond
+                ((listp first-node)
+                 (%%modify-first-leaves first-node test result))
+                ((funcall test first-node)
+                 (funcall result first-node))
+                (t first-node)))
+            (mapcar (lambda (node)
+                      (if (listp node)
+                          (%%modify-first-leaves node test result)
+                          node))
+                    (rest tree)))))
 
-(defmacro tree-leaves (tree test result)
-  `(tree-leaves%%
+(defmacro modify-first-leaves (tree test result)
+  `(%%modify-first-leaves
     ,tree
     (lambda (x)
       (declare (ignorable x))

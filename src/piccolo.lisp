@@ -194,7 +194,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 
 (defmacro h (&body body)
   `(progn
-     ,@(tree-leaves
+     ,@(modify-first-leaves
         body
         (html-element-p x)
         (find-symbol (string-upcase x) :piccolo))))
