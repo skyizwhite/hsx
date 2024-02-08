@@ -1,18 +1,11 @@
-(defsystem piccolo
-  :author "Bo Yao <icerove@gmail.com>"
+(defsystem "piccolo"
+  :version "0.1.0"
+  :description "A beautiful, easily composable HTML5 generation library"
+  :author "paku <paku@skyizwhite.dev>, Bo Yao <icerove@gmail.com>"
   :license "MIT"
-  :version "0.2-dev"
-  :components ((:module "src"
-                :serial t
-                :components
-                ((:file "package")
-                 (:file "util")
-                 (:file "piccolo"))))
-  :description "A beautiful, easilly composable HTML5 generation library"
-  :long-description
-  #.(uiop:read-file-string
-     (uiop:subpathname *load-pathname* "README.md"))
+  :long-description #.(uiop:read-file-string
+                       (uiop:subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op piccolo-test)))
-  :depends-on (:alexandria
-               :assoc-utils
-               :let-over-lambda))
+  :class :package-inferred-system
+  :pathname "src"
+  :depends-on ("piccolo/main"))
