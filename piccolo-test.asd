@@ -1,5 +1,5 @@
 (defsystem piccolo-test
-  :author "Bo Yao <icerove@gmail.com>"
+  :author "paku <paku@skyizwhite.dev>"
   :license "MIT"
   :depends-on (:piccolo :fiveam)
   :components ((:module "t"

@@ -1,4 +1,46 @@
-(in-package :piccolo)
+(uiop:define-package #:piccolo/elements
+  (:use #:cl)
+  (:local-nicknames (#:util #:piccolo/util))
+  (:local-nicknames (#:asc #:assoc-utils))
+  (:local-nicknames (#:lol #:let-over-lambda))
+  (:local-nicknames (#:alx #:alexandria))
+  (:export
+   ;;; builtin HTML elements
+   ;;; all html5 elements, e.g. div, nav, media, export in code except
+   ;;; <time> and <map> conflicts with cl symbol, are defined and
+   ;;; exported as |time|, |map|
+   #:html
+
+   ;;; fragment lets you group elements without a wrapper element.
+   #:<>
+
+   ;;; user defined elements
+   #:define-element
+   #:*expand-user-element*
+   ;; for reference tag name, attributes and children elements in user
+   ;; element definition
+   #:tag
+   #:children
+   #:attrs
+
+   ;;; attribute accessing utilility
+   #:attrs-alist
+   #:make-attrs
+   #:copy-attrs
+   #:attr
+   #:delete-attr
+
+   ;;; element slots
+   #:element-tag
+   #:element-attrs
+   #:element-children
+   #:user-element-expand-to
+
+   ;;; the h macro for avoiding import all builtin html element functions
+   #:h
+   #:element-string
+   #:elem-str))
+(in-package #:piccolo/elements)
 
 (defclass element ()
   ((tag :initarg :tag
@@ -25,21 +67,21 @@
   (make-instance 'builtin-element
                  :tag tag
                  :attrs attrs
-                 :children (escape-children children)))
+                 :children (util:escape-children children)))
 
 (defun make-builtin-element-with-prefix (&key tag attrs children prefix)
   (make-instance 'builtin-element-with-prefix
                  :tag tag
                  :attrs attrs
                  :prefix prefix
-                 :children (escape-children children)))
+                 :children (util:escape-children children)))
 
 (defun make-user-element (&key tag attrs children expander)
   (make-instance 'user-element
                  :tag tag
                  :attrs attrs
                  :expander expander
-                 :children (escape-children children)))
+                 :children (util:escape-children children)))
 
 (defmethod user-element-expand-to ((element user-element))
   (funcall (user-element-expander element)
@@ -51,35 +93,24 @@
   (make-instance 'fragment
                  :tag 'fragment
                  :attrs (make-attrs :alist nil)
-                 :children (escape-children children)))
+                 :children (util:escape-children children)))
 
 (defstruct (attrs (:constructor %make-attrs))
   alist)
 
-(defvar *escape-html* :utf8
-  "Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
-If :UTF8, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
-in attribute keys will not be escaped since piccolo will always use double quote for
-attribute keys.
-If :ASCII, besides what escaped in :UTF8, also escape all non-ascii characters.
-If :ATTR, only #\" in attribute values will be escaped.
-If NIL, nothing is escaped and programmer is responsible to escape elements properly.
-When given :ASCII and :ATTR, it's possible to insert html text as a children, e.g.
-(div :id \"container\" \"Some <b>text</b>\")")
-
 (defun make-attrs (&key alist)
-  (if *escape-html*
-      (%make-attrs :alist (escape-attrs-alist alist))
+  (if util:*escape-html*
+      (%make-attrs :alist (util:escape-attrs-alist alist))
       (%make-attrs :alist alist)))
 
 (defmethod (setf attr) (value (attrs attrs) key)
-  (setf (aget (attrs-alist attrs) key) value))
+  (setf (asc:aget (attrs-alist attrs) key) value))
 
 (defmethod delete-attr ((attrs attrs) key)
-  (delete-from-alistf (attrs-alist attrs) key))
+  (asc:delete-from-alistf (attrs-alist attrs) key))
 
 (defmethod attr ((attrs attrs) key)
-  (aget (attrs-alist attrs) key))
+  (asc:aget (attrs-alist attrs) key))
 
 (defmethod (setf attr) (value (element element) key)
   (setf (attr (element-attrs element) key) value))
@@ -91,6 +122,30 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
   (attr (element-attrs element) key))
 
 (defvar *builtin-elements* (make-hash-table))
+
+(defun split-attrs-and-children (attrs-and-children)
+  (cond
+    ((attrs-p (first attrs-and-children))
+     (values (first attrs-and-children) (lol:flatten (rest attrs-and-children))))
+    ((asc:alistp (first attrs-and-children))
+     (values (make-attrs :alist (first attrs-and-children))
+             (lol:flatten (rest attrs-and-children))))
+    ((listp (first attrs-and-children)) ;plist
+     (values (make-attrs :alist (util:plist-alist (first attrs-and-children)))
+             (lol:flatten (rest attrs-and-children))))
+    ((hash-table-p (first attrs-and-children))
+     (values (make-attrs :alist (asc:hash-alist (first attrs-and-children)))
+             (lol:flatten (rest attrs-and-children))))
+    ((keywordp (first attrs-and-children)) ;inline-plist
+     (loop for thing on attrs-and-children by #'cddr
+           for (k v) = thing
+           when (and (keywordp k) v)
+           collect (cons k v) into attrs
+           when (not (keywordp k))
+           return (values (make-attrs :alist attrs) (lol:flatten thing))
+           finally (return (values (make-attrs :alist attrs) nil))))
+    (t
+     (values (make-attrs :alist nil) (lol:flatten attrs-and-children)))))
 
 (defun %html (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
@@ -106,12 +161,12 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 (setf (gethash :html *builtin-elements*) t)
 
 (defmacro define-builtin-element (element-name)
-  (let ((%element-name (alexandria:symbolicate '% element-name)))
+  (let ((%element-name (alx:symbolicate '% element-name)))
     `(progn
        (defun ,%element-name (&rest attrs-and-children)
          (multiple-value-bind (attrs children)
              (split-attrs-and-children attrs-and-children)
-           (make-builtin-element :tag (string-downcase (mkstr ',element-name))
+           (make-builtin-element :tag (string-downcase (lol:mkstr ',element-name))
                                  :attrs attrs
                                  :children children)))
        (defmacro ,element-name (&body attrs-and-children)
@@ -121,7 +176,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
   `(progn
      ,@(mapcan (lambda (e)
                  (list `(define-builtin-element ,e)
-                       `(setf (gethash (make-keyword ',e) *builtin-elements*) t)
+                       `(setf (gethash (alx:make-keyword ',e) *builtin-elements*) t)
                        `(export ',e)))
                element-names)))
 
@@ -138,7 +193,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
 
 (defmethod print-object ((attrs attrs) stream)
   (if (attrs-alist attrs)
-      (format stream " ~{~a=~s~^ ~}" (alist-plist (attrs-alist attrs)))
+      (format stream " ~{~a=~s~^ ~}" (util:alist-plist (attrs-alist attrs)))
       (format stream "")))
 
 (defparameter *self-closing-tags*
@@ -170,8 +225,8 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
   (format stream "~a~%" (element-prefix element))
   (call-next-method))
 
-(defmacro! define-element (name (&rest args) &body body)
-  (let ((%name (alexandria:symbolicate '% name)))
+(lol:defmacro! define-element (name (&rest args) &body body)
+  (let ((%name (alx:symbolicate '% name)))
     `(progn
        (defun ,%name (&rest attrs-and-children)
          (multiple-value-bind (,g!attrs ,g!children)
@@ -186,7 +241,7 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
                                              (make-fragment :children ,g!exp-children))))
                           (declare (ignorable children))
                           (let ,(mapcar (lambda (arg)
-                                          (list arg `(attr attrs (make-keyword ',arg))))
+                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
                                         args)
                             (progn ,@body)))))))
        (defmacro ,name (&body attrs-and-children)
@@ -212,15 +267,21 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
                          "~<~a~:>")
               (element-children element))))
 
-(defun html-element-p (x)
-  (and (symbolp x) (not (keywordp x)) (gethash (make-keyword x) *builtin-elements*)))
+(defun html-element-p (node)
+  (and (symbolp node)
+       (not (keywordp node))
+       (gethash (alx:make-keyword node) *builtin-elements*)))
 
 (defmacro h (&body body)
   `(progn
-     ,@(modify-first-leaves
+     ,@(util:modify-first-leaves
         body
-        (or (html-element-p x) (string= x '<>))
-        (find-symbol (string-upcase x) :piccolo))))
+        (lambda (node)
+          (declare (ignorable node))
+          (or (html-element-p node) (string= node '<>)))
+        (lambda (node)
+          (declare (ignorable node))
+          (find-symbol (string-upcase node) :piccolo)))))
 
 (defmethod element-string ((element element))
   (with-output-to-string (s)
