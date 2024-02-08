@@ -1,7 +1,7 @@
 (defsystem "piccolo"
   :version "0.1.0"
   :description "A beautiful, easily composable HTML5 generation library"
-  :author "paku <paku@skyizwhite.dev>"
+  :author "skyizwhite <paku@skyizwhite.dev>"
   :license "MIT"
   :long-description #.(uiop:read-file-string
                        (uiop:subpathname *load-pathname* "README.md"))

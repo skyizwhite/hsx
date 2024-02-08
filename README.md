@@ -1,6 +1,6 @@
-# piccolo
+# Piccolo
 
-piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easily composable DSL for writing HTML with Common Lisp.
+Piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easily composable HTML5 generation library for Common Lisp.
 
 It's
 
@@ -8,6 +8,21 @@ It's
 - Easy to debug: pretty print generated html snippet in REPL;
 - Powerful: help you define reusable and composable components, like that in React
 - Modern: focus only on HTML5
+
+
+# Warning
+
+This software is still ALPHA quality. The APIs likely change.
+
+# Changes from Flute
+
+- Added:
+  - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
+- Improved:
+  - Element functions are wrapped in macros for natural indentation.
+  - Fixed several bugs.
+- Removed:
+  - CSS style id and class attributes (For example `div#id.class`)
 
 # Getting started
 
@@ -23,7 +38,7 @@ Then define a new package specifically for HTML generation, in its definition:
 (defpackage piccolo-user
   (:use :cl :piccolo))
 ```
-If you don't want to import all symbols, see [H Macro](#h-macro), which provide a similar interface as a tranditional Lisp HTML generation library.
+If you don't want to import all symbols, see [H Macro](#h-macro), which provide a similar interface as a traditional Lisp HTML generation library.
 
 ## Using html elements
 ```
@@ -149,37 +164,12 @@ Then just wrap `h` for all html generation part. In the same examples above, it 
 (defparameter *dog2* (dog :id "dog2" :size 20 "some children"))
 ```
 
-## Inline CSS and JavaScript
-With help of [cl-css](https://github.com/Inaimathi/cl-css) (available in Quicklisp), You can write inline CSS for the `style` attribute, in a similar syntax like piccolo:
-```lisp
-(div :style (inline-css '(:margin 5px :padding 0px)))
-```
-`cl-css:inline-css` is a function taking plist and returns the result css string, so it can be safely used inside or outside of `H` macro and with variable arguments.
-
-With help of [Parenscript](https://github.com/vsedach/Parenscript) (available in Quicklisp), You can write inline JavaScript for `onclick`, etc. attribute:
-```lisp
-(button :onclick (ps-inline (func)))
-```
-
 That's all you need to know to define elements and generate html. Please reference the [API Reference](#api-reference) Section for detailed API.
-
-# Change Logs
-## 2018/07/28 Version 0.2-dev
-- Support `element#id.class1.class2` in `H` macro for builtin elements;
-- Suggestions on inline CSS and JavaScript in lispy way;
-- Jon Atack fix an error example in README.
-## 2018/07/11 Version 0.1
-- Current features, APIs and Tests.
 
 # Motivation
 Currently there're a few HTML generation library in Common Lisp, like [CL-WHO](https://edicl.github.io/cl-who/), [CL-MARKUP](https://github.com/arielnetworks/cl-markup) and [Spinneret](https://github.com/ruricolist/spinneret). They both have good features for generating standard HTML, but not very good at user element (components) that currently widely used in frontend: you need to define all of them as macros and to define components on top of these components, you'll have to make these components more complex macros to composite them. [Spinneret](https://github.com/ruricolist/spinneret) has a `deftag` feature, but `deftag` is still expand to a `defmacro`.
 
 I'd also want to modify the customer component attribute after create it and incorporate it with it's own logic (like the dog size example above), this logic should be any lisp code. This requires provide all element as object, not plain HTML text generation. With this approach, all elements have a same name function to create it, and returns element that you can modify later. These objects are virtual doms and it's very pleasant to write html code and frontend component by just composite element objects as arguments in element creation function calls. piccolo's composite feature inspired by [Hiccup](https://github.com/weavejester/hiccup) and [Reagent](https://github.com/reagent-project/reagent) but more powerful -- in piccolo, user defined elements is real object with attributes and it's own generation logic.
-
-# Limitation
-With the function name approach, it's not possible to support `div.id#class1#class2` style function names. I'm working on some tweak of reader macros in [illusion](https://github.com/ailisp/illusion) library to detect this and convert it to `(div :id "id" :class "class1 class2" ...)` call
-
-The most and major limitation is we don't have a substential subset of Common Lisp in browser so piccolo can be used in frontend. [Parenscript](https://github.com/vsedach/Parenscript) is essentially a JavaScript semantic in Lisp like syntax. [JSCL](https://github.com/jscl-project/jscl) is promosing, but by now it seems focus on creating a CL REPL on Web and doesn't support `format` or CLOS. Also we lack enough infrastructure to build Common Lisp to JavaScript (might be an asdf plugin) and connect to a browser "Swank" via WebSocket from Emacs. I'll be working these: a full or at least substential subset of Common Lisp to JavaScript Compiler to eventually have a full frontend development environment in Common Lisp. Any help or contribution is welcome.
 
 # API Reference
 Here is a draft version of API Reference, draft means it will be better organized and moved to a separate HTML doc, but it's content is already quite complete.
@@ -207,7 +197,7 @@ All of above HTML5 elements are functions, which support same kinds of parameter
 (a)
 
 ;; 2. attributes of alist, plist or ATTRS object
-;; The following creates: <a id="aa" customer-attr="bb">
+;; The following creates: <a id="aa" customer-attr="bb"></a>
 (a :id "aa" :customer-attr "bb")
 (a '(:id "aa" :customer-attr "bb"))
 (a '((:id . "aa") (:customer-attr . "bb")))
@@ -366,5 +356,8 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 
 
 # License
-Licensed under MIT License.
+Licensed under MIT License.　
+
+Copyright (c) 2024, skyizwhite.
+
 Copyright (c) 2018, Bo Yao. All rights reserved.
