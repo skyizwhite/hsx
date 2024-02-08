@@ -85,16 +85,13 @@
     ((alistp (first attrs-and-children))
      (values (make-attrs :alist (first attrs-and-children))
              (flatten (rest attrs-and-children))))
-    ((listp (first attrs-and-children))
+    ((listp (first attrs-and-children)) ;plist
      (values (make-attrs :alist (plist-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
     ((hash-table-p (first attrs-and-children))
      (values (make-attrs :alist (hash-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
-    ((and (vectorp (first attrs-and-children))
-          (keywordp (aref (first attrs-and-children) 0)))
-     (append-inline-attrs attrs-and-children))
-    ((keywordp (first attrs-and-children))
+    ((keywordp (first attrs-and-children)) ;inline-plist
      (loop for thing on attrs-and-children by #'cddr
            for (k v) = thing
            when (and (keywordp k) v)
@@ -104,17 +101,3 @@
            finally (return (values (make-attrs :alist attrs) nil))))
     (t
      (values (make-attrs :alist nil) (flatten attrs-and-children)))))
-
-(defun append-inline-attrs (attrs-and-children)
-  (let* ((inline-attrs (coerce (first attrs-and-children) 'list))
-         (id (getf inline-attrs :id))
-         (class (getf inline-attrs :class)))
-    (multiple-value-bind (attrs children)
-        (split-attrs-and-children (rest attrs-and-children))
-      (when (and id (not (attr attrs :id)))
-        (setf (attr attrs :id) id))
-      (when class
-        (if-let (other-class (attr attrs :class))
-          (setf (attr attrs :class) (format nil "~a ~a" class other-class))
-          (setf (attr attrs :class) class)))
-      (values attrs children))))
