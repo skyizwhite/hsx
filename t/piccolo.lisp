@@ -261,19 +261,22 @@
 
     (is (eql nil (attrs-alist (element-attrs dog3))))
     (is (string= "dog" (second (element-children (user-element-expand-to dog3)))))
-    (is (string= "dog.png" (attr (first (element-children (user-element-expand-to dog3))) :src)))
+    (is (string= "dog.png" (attr (first (element-children
+                                         (first (element-children (user-element-expand-to dog3))))) :src)))
     (is (string= "dog.png" (attr (first (element-children dog3)) :src)))
 
     (is (equal '((:id . "dog") (:size . 10)) (attrs-alist (element-attrs dog4))))
     (is (= 10 (attr dog4 :size)))
     (is (string= "img" (element-tag (first (element-children dog4)))))
-    (is (string= "dog4.png" (attr (first (element-children (user-element-expand-to dog4))) :src)))
+    (is (string= "dog4.png" (attr (first (element-children
+                                          (first (element-children (user-element-expand-to dog4))))) :src)))
     (is (string= "woo" (second (element-children dog4))))
 
     (setf (attr dog4 :size) 16)
     (is (string= "big-dog" (attr (user-element-expand-to dog4) :class)))
     (setf (element-children dog4) (list dog1 dog2 dog3))
-    (is (equal (list dog1 dog2 dog3 "dog") (element-children (user-element-expand-to dog4))))))
+    (is (equal (list dog1 dog2 dog3) (element-children
+                                      (first (element-children (user-element-expand-to dog4))))))))
 
 (test user-element-html-generation
   (LET* ((dog1 (dog))
