@@ -21,6 +21,9 @@
    ;;; exported as |time|, |map|
    :html
 
+   ;;; fragment
+   :<>
+
    ;;; user defined elements
    :define-element
    :*expand-user-element*
