@@ -18,10 +18,10 @@ This software is still ALPHA quality. The APIs likely change.
 
 - Added:
   - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
-  - Boolean attributes support (e.g. `checked`, `disabled`). For key/value pairs corresponding to boolean attributes, only the key is rendered when the value is `t`, and nothing is rendered when the value is `nil`.
+  - Boolean attributes support (e.g. `checked`, `disabled`). For key/value pairs corresponding to boolean attributes, only the key is rendered when the value is `t`, and nothing is rendered when the value is `nil`. https://github.com/ailisp/flute/issues/11
 - Improved:
   - Element functions are wrapped in macros for natural indentation.
-  - Fixed several bugs.
+  - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7
 - Removed:
   - CSS style id and class attributes (e.g. `div#id.class`)
 
