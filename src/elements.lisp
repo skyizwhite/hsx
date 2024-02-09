@@ -221,8 +221,11 @@
        (defmacro ,name (&body attrs-and-children)
          `(,',%name ,@attrs-and-children)))))
 
-(defun %<> (&rest children)
-  (make-fragment :children children))
+(defun %<> (&rest attrs-and-children)
+  (multiple-value-bind (attrs children)
+      (split-attrs-and-children attrs-and-children)
+    (declare (ignore attrs))
+    (make-fragment :children children)))
 
 (defmacro <> (&body children)
   `(%<> ,@children))
