@@ -5,7 +5,7 @@
   :license "MIT"
   :long-description #.(uiop:read-file-string
                        (uiop:subpathname *load-pathname* "README.md"))
-  :in-order-to ((test-op (test-op piccolo-test)))
   :class :package-inferred-system
   :pathname "src"
-  :depends-on ("piccolo/main"))
+  :depends-on ("piccolo/main")
+  :in-order-to ((test-op (test-op "piccolo-tests"))))
