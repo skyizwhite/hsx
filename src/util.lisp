@@ -3,7 +3,6 @@
   (:export
    ;;; list utility
    #:plist-alist
-   #:alist-plist
 
    ;;; escape utility
    #:*escape-html*
@@ -22,13 +21,7 @@
   (loop for (k v) on plist by #'cddr
         collect (cons k v)))
 
-(defun alist-plist (alist)
-  (mapcan (lambda (kv)
-            (list (string-downcase (car kv))
-                  (cdr kv)))
-          alist))
-
-(defvar *escape-html* :utf8
+(defparameter *escape-html* :utf8
   "Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
 If :UTF8, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
 in attribute keys will not be escaped since piccolo will always use double quote for

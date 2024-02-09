@@ -38,30 +38,35 @@
 
    ;;; the h macro for avoiding import all builtin html element functions
    #:h
+
+   ;;; helper for generate html string
    #:element-string
    #:elem-str))
 (in-package #:piccolo/elements)
 
+;;; classes
+
 (defclass element ()
-  ((tag :initarg :tag
-        :accessor element-tag)
-   (attrs :initarg :attrs
-          :accessor element-attrs)
-   (children :initarg :children
+  ((tag      :initarg  :tag
+             :accessor element-tag)
+   (attrs    :initarg  :attrs
+             :accessor element-attrs)
+   (children :initarg  :children
              :accessor element-children)))
 
 (defclass builtin-element (element) ())
 
 (defclass builtin-element-with-prefix (builtin-element)
-  ((prefix :initarg :prefix
+  ((prefix :initarg  :prefix
            :accessor element-prefix)))
 
 (defclass user-element (element)
   ((expand-to :initarg :expander
               :accessor user-element-expander)))
 
-(defclass fragment (element)
-  ())
+(defclass fragment (element) ())
+
+;;; constructors
 
 (defun make-builtin-element (&key tag attrs children)
   (make-instance 'builtin-element
@@ -95,6 +100,8 @@
                  :attrs (make-attrs :alist nil)
                  :children (util:escape-children children)))
 
+;;; attributes
+
 (defstruct (attrs (:constructor %make-attrs))
   alist)
 
@@ -121,7 +128,7 @@
 (defmethod attr ((element element) key)
   (attr (element-attrs element) key))
 
-(defvar *builtin-elements* (make-hash-table))
+;;; elements
 
 (defun split-attrs-and-children (attrs-and-children)
   (cond
@@ -147,6 +154,9 @@
     (t
      (values (make-attrs :alist nil) (lol:flatten attrs-and-children)))))
 
+(defparameter *builtin-elements* (make-hash-table))
+(setf (gethash :html *builtin-elements*) t)
+
 (defun %html (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
       (split-attrs-and-children attrs-and-children)
@@ -157,8 +167,6 @@
 
 (defmacro html (&body attrs-and-children)
   `(%html ,@attrs-and-children))
-
-(setf (gethash :html *builtin-elements*) t)
 
 (defmacro define-builtin-element (element-name)
   (let ((%element-name (alx:symbolicate '% element-name)))
@@ -191,31 +199,60 @@
   style sub summary sup svg table tbody td template textarea tfoot th
   thead |time| title tr track u ul var video wbr)
 
+(lol:defmacro! define-element (name (&rest args) &body body)
+  (let ((%name (alx:symbolicate '% name)))
+    `(progn
+       (defun ,%name (&rest attrs-and-children)
+         (multiple-value-bind (,g!attrs ,g!children)
+             (split-attrs-and-children attrs-and-children)
+           (make-user-element 
+            :tag (string-downcase ',name)
+            :attrs ,g!attrs
+            :children ,g!children
+            :expander (lambda (tag attrs ,g!exp-children)
+                        (declare (ignorable tag attrs))
+                        (let ((children (and ,g!exp-children
+                                             (make-fragment :children ,g!exp-children))))
+                          (declare (ignorable children))
+                          (let ,(mapcar (lambda (arg)
+                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
+                                        args)
+                            (progn ,@body)))))))
+       (defmacro ,name (&body attrs-and-children)
+         `(,',%name ,@attrs-and-children)))))
+
+(defun %<> (&rest children)
+  (make-fragment :children children))
+
+(defmacro <> (&body children)
+  `(%<> ,@children))
+
+;;; print-object
+
 (defparameter *boolean-attrs*
   '(allowfullscreen async autofocus autoplay checked controls default defer
     disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
     novalidate open playsinline readonly required reversed selected))
 
-(defmethod print-object ((attrs attrs) stream)
-  (if (attrs-alist attrs)
-      (let ((alist (attrs-alist attrs)))
-        (dolist (pair alist)
-          (let ((key (car pair))
-                (value (cdr pair)))
-            (if (member key *boolean-attrs* :test #'string=)
-                (when value
-                  (format stream " ~a" (string-downcase key)))
-                (format stream " ~a=~s" (string-downcase key) value)))))
-      (format stream "")))
-
 (defparameter *self-closing-tags*
   '(area base br col embed hr img input keygen
     link meta param source track wbr))
+
+(defparameter *expand-user-element* t)
 
 (defun self-closing-p (tag)
   (member (make-symbol (string-upcase tag))
           *self-closing-tags*
           :test #'string=))
+
+(defmethod print-object ((attrs attrs) stream)
+  (loop 
+    :for (k . v) :in (attrs-alist attrs)
+    :do (format stream (if (member k *boolean-attrs* :test #'string=)
+                           "~@[ ~a~]"
+                           " ~a=~s")
+                (string-downcase k)
+                v)))
 
 (defmethod print-object ((element element) stream)
   (if (element-children element)
@@ -237,40 +274,10 @@
   (format stream "~a~%" (element-prefix element))
   (call-next-method))
 
-(lol:defmacro! define-element (name (&rest args) &body body)
-  (let ((%name (alx:symbolicate '% name)))
-    `(progn
-       (defun ,%name (&rest attrs-and-children)
-         (multiple-value-bind (,g!attrs ,g!children)
-             (split-attrs-and-children attrs-and-children)
-           (make-user-element 
-            :tag (string-downcase ',name)
-            :attrs ,g!attrs
-            :children ,g!children
-            :expander (lambda (tag attrs ,g!exp-children)
-                        (declare (ignorable tag attrs ,g!exp-children))
-                        (let ((children (and ,g!exp-children
-                                             (make-fragment :children ,g!exp-children))))
-                          (declare (ignorable children))
-                          (let ,(mapcar (lambda (arg)
-                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
-                                        args)
-                            (progn ,@body)))))))
-       (defmacro ,name (&body attrs-and-children)
-         `(,',%name ,@attrs-and-children)))))
-
-(defvar *expand-user-element* t)
-
 (defmethod print-object ((element user-element) stream)
   (if *expand-user-element*
       (print-object (user-element-expand-to element) stream)
       (call-next-method)))
-
-(defun %<> (&rest children)
-  (make-fragment :children children))
-
-(defmacro <> (&body children)
-  `(%<> ,@children))
 
 (defmethod print-object ((element fragment) stream)
   (if (element-children element)
@@ -278,6 +285,8 @@
                          "~<~@{~a~^~:@_~}~:>"
                          "~<~a~:>")
               (element-children element))))
+
+;;; h macro
 
 (defun html-element-p (node)
   (and (symbolp node)
@@ -294,6 +303,8 @@
         (lambda (node)
           (declare (ignorable node))
           (find-symbol (string-upcase node) :piccolo)))))
+
+;;; helper for generate html string
 
 (defmethod element-string ((element element))
   (with-output-to-string (s)
