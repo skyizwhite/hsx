@@ -1,9 +1,9 @@
 (uiop:define-package #:piccolo/elements
   (:use #:cl)
   (:local-nicknames (#:util #:piccolo/util))
-  (:local-nicknames (#:asc #:assoc-utils))
-  (:local-nicknames (#:lol #:let-over-lambda))
-  (:local-nicknames (#:alx #:alexandria))
+  (:local-nicknames (#:asc  #:assoc-utils))
+  (:local-nicknames (#:lol  #:let-over-lambda))
+  (:local-nicknames (#:alx  #:alexandria))
   (:export
    ;;; builtin HTML elements
    ;;; all html5 elements, e.g. div, nav, media, export in code except
@@ -16,7 +16,6 @@
 
    ;;; user defined elements
    #:define-element
-   #:*expand-user-element*
    ;; for reference tag name, attributes and children elements in user
    ;; element definition
    #:tag
@@ -30,18 +29,17 @@
    #:attr
    #:delete-attr
 
-   ;;; element slots
+   ;;; element
+   #:element
+   #:*builtin-elements*
+   #:builtin-element-with-prefix
+   #:user-element
+   #:fragment
    #:element-tag
    #:element-attrs
    #:element-children
-   #:user-element-expand-to
-
-   ;;; the h macro for avoiding import all builtin html element functions
-   #:h
-
-   ;;; helper for generate html string
-   #:element-string
-   #:elem-str))
+   #:element-prefix
+   #:user-element-expand-to))
 (in-package #:piccolo/elements)
 
 ;;; classes
@@ -229,90 +227,3 @@
 
 (defmacro <> (&body children)
   `(%<> ,@children))
-
-;;; print-object
-
-(defparameter *boolean-attrs*
-  '(allowfullscreen async autofocus autoplay checked controls default defer
-    disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
-    novalidate open playsinline readonly required reversed selected))
-
-(defparameter *self-closing-tags*
-  '(area base br col embed hr img input keygen
-    link meta param source track wbr))
-
-(defparameter *expand-user-element* t)
-
-(defun self-closing-p (tag)
-  (member (make-symbol (string-upcase tag))
-          *self-closing-tags*
-          :test #'string=))
-
-(defmethod print-object ((attrs attrs) stream)
-  (loop 
-    :for (k . v) :in (attrs-alist attrs)
-    :do (format stream (if (member k *boolean-attrs* :test #'string=)
-                           "~@[ ~a~]"
-                           " ~a=~s")
-                (string-downcase k)
-                v)))
-
-(defmethod print-object ((element element) stream)
-  (if (element-children element)
-      (format stream (if (rest (element-children element))
-                         "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                         "~@<<~a~a>~2I~:_~<~a~:>~0I~:_</~a>~:>")
-              (element-tag element)
-              (element-attrs element)
-              (element-children element)
-              (element-tag element))
-      (format stream (if (self-closing-p (element-tag element))
-                         "<~a~a>"
-                         "<~a~a></~a>")
-              (element-tag element)
-              (element-attrs element)
-              (element-tag element))))
-
-(defmethod print-object ((element builtin-element-with-prefix) stream)
-  (format stream "~a~%" (element-prefix element))
-  (call-next-method))
-
-(defmethod print-object ((element user-element) stream)
-  (if *expand-user-element*
-      (print-object (user-element-expand-to element) stream)
-      (call-next-method)))
-
-(defmethod print-object ((element fragment) stream)
-  (if (element-children element)
-      (format stream (if (rest (element-children element))
-                         "~<~@{~a~^~:@_~}~:>"
-                         "~<~a~:>")
-              (element-children element))))
-
-;;; h macro
-
-(defun html-element-p (node)
-  (and (symbolp node)
-       (not (keywordp node))
-       (gethash (alx:make-keyword node) *builtin-elements*)))
-
-(defmacro h (&body body)
-  `(progn
-     ,@(util:modify-first-leaves
-        body
-        (lambda (node)
-          (declare (ignorable node))
-          (or (html-element-p node) (string= node '<>)))
-        (lambda (node)
-          (declare (ignorable node))
-          (find-symbol (string-upcase node) :piccolo)))))
-
-;;; helper for generate html string
-
-(defmethod element-string ((element element))
-  (with-output-to-string (s)
-    (write element :stream s)))
-
-(defmethod elem-str ((element element))
-  (with-output-to-string (s)
-    (write element :stream s :pretty nil)))
