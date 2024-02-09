@@ -148,6 +148,14 @@
     (is (string= "<div id=\"4\"><div id=\"3\"><div>some text</div><div id=\"2\"></div>some other text</div><div id=\"5\"><a href=\"a.html\">a</a></div></div>"
                  (elem-str div4)))))
 
+(test boolean-attrs
+  (let ((script1 (script :defer t :data-domain "example.com" :src "example.com/script.js"))
+        (script2 (script :defer nil :data-domain "example.com" :src "example.com/script.js")))
+    (is (string= "<script defer data-domain=\"example.com\" src=\"example.com/script.js\"></script>"
+                 (element-string script1)))
+    (is (string= "<script data-domain=\"example.com\" src=\"example.com/script.js\"></script>"
+                 (element-string script2)))))
+
 (in-suite escape)
 
 (defparameter *a-attrs*

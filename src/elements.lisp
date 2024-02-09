@@ -191,9 +191,21 @@
   style sub summary sup svg table tbody td template textarea tfoot th
   thead |time| title tr track u ul var video wbr)
 
+(defparameter *boolean-attrs*
+  '(allowfullscreen async autofocus autoplay checked controls default defer
+    disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
+    novalidate open playsinline readonly required reversed selected))
+
 (defmethod print-object ((attrs attrs) stream)
   (if (attrs-alist attrs)
-      (format stream " ~{~a=~s~^ ~}" (util:alist-plist (attrs-alist attrs)))
+      (let ((alist (attrs-alist attrs)))
+        (dolist (pair alist)
+          (let ((key (car pair))
+                (value (cdr pair)))
+            (if (member key *boolean-attrs* :test #'string=)
+                (when value
+                  (format stream " ~a" (string-downcase key)))
+                (format stream " ~a=~s" (string-downcase key) value)))))
       (format stream "")))
 
 (defparameter *self-closing-tags*
