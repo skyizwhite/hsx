@@ -18,11 +18,12 @@ This software is still ALPHA quality. The APIs likely change.
 
 - Added:
   - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
+  - Boolean attributes support (e.g. `checked`, `disabled`). For key/value pairs corresponding to boolean attributes, only the key is rendered when the value is `t`, and nothing is rendered when the value is `nil`.
 - Improved:
   - Element functions are wrapped in macros for natural indentation.
   - Fixed several bugs.
 - Removed:
-  - CSS style id and class attributes (For example `div#id.class`)
+  - CSS style id and class attributes (e.g. `div#id.class`)
 
 # Getting started
 
