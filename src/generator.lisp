@@ -1,16 +1,10 @@
 (uiop:define-package #:piccolo/generator
   (:use #:cl)
-  (:local-nicknames (#:alx  #:alexandria))
-  (:local-nicknames (#:util #:piccolo/util))
-  (:local-nicknames (#:elm  #:piccolo/elements))
-  (:export
-   ;;; the h macro for avoiding import all builtin html element functions
-   #:h
-
-   ;;; helper for generate html string
-   #:*expand-user-element*
-   #:element-string
-   #:elem-str))
+  (:local-nicknames (#:alx #:alexandria))
+  (:local-nicknames (#:elm #:piccolo/elements))
+  (:export #:*expand-user-element*
+           #:element-string
+           #:elem-str))
 (in-package #:piccolo/generator)
 
 ;;; print-object
@@ -71,24 +65,6 @@
                          "~<~@{~a~^~:@_~}~:>"
                          "~<~a~:>")
               (elm:element-children element))))
-
-;;; h macro
-
-(defun html-element-p (node)
-  (and (symbolp node)
-       (not (keywordp node))
-       (gethash (alx:make-keyword node) elm:*builtin-elements*)))
-
-(defmacro h (&body body)
-  `(progn
-     ,@(util:modify-first-leaves
-        body
-        (lambda (node)
-          (declare (ignorable node))
-          (or (html-element-p node) (string= node '<>)))
-        (lambda (node)
-          (declare (ignorable node))
-          (find-symbol (string-upcase node) :piccolo)))))
 
 ;;; helper for generate html string
 

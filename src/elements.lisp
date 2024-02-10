@@ -1,45 +1,31 @@
 (uiop:define-package #:piccolo/elements
   (:use #:cl)
-  (:local-nicknames (#:util #:piccolo/util))
-  (:local-nicknames (#:asc  #:assoc-utils))
-  (:local-nicknames (#:lol  #:let-over-lambda))
-  (:local-nicknames (#:alx  #:alexandria))
-  (:export
-   ;;; builtin HTML elements
-   ;;; all html5 elements, e.g. div, nav, media, export in code except
-   ;;; <time> and <map> conflicts with cl symbol, are defined and
-   ;;; exported as |time|, |map|
-   #:html
-
-   ;;; fragment lets you group elements without a wrapper element.
-   #:<>
-
-   ;;; user defined elements
-   #:define-element
-   ;; for reference tag name, attributes and children elements in user
-   ;; element definition
-   #:tag
-   #:children
-   #:attrs
-
-   ;;; attribute accessing utilility
-   #:attrs-alist
-   #:make-attrs
-   #:copy-attrs
-   #:attr
-   #:delete-attr
-
-   ;;; element
-   #:element
-   #:*builtin-elements*
-   #:builtin-element-with-prefix
-   #:user-element
-   #:fragment
-   #:element-tag
-   #:element-attrs
-   #:element-children
-   #:element-prefix
-   #:user-element-expand-to))
+  (:local-nicknames (#:asu #:assoc-utils))
+  (:local-nicknames (#:lol #:let-over-lambda))
+  (:local-nicknames (#:alx #:alexandria))
+  (:local-nicknames (#:esc #:piccolo/escape))
+  (:export #:html
+           #:<>
+           #:define-element
+           #:tag
+           #:children
+           #:attrs
+           #:attrs-alist
+           #:make-attrs
+           #:copy-attrs
+           #:attr
+           #:delete-attr
+           #:element
+           #:builtin-element
+           #:builtin-element-with-prefix
+           #:user-element
+           #:fragment
+           #:element-tag
+           #:element-attrs
+           #:element-prefix
+           #:element-children
+           #:user-element-expand-to
+           #:h))
 (in-package #:piccolo/elements)
 
 ;;; classes
@@ -70,21 +56,21 @@
   (make-instance 'builtin-element
                  :tag tag
                  :attrs attrs
-                 :children (util:escape-children children)))
+                 :children (esc:escape-children children)))
 
 (defun make-builtin-element-with-prefix (&key tag attrs children prefix)
   (make-instance 'builtin-element-with-prefix
                  :tag tag
                  :attrs attrs
                  :prefix prefix
-                 :children (util:escape-children children)))
+                 :children (esc:escape-children children)))
 
 (defun make-user-element (&key tag attrs children expander)
   (make-instance 'user-element
                  :tag tag
                  :attrs attrs
                  :expander expander
-                 :children (util:escape-children children)))
+                 :children (esc:escape-children children)))
 
 (defmethod user-element-expand-to ((element user-element))
   (funcall (user-element-expander element)
@@ -96,7 +82,7 @@
   (make-instance 'fragment
                  :tag 'fragment
                  :attrs (make-attrs :alist nil)
-                 :children (util:escape-children children)))
+                 :children (esc:escape-children children)))
 
 ;;; attributes
 
@@ -104,18 +90,18 @@
   alist)
 
 (defun make-attrs (&key alist)
-  (if util:*escape-html*
-      (%make-attrs :alist (util:escape-attrs-alist alist))
+  (if esc:*escape-html*
+      (%make-attrs :alist (esc:escape-attrs-alist alist))
       (%make-attrs :alist alist)))
 
 (defmethod (setf attr) (value (attrs attrs) key)
-  (setf (asc:aget (attrs-alist attrs) key) value))
+  (setf (asu:aget (attrs-alist attrs) key) value))
 
 (defmethod delete-attr ((attrs attrs) key)
-  (asc:delete-from-alistf (attrs-alist attrs) key))
+  (asu:delete-from-alistf (attrs-alist attrs) key))
 
 (defmethod attr ((attrs attrs) key)
-  (asc:aget (attrs-alist attrs) key))
+  (asu:aget (attrs-alist attrs) key))
 
 (defmethod (setf attr) (value (element element) key)
   (setf (attr (element-attrs element) key) value))
@@ -132,14 +118,14 @@
   (cond
     ((attrs-p (first attrs-and-children))
      (values (first attrs-and-children) (lol:flatten (rest attrs-and-children))))
-    ((asc:alistp (first attrs-and-children))
+    ((asu:alistp (first attrs-and-children))
      (values (make-attrs :alist (first attrs-and-children))
              (lol:flatten (rest attrs-and-children))))
     ((listp (first attrs-and-children)) ;plist
-     (values (make-attrs :alist (util:plist-alist (first attrs-and-children)))
+     (values (make-attrs :alist (alx:plist-alist (first attrs-and-children)))
              (lol:flatten (rest attrs-and-children))))
     ((hash-table-p (first attrs-and-children))
-     (values (make-attrs :alist (asc:hash-alist (first attrs-and-children)))
+     (values (make-attrs :alist (asu:hash-alist (first attrs-and-children)))
              (lol:flatten (rest attrs-and-children))))
     ((keywordp (first attrs-and-children)) ;inline-plist
      (loop for thing on attrs-and-children by #'cddr
@@ -227,3 +213,36 @@
 
 (defmacro <> (&body children)
   `(%<> ,@children))
+
+;;; h macro
+
+(defun html-element-p (node)
+  (and (symbolp node)
+       (not (keywordp node))
+       (gethash (alx:make-keyword node) *builtin-elements*)))
+
+(defun modify-first-leaves (tree test result)
+  (if tree
+      (cons (let ((first-node (first tree)))
+              (cond
+                ((listp first-node)
+                 (modify-first-leaves first-node test result))
+                ((funcall test first-node)
+                 (funcall result first-node))
+                (t first-node)))
+            (mapcar (lambda (node)
+                      (if (listp node)
+                          (modify-first-leaves node test result)
+                          node))
+                    (rest tree)))))
+
+(defmacro h (&body body)
+  `(progn
+     ,@(modify-first-leaves
+        body
+        (lambda (node)
+          (declare (ignorable node))
+          (or (html-element-p node) (string= node '<>)))
+        (lambda (node)
+          (declare (ignorable node))
+          (find-symbol (string-upcase node) :piccolo)))))

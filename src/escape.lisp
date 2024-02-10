@@ -1,25 +1,13 @@
-(uiop:define-package #:piccolo/util
+(uiop:define-package #:piccolo/escape
   (:use #:cl)
-  (:export
-   ;;; list utility
-   #:plist-alist
-
-   ;;; escape utility
-   #:*escape-html*
-   #:utf8-html-escape-char-p
-   #:ascii-html-escape-char-p
-   #:attr-value-escape-char-p
-   #:escape-string
-   #:escape-attrs-alist
-   #:escape-children
-
-   ;;; syntax tree utility
-   #:modify-first-leaves))
-(in-package #:piccolo/util)
-
-(defun plist-alist (plist)
-  (loop for (k v) on plist by #'cddr
-        collect (cons k v)))
+  (:export #:*escape-html*
+           #:utf8-html-escape-char-p
+           #:ascii-html-escape-char-p
+           #:attr-value-escape-char-p
+           #:escape-string
+           #:escape-attrs-alist
+           #:escape-children))
+(in-package #:piccolo/escape)
 
 (defparameter *escape-html* :utf8
   "Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
@@ -74,18 +62,3 @@ When given :ASCII and :ATTR, it's possible to insert html text as a children, e.
                   (otherwise child))
                 child))
           children))
-
-(defun modify-first-leaves (tree test result)
-  (if tree
-      (cons (let ((first-node (first tree)))
-              (cond
-                ((listp first-node)
-                 (modify-first-leaves first-node test result))
-                ((funcall test first-node)
-                 (funcall result first-node))
-                (t first-node)))
-            (mapcar (lambda (node)
-                      (if (listp node)
-                          (modify-first-leaves node test result)
-                          node))
-                    (rest tree)))))
