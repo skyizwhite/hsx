@@ -9,11 +9,6 @@ It's
 - Powerful: help you define reusable and composable components, like that in React
 - Modern: focus only on HTML5
 
-
-# Warning
-
-This software is still ALPHA quality. The APIs likely change.
-
 # Changes from Flute
 
 - Added:
@@ -46,7 +41,7 @@ If you don't want to import all symbols, see [H Macro](#h-macro), which provide 
 (html
   (head
     (link :rel "...")
-    (script :src "..."))
+    (script :src "..." :defer t))
   (body
     (div :id "a" :class "b"
       (p :style "color: red"
