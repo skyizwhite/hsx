@@ -250,8 +250,6 @@
      ,@(modify-first-leaves
         body
         (lambda (node)
-          (declare (ignorable node))
           (or (html-element-p node) (string= node '<>)))
         (lambda (node)
-          (declare (ignorable node))
           (find-symbol (string-upcase node) :piccolo)))))
