@@ -9,7 +9,7 @@ It's
 - Powerful: help you define reusable and composable components, like that in React
 - Modern: focus only on HTML5
 
-# Changes from Flute
+# Differences from Flute
 
 - Added:
   - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
@@ -18,7 +18,8 @@ It's
   - Element functions are wrapped in macros for natural indentation.
   - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7
 - Removed:
-  - CSS style id and class attributes (e.g. `div#id.class`)
+  - Attributes like CSS selectors (e.g. `div#id.class`)
+  - ASCII-based escaping. Piccolo only supports UTF-8.
 
 # Getting started
 
@@ -242,7 +243,7 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;;
 ;; Create a attrs aoject, given an alist of (:attr . "attr-value") pair.
 ;; Attribute values (cdr of each element in alist) will be escaped if
-;; *ESCAPE-HTML* is not NIL
+;; *ESCAPE-HTML* is t.
 
 ;; Function COPY-ATTRS ATTRS
 ;;
@@ -304,15 +305,11 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ```lisp
 ;; Variable *ESCAPE-HTML*
 ;;
-;; Specify the escape option when generate html, can be :UTF8, :ASCII, :ATTR or NIL.
-;; If :UTF8, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
+;; Specify the escape option when generate html with UTF-8, can be t or NIL.
+;; If t, escape only #\<, #\> and #\& in body, and \" in attribute keys. #\' will
 ;; in attribute keys will not be escaped since piccolo will always use double quote for
 ;; attribute keys.
-;; If :ASCII, besides what escaped in :UTF8, also escape all non-ascii characters.
-;; If :ATTR, only #\" in attribute values will be escaped.
 ;; If NIL, nothing is escaped and programmer is responsible to escape elements properly.
-;; When given :ASCII and :ATTR, it's possible to insert html text as a children, e.g.
-;; (div :id "container" "Some <b>text</b>")
 ;; All the escapes are done in element creation time.
 
 ;; Function ESCAPE-STRING STRING TEST
@@ -320,16 +317,10 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;; Escape the STRING if it's a STRING and escaping all charaters C that satisfied
 ;; (FUNCALL TEST C). Return the new STRING after escape.
 
-;; Function UTF8-HTML-ESCAPE-CHAR-P CHAR
+;; Function HTML-ESCAPE-CHAR-P CHAR
 ;;
 ;; Return T if CHAR is a CHARACTER that need to be escaped when HTML is UTF-8 encoded.
 ;; Return NIL otherwise.
-
-;; Function ASCII-HTML-ESCAPE-CHAR-P CHAR
-;;
-;; Return T if CHAR is a CHARACTER that need to be escaped when HTML is ASCII encoded.
-;; Return NIL otherwise.
-
 
 ;; Function ATTR-VALUE-ESCAPE-CHAR-P CHAR
 ;;

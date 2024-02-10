@@ -178,11 +178,7 @@
                                (:data . "'<>")) ))
     (is (equal escaped-attrs-alist (attrs-alist (element-attrs (new-a)))))
     (let ((*escape-html* nil))
-      (is (equal *a-attrs* (attrs-alist (element-attrs (new-a))))))
-    (let ((*escape-html* :attr))
-      (is (equal escaped-attrs-alist (attrs-alist (element-attrs (new-a))))))
-    (let ((*escape-html* :ascii))
-      (is (equal escaped-attrs-alist (attrs-alist (element-attrs (new-a))))))))
+      (is (equal *a-attrs* (attrs-alist (element-attrs (new-a))))))))
 
 (test escape-children
   (let ((a (new-a)))
@@ -191,15 +187,7 @@
     (is (string= "child'<>&quot;.html" (attr (element-attrs (third (element-children a))) :href)))
     (is (string= "child'&lt;&gt;\"" (first (element-children (third (element-children a))))))
     (is (string= (string (code-char 128)) (second (element-children (third (element-children a))))))
-    (is (string= (string (code-char 128)) (fourth (element-children a)))))
-  (let* ((*escape-html* :ascii)
-         (a (new-a)))
-    (is (string= "child text 1" (first (element-children a))))
-    (is (string= "child text 2 &lt;br&gt; &amp;" (second (element-children a))))
-    (is (string= "child'<>&quot;.html" (attr (element-attrs (third (element-children a))) :href)))
-    (is (string= "child'&lt;&gt;\"" (first (element-children (third (element-children a))))))
-    (is (string= "&#128;" (second (element-children (third (element-children a))))))
-    (is (string= "&#128;" (fourth (element-children a))))))
+    (is (string= (string (code-char 128)) (fourth (element-children a))))))
 
 (in-suite attr-access)
 
