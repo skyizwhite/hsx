@@ -9,30 +9,39 @@
 
 ;;; print-object
 
-(defparameter *boolean-attrs*
-  '(allowfullscreen async autofocus autoplay checked controls default defer
-    disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
-    novalidate open playsinline readonly required reversed selected))
+(defun symbols-hash-table (symbols)
+  (let ((ht (make-hash-table)))
+    (mapcar (lambda (sym)
+              (setf (gethash (alx:make-keyword sym) ht) t))
+            symbols)
+    ht))
 
-(defparameter *self-closing-tags*
-  '(area base br col embed hr img input keygen
-    link meta param source track wbr))
+(defmacro define-group (name &body symbols)
+  (alx:with-gensyms (ht)
+    `(progn
+       (let ((,ht (symbols-hash-table ',symbols)))
+         (defun ,(alx:symbolicate name '-p) (symbol)
+           (gethash (alx:make-keyword (string-upcase symbol)) ,ht))))))
+
+(define-group boolean-attr-key
+  allowfullscreen async autofocus autoplay checked controls default defer
+  disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
+  novalidate open playsinline readonly required reversed selected)
+
+(define-group self-closing-tag
+  area base br col embed hr img input keygen
+  link meta param source track wbr)
 
 (defparameter *expand-user-element* t)
 
-(defun self-closing-p (tag)
-  (member (make-symbol (string-upcase tag))
-          *self-closing-tags*
-          :test #'string=))
-
 (defmethod print-object ((attrs elm:attrs) stream)
   (loop 
-    :for (k . v) :in (elm:attrs-alist attrs)
-    :do (format stream (if (member k *boolean-attrs* :test #'string=)
+    :for (key . value) :in (elm:attrs-alist attrs)
+    :do (format stream (if (boolean-attr-key-p key)
                            "~@[ ~a~]"
                            " ~a=~s")
-                (string-downcase k)
-                v)))
+                (string-downcase key)
+                value)))
 
 (defmethod print-object ((element elm:element) stream)
   (if (elm:element-children element)
@@ -43,7 +52,7 @@
               (elm:element-attrs element)
               (elm:element-children element)
               (elm:element-tag element))
-      (format stream (if (self-closing-p (elm:element-tag element))
+      (format stream (if (self-closing-tag-p (elm:element-tag element))
                          "<~a~a>"
                          "<~a~a></~a>")
               (elm:element-tag element)
