@@ -1,7 +1,6 @@
 (uiop:define-package #:piccolo/elements
   (:use #:cl)
   (:local-nicknames (#:asu #:assoc-utils))
-  (:local-nicknames (#:lol #:let-over-lambda))
   (:local-nicknames (#:alx #:alexandria))
   (:local-nicknames (#:esc #:piccolo/escape))
   (:export #:html
@@ -114,29 +113,38 @@
 
 ;;; elements
 
+(defun flatten (x)
+  (labels ((rec (x acc)
+             (cond ((null x) acc)
+                   ((atom x) (cons x acc))
+                   (t (rec
+                       (car x)
+                       (rec (cdr x) acc))))))
+    (rec x nil)))
+
 (defun split-attrs-and-children (attrs-and-children)
   (cond
     ((attrs-p (first attrs-and-children))
-     (values (first attrs-and-children) (lol:flatten (rest attrs-and-children))))
+     (values (first attrs-and-children) (flatten (rest attrs-and-children))))
     ((asu:alistp (first attrs-and-children))
      (values (make-attrs :alist (first attrs-and-children))
-             (lol:flatten (rest attrs-and-children))))
+             (flatten (rest attrs-and-children))))
     ((listp (first attrs-and-children)) ;plist
      (values (make-attrs :alist (alx:plist-alist (first attrs-and-children)))
-             (lol:flatten (rest attrs-and-children))))
+             (flatten (rest attrs-and-children))))
     ((hash-table-p (first attrs-and-children))
      (values (make-attrs :alist (asu:hash-alist (first attrs-and-children)))
-             (lol:flatten (rest attrs-and-children))))
+             (flatten (rest attrs-and-children))))
     ((keywordp (first attrs-and-children)) ;inline-plist
      (loop for thing on attrs-and-children by #'cddr
            for (k v) = thing
            when (and (keywordp k) v)
            collect (cons k v) into attrs
            when (not (keywordp k))
-           return (values (make-attrs :alist attrs) (lol:flatten thing))
+           return (values (make-attrs :alist attrs) (flatten thing))
            finally (return (values (make-attrs :alist attrs) nil))))
     (t
-     (values (make-attrs :alist nil) (lol:flatten attrs-and-children)))))
+     (values (make-attrs :alist nil) (flatten attrs-and-children)))))
 
 (defparameter *builtin-elements* (make-hash-table))
 (setf (gethash :html *builtin-elements*) t)
@@ -158,7 +166,7 @@
        (defun ,%element-name (&rest attrs-and-children)
          (multiple-value-bind (attrs children)
              (split-attrs-and-children attrs-and-children)
-           (make-builtin-element :tag (string-downcase (lol:mkstr ',element-name))
+           (make-builtin-element :tag (string-downcase ',element-name)
                                  :attrs attrs
                                  :children children)))
        (defmacro ,element-name (&body attrs-and-children)
@@ -183,27 +191,28 @@
   style sub summary sup svg table tbody td template textarea tfoot th
   thead |time| title tr track u ul var video wbr)
 
-(lol:defmacro! define-element (name (&rest args) &body body)
-  (let ((%name (alx:symbolicate '% name)))
-    `(progn
-       (defun ,%name (&rest attrs-and-children)
-         (multiple-value-bind (,g!attrs ,g!children)
-             (split-attrs-and-children attrs-and-children)
-           (make-user-element 
-            :tag (string-downcase ',name)
-            :attrs ,g!attrs
-            :children ,g!children
-            :expander (lambda (tag attrs ,g!exp-children)
-                        (declare (ignorable tag attrs))
-                        (let ((children (and ,g!exp-children
-                                             (make-fragment :children ,g!exp-children))))
-                          (declare (ignorable children))
-                          (let ,(mapcar (lambda (arg)
-                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
-                                        args)
-                            (progn ,@body)))))))
-       (defmacro ,name (&body attrs-and-children)
-         `(,',%name ,@attrs-and-children)))))
+(defmacro define-element (name (&rest args) &body body)
+  (alx:with-gensyms (attrs children exp-children)
+    (let ((%name (alx:symbolicate '% name)))
+      `(progn
+         (defun ,%name (&rest attrs-and-children)
+           (multiple-value-bind (,attrs ,children)
+               (split-attrs-and-children attrs-and-children)
+             (make-user-element 
+              :tag (string-downcase ',name)
+              :attrs ,attrs
+              :children ,children
+              :expander (lambda (tag attrs ,exp-children)
+                          (declare (ignorable tag attrs))
+                          (let ((children (and ,exp-children
+                                               (make-fragment :children ,exp-children))))
+                            (declare (ignorable children))
+                            (let ,(mapcar (lambda (arg)
+                                            (list arg `(attr attrs (alx:make-keyword ',arg))))
+                                          args)
+                              (progn ,@body)))))))
+         (defmacro ,name (&body attrs-and-children)
+           `(,',%name ,@attrs-and-children))))))
 
 (defun %<> (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
