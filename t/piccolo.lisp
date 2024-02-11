@@ -185,7 +185,7 @@
     (is (string= "child text 1" (first (element-children a))))
     (is (string= "child text 2 &lt;br&gt; &amp;" (second (element-children a))))
     (is (string= "child'<>&quot;.html" (attr (element-attrs (third (element-children a))) :href)))
-    (is (string= "child'&lt;&gt;\"" (first (element-children (third (element-children a))))))
+    (is (string= "child&#x27;&lt;&gt;&quot;" (first (element-children (third (element-children a))))))
     (is (string= (string (code-char 128)) (second (element-children (third (element-children a))))))
     (is (string= (string (code-char 128)) (fourth (element-children a))))))
 
@@ -228,7 +228,7 @@
   (let ((cat (cat)))
     (is (string= "cat" (attr (user-element-expand-to cat) :id)))
     (is (string= "cat.png" (attr (first (element-children (user-element-expand-to cat))) :src)))
-    (is (string= "I'm a cat" (car (last (element-children (user-element-expand-to cat))))))))
+    (is (string= "I&#x27;m a cat" (car (last (element-children (user-element-expand-to cat))))))))
 
 (define-element dog (id size)
   (if (and (realp size) (> size 10))
@@ -298,16 +298,16 @@
     (is (string= "<div id=\"home\">
   <div id=\"cat\">
     <img src=\"cat.png\">
-    I'm a cat
+    I&#x27;m a cat
   </div>
   <div id=\"cat\">
     <img src=\"cat.png\">
-    I'm a cat
+    I&#x27;m a cat
   </div>
   <div id=\"doge\" class=\"small-dog\">
     <div id=\"cat\">
       <img src=\"cat.png\">
-      I'm a cat
+      I&#x27;m a cat
     </div>
     dog
   </div>
