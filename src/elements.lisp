@@ -192,27 +192,29 @@
   thead |time| title tr track u ul var video wbr)
 
 (defmacro define-element (name (&rest args) &body body)
-  (alx:with-gensyms (attrs children exp-children)
-    (let ((%name (alx:symbolicate '% name)))
-      `(progn
-         (defun ,%name (&rest attrs-and-children)
-           (multiple-value-bind (,attrs ,children)
-               (split-attrs-and-children attrs-and-children)
-             (make-user-element 
-              :tag (string-downcase ',name)
-              :attrs ,attrs
-              :children ,children
-              :expander (lambda (tag attrs ,exp-children)
-                          (declare (ignorable tag attrs))
-                          (let ((children (and ,exp-children
-                                               (make-fragment :children ,exp-children))))
-                            (declare (ignorable children))
-                            (let ,(mapcar (lambda (arg)
-                                            (list arg `(attr attrs (alx:make-keyword ',arg))))
-                                          args)
-                              (progn ,@body)))))))
-         (defmacro ,name (&body attrs-and-children)
-           `(,',%name ,@attrs-and-children))))))
+  (let ((%name (alx:symbolicate '% name))
+        (attrs (gensym "attrs"))
+        (children (gensym "children"))
+        (exp-children (gensym "exp-children")))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (defun ,%name (&rest attrs-and-children)
+         (multiple-value-bind (,attrs ,children)
+             (split-attrs-and-children attrs-and-children)
+           (make-user-element 
+            :tag (string-downcase ',name)
+            :attrs ,attrs
+            :children ,children
+            :expander (lambda (tag attrs ,exp-children)
+                        (declare (ignorable tag attrs))
+                        (let ((children (and ,exp-children
+                                             (make-fragment :children ,exp-children))))
+                          (declare (ignorable children))
+                          (let ,(mapcar (lambda (arg)
+                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
+                                        args)
+                            (progn ,@body)))))))
+       (defmacro ,name (&body attrs-and-children)
+         `(,',%name ,@attrs-and-children)))))
 
 (defun %<> (&rest attrs-and-children)
   (multiple-value-bind (attrs children)
