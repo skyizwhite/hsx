@@ -47,7 +47,7 @@
   (if (elm:element-children element)
       (format stream (if (rest (elm:element-children element))
                          "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                         "~@<<~a~a>~2I~:_~<~a~:>~0I~:_</~a>~:>")
+                         "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
               (elm:element-tag element)
               (elm:element-attrs element)
               (elm:element-children element)
