@@ -136,13 +136,13 @@
      (values (make-attrs :alist (asu:hash-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
     ((keywordp (first attrs-and-children)) ;inline-plist
-     (loop for thing on attrs-and-children by #'cddr
-           for (k v) = thing
-           when (and (keywordp k) v)
-           collect (cons k v) into attrs
-           when (not (keywordp k))
-           return (values (make-attrs :alist attrs) (flatten thing))
-           finally (return (values (make-attrs :alist attrs) nil))))
+     (loop :for thing :on attrs-and-children :by #'cddr
+           :for (k v) := thing
+           :when (and (keywordp k) v)
+           :collect (cons k v) :into attrs
+           :when (not (keywordp k))
+           :return (values (make-attrs :alist attrs) (flatten thing))
+           :finally (return (values (make-attrs :alist attrs) nil))))
     (t
      (values (make-attrs :alist nil) (flatten attrs-and-children)))))
 

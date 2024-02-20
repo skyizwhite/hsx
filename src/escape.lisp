@@ -25,15 +25,15 @@
 
 (defun escape-char (char escape-map)
   (or (cdr (assoc char escape-map))
-       char))
+      char))
 
 (defun escape-string (string escape-map)
   (if (stringp string)
       (with-output-to-string (s)
         (loop
-          for c across string
-          do (write (escape-char c escape-map)
-                    :stream s :escape nil)))
+          :for c :across string
+          :do (write (escape-char c escape-map)
+                     :stream s :escape nil)))
       string))
 
 (defun escape-attrs-alist (alist)
