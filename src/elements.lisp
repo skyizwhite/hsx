@@ -232,6 +232,9 @@
        (not (keywordp node))
        (gethash (alx:make-keyword node) *builtin-elements*)))
 
+(defun fragment-p (node)
+  (string= node '<>))
+
 (defun modify-first-leaves (tree test result)
   (if tree
       (cons (let ((first-node (first tree)))
@@ -252,6 +255,6 @@
      ,@(modify-first-leaves
         body
         (lambda (node)
-          (or (html-element-p node) (string= node '<>)))
+          (or (html-element-p node) (fragment-p node)))
         (lambda (node)
           (find-symbol (string-upcase node) :piccolo)))))
