@@ -7,7 +7,7 @@
            #:elem-str))
 (in-package #:piccolo/generator)
 
-;;; print-object
+;;; groups of specific tags and attributes
 
 (defun symbols-hash-table (symbols)
   (let ((ht (make-hash-table)))
@@ -31,6 +31,8 @@
 (define-group self-closing-tag
   area base br col embed hr img input keygen
   link meta param source track wbr)
+
+;;; print-object
 
 (defparameter *expand-user-element* t)
 
