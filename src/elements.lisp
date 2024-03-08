@@ -79,7 +79,7 @@
 
 (defun make-fragment (&key children)
   (make-instance 'fragment
-                 :tag 'fragment
+                 :tag "fragment"
                  :attrs (make-attrs :alist nil)
                  :children (esc:escape-children children)))
 
