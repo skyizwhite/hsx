@@ -1,8 +1,8 @@
 (uiop:define-package #:piccolo/escape
   (:use #:cl)
   (:export #:*escape-html*
-           #:html-escape-char-p
-           #:attr-value-escape-char-p
+           #:*html-escape-map*
+           #:*attr-escape-map*
            #:escape-string
            #:escape-attrs-alist
            #:escape-children))
@@ -44,7 +44,7 @@
 
 (defun escape-children (children)
   (mapcar (lambda (child)
-            (if (stringp child)
+            (if (and (stringp child) *escape-html*)
                 (escape-string child *html-escape-map*)
                 child))
           children))

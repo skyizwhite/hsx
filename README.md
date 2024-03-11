@@ -316,17 +316,6 @@ The `HTML` element is a little special, it's with `<!DOCTYPE html>` prefix to ma
 ;;
 ;; Escape the STRING if it's a STRING and escaping all charaters C that satisfied
 ;; (FUNCALL TEST C). Return the new STRING after escape.
-
-;; Function HTML-ESCAPE-CHAR-P CHAR
-;;
-;; Return T if CHAR is a CHARACTER that need to be escaped when HTML is UTF-8 encoded.
-;; Return NIL otherwise.
-
-;; Function ATTR-VALUE-ESCAPE-CHAR-P CHAR
-;;
-;; Return T if CHAR is a CHARACTER that need to be escaped when as an attribute value.
-;; Return NIL otherwise.
-
 ```
 
 ## Generate HTML string
