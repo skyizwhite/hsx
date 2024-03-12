@@ -39,7 +39,8 @@
 (defmethod print-object ((attrs elm:attrs) stream)
   (loop 
     :for (key . value) :in (elm:attrs-alist attrs)
-    :do (format stream (if (boolean-attr-key-p key)
+    :do (format stream (if (and (boolean-attr-key-p key)
+                                (typep value 'boolean))
                            "~@[ ~a~]"
                            " ~a=~s")
                 (string-downcase key)
