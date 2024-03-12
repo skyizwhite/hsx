@@ -13,7 +13,10 @@ It's
 
 - Added:
   - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
-  - Boolean attributes support (e.g. `checked`, `disabled`). For key/value pairs corresponding to boolean attributes, only the key is rendered when the value is `t`, and nothing is rendered when the value is `nil`. https://github.com/ailisp/flute/issues/11
+  - Boolean attributes support (e.g. `checked`, `disabled`). If the value is
+    - `nil`: Nothing is rendered.
+    - `t`: Only the key is rendered.
+    - non-boolean: The key/value pair is rendered.
 - Improved:
   - Element functions are wrapped in macros for natural indentation.
   - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7
