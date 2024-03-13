@@ -23,11 +23,6 @@
          (defun ,(alx:symbolicate name '-p) (symbol)
            (gethash (alx:make-keyword (string-upcase symbol)) ,ht))))))
 
-(define-group boolean-attr-key
-  allowfullscreen async autofocus autoplay checked controls default defer
-  disabled formnovalidate inert ismap itemscope loop multiple muted nomodule
-  novalidate open playsinline readonly required reversed selected)
-
 (define-group self-closing-tag
   area base br col embed hr img input keygen
   link meta param source track wbr)
@@ -39,8 +34,7 @@
 (defmethod print-object ((attrs elm:attrs) stream)
   (loop 
     :for (key . value) :in (elm:attrs-alist attrs)
-    :do (format stream (if (and (boolean-attr-key-p key)
-                                (typep value 'boolean))
+    :do (format stream (if (typep value 'boolean)
                            "~@[ ~a~]"
                            " ~a=~s")
                 (string-downcase key)
