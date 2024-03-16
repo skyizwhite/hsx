@@ -257,4 +257,4 @@
         (lambda (node)
           (or (html-element-p node) (fragment-p node)))
         (lambda (node)
-          (find-symbol (string-upcase node) :piccolo)))))
+          (find-symbol (string node) :piccolo)))))
