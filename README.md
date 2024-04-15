@@ -46,8 +46,22 @@ It's
 ```
 
 - Improved:
-  - Element functions are wrapped in macros for natural indentation.
+  - Element functions are wrapped in macros for natural indentation. To manipulate them as function objects, prefix '%' to the element name, or use `get-element` function.
   - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7
+
+```lisp
+(define-element dynamic-1 (as)
+  (funcall as props children))
+
+(define-element dynamic-2 (as)
+  (funcall (get-element as) props children))
+
+(dynamic-1 :as #'%span :class "bold" "child")
+(dynamic-2 :as "span" :class "bold" "child")
+
+; <span class="bold">child</span>
+```
+
 - Removed:
   - Attributes like CSS selectors (e.g. `div#id.class`)
   - ASCII-based escaping. Piccolo only supports UTF-8.
@@ -367,4 +381,4 @@ Licensed under MIT License.　
 
 Copyright (c) 2024, skyizwhite.
 
-Copyright (c) 2018, Bo Yao. All rights reserved.
+Copyright (c) 2018, Bo Yao.

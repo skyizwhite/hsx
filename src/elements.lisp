@@ -37,7 +37,8 @@
            #:element-prefix
            #:element-children
            #:user-element-expand-to
-           #:h))
+           #:h
+           #:get-element))
 (in-package #:piccolo/elements)
 
 ;;; classes
@@ -279,3 +280,8 @@
           (or (html-element-p node) (fragment-p node)))
         (lambda (node)
           (find-symbol (string node) :piccolo)))))
+
+;;; Utility
+
+(defun get-element (name)
+  (find-symbol (concatenate 'string "%" (string-upcase name)) :piccolo))
