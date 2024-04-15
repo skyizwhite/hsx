@@ -129,7 +129,8 @@
     ((asu:alistp (first attrs-and-children))
      (values (make-attrs :alist (first attrs-and-children))
              (flatten (rest attrs-and-children))))
-    ((listp (first attrs-and-children)) ;plist
+    ((and (listp (first attrs-and-children))
+          (keywordp (first (first attrs-and-children)))) ;plist
      (values (make-attrs :alist (alx:plist-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
     ((hash-table-p (first attrs-and-children))
@@ -195,7 +196,7 @@
   (let ((%name (alx:symbolicate '% name))
         (attrs (gensym "attrs"))
         (children (gensym "children"))
-        (exp-children (gensym "exp-children")))
+        (raw-children (gensym "raw-children")))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (defun ,%name (&rest attrs-and-children)
          (multiple-value-bind (,attrs ,children)
@@ -204,10 +205,9 @@
             :tag (string-downcase ',name)
             :attrs ,attrs
             :children ,children
-            :expander (lambda (tag attrs ,exp-children)
+            :expander (lambda (tag attrs ,raw-children)
                         (declare (ignorable tag attrs))
-                        (let ((children (and ,exp-children
-                                             (make-fragment :children ,exp-children))))
+                        (let ((children (and ,raw-children (apply #'%<> ,raw-children))))
                           (declare (ignorable children))
                           (let ,(mapcar (lambda (arg)
                                           (list arg `(attr attrs (alx:make-keyword ',arg))))
