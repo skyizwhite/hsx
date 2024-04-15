@@ -14,7 +14,9 @@
                 #:escape-children
                 #:*escape-html*)
   (:export #:html
+           #:%html
            #:<>
+           #:%<>
            #:define-element
            #:tag
            #:children
@@ -189,7 +191,8 @@
      ,@(mapcan (lambda (e)
                  (list `(define-builtin-element ,e)
                        `(setf (gethash (make-keyword ',e) *builtin-elements*) t)
-                       `(export ',e)))
+                       `(export ',e)
+                       `(export ',(symbolicate '% e))))
                element-names)))
 
 (define-and-export-builtin-elements
