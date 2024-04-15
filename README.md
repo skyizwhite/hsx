@@ -17,7 +17,7 @@ It's
     - `nil`: Nothing is rendered.
     - `t`: Only the key is rendered.
     - non-boolean: The key/value pair is rendered.
-  - `props`: If the properties given to a component are not declared with `define-element` macro, they are gathered into `props` property list. This allows flexible props passing to components.
+  - `props`: If the properties assigned to a component are not declared within the `define-element` macro, they are automatically collected into the `props` property list. This allows for flexible passing of props to the component.
 
 ```lisp
 (<>
