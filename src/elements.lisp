@@ -19,7 +19,7 @@
            #:tag
            #:children
            #:attrs
-           #:...props
+           #:props
            #:attrs-alist
            #:make-attrs
            #:copy-attrs
@@ -223,13 +223,13 @@
                           (let ,(mapcar (lambda (prop)
                                           (list prop `(attr attrs (make-keyword ',prop))))
                                         props)
-                            (let ((...props
+                            (let ((props
                                     (loop :for (key . value) in (attrs-alist attrs)
                                           :unless (member key
                                                           ',(mapcar #'make-keyword
                                                                     props))
                                           :append (list key value))))
-                              (declare (ignorable ...props))
+                              (declare (ignorable props))
                               (progn ,@body))))))))
        (defmacro ,name (&body attrs-and-children)
          `(,',%name ,@attrs-and-children)))))
