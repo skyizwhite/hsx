@@ -1,8 +1,18 @@
 (uiop:define-package #:piccolo/elements
   (:use #:cl)
-  (:local-nicknames (#:asu #:assoc-utils))
-  (:local-nicknames (#:alx #:alexandria))
-  (:local-nicknames (#:esc #:piccolo/escape))
+  (:import-from #:assoc-utils
+                #:aget
+                #:alistp
+                #:delete-from-alistf
+                #:hash-alist)
+  (:import-from #:alexandria
+                #:make-keyword
+                #:plist-alist
+                #:symbolicate)
+  (:import-from #:piccolo/escape
+                #:escape-attrs-alist
+                #:escape-children
+                #:*escape-html*)
   (:export #:html
            #:<>
            #:define-element
@@ -56,21 +66,21 @@
   (make-instance 'builtin-element
                  :tag tag
                  :attrs attrs
-                 :children (esc:escape-children children)))
+                 :children (escape-children children)))
 
 (defun make-builtin-element-with-prefix (&key tag attrs children prefix)
   (make-instance 'builtin-element-with-prefix
                  :tag tag
                  :attrs attrs
                  :prefix prefix
-                 :children (esc:escape-children children)))
+                 :children (escape-children children)))
 
 (defun make-user-element (&key tag attrs children expander)
   (make-instance 'user-element
                  :tag tag
                  :attrs attrs
                  :expander expander
-                 :children (esc:escape-children children)))
+                 :children (escape-children children)))
 
 (defmethod user-element-expand-to ((element user-element))
   (funcall (user-element-expander element)
@@ -82,7 +92,7 @@
   (make-instance 'fragment
                  :tag "fragment"
                  :attrs (make-attrs :alist nil)
-                 :children (esc:escape-children children)))
+                 :children (escape-children children)))
 
 ;;; attributes
 
@@ -90,18 +100,18 @@
   alist)
 
 (defun make-attrs (&key alist)
-  (if esc:*escape-html*
-      (%make-attrs :alist (esc:escape-attrs-alist alist))
+  (if *escape-html*
+      (%make-attrs :alist (escape-attrs-alist alist))
       (%make-attrs :alist alist)))
 
 (defmethod (setf attr) (value (attrs attrs) key)
-  (setf (asu:aget (attrs-alist attrs) key) value))
+  (setf (aget (attrs-alist attrs) key) value))
 
 (defmethod delete-attr ((attrs attrs) key)
-  (asu:delete-from-alistf (attrs-alist attrs) key))
+  (delete-from-alistf (attrs-alist attrs) key))
 
 (defmethod attr ((attrs attrs) key)
-  (asu:aget (attrs-alist attrs) key))
+  (aget (attrs-alist attrs) key))
 
 (defmethod (setf attr) (value (element element) key)
   (setf (attr (element-attrs element) key) value))
@@ -127,15 +137,15 @@
   (cond
     ((attrs-p (first attrs-and-children))
      (values (first attrs-and-children) (flatten (rest attrs-and-children))))
-    ((asu:alistp (first attrs-and-children))
+    ((alistp (first attrs-and-children))
      (values (make-attrs :alist (first attrs-and-children))
              (flatten (rest attrs-and-children))))
     ((and (listp (first attrs-and-children))
           (keywordp (first (first attrs-and-children)))) ;plist
-     (values (make-attrs :alist (alx:plist-alist (first attrs-and-children)))
+     (values (make-attrs :alist (plist-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
     ((hash-table-p (first attrs-and-children))
-     (values (make-attrs :alist (asu:hash-alist (first attrs-and-children)))
+     (values (make-attrs :alist (hash-alist (first attrs-and-children)))
              (flatten (rest attrs-and-children))))
     ((keywordp (first attrs-and-children)) ;inline-plist
      (loop :for thing :on attrs-and-children :by #'cddr
@@ -163,7 +173,7 @@
   `(%html ,@attrs-and-children))
 
 (defmacro define-builtin-element (element-name)
-  (let ((%element-name (alx:symbolicate '% element-name)))
+  (let ((%element-name (symbolicate '% element-name)))
     `(progn
        (defun ,%element-name (&rest attrs-and-children)
          (multiple-value-bind (attrs children)
@@ -178,7 +188,7 @@
   `(progn
      ,@(mapcan (lambda (e)
                  (list `(define-builtin-element ,e)
-                       `(setf (gethash (alx:make-keyword ',e) *builtin-elements*) t)
+                       `(setf (gethash (make-keyword ',e) *builtin-elements*) t)
                        `(export ',e)))
                element-names)))
 
@@ -194,7 +204,7 @@
   thead |time| title tr track u ul var video wbr)
 
 (defmacro define-element (name (&rest props) &body body)
-  (let ((%name (alx:symbolicate '% name))
+  (let ((%name (symbolicate '% name))
         (attrs (gensym "attrs"))
         (children (gensym "children"))
         (raw-children (gensym "raw-children")))
@@ -211,12 +221,12 @@
                         (let ((children (and ,raw-children (apply #'%<> ,raw-children))))
                           (declare (ignorable children))
                           (let ,(mapcar (lambda (prop)
-                                          (list prop `(attr attrs (alx:make-keyword ',prop))))
+                                          (list prop `(attr attrs (make-keyword ',prop))))
                                         props)
                             (let ((...props
                                     (loop :for (key . value) in (attrs-alist attrs)
                                           :unless (member key
-                                                          ',(mapcar #'alx:make-keyword
+                                                          ',(mapcar #'make-keyword
                                                                     props))
                                           :append (list key value))))
                               (declare (ignorable ...props))
@@ -238,7 +248,7 @@
 (defun html-element-p (node)
   (and (symbolp node)
        (not (keywordp node))
-       (gethash (alx:make-keyword node) *builtin-elements*)))
+       (gethash (make-keyword node) *builtin-elements*)))
 
 (defun fragment-p (node)
   (string= node '<>))
