@@ -218,7 +218,7 @@
                                           :unless (member key
                                                           ',(mapcar #'alx:make-keyword
                                                                     props))
-                                          :collect (cons key value))))
+                                          :append (list key value))))
                               (declare (ignorable ...props))
                               (progn ,@body))))))))
        (defmacro ,name (&body attrs-and-children)

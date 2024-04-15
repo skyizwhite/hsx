@@ -17,7 +17,7 @@ It's
     - `nil`: Nothing is rendered.
     - `t`: Only the key is rendered.
     - non-boolean: The key/value pair is rendered.
-  - `...props`: If the properties given to a component are not declared with `define-element` macro, they are gathered into `...props` association list. This allows flexible props passing to components.
+  - `...props`: If the properties given to a component are not declared with `define-element` macro, they are gathered into `...props` property list. This allows flexible props passing to components.
 
 ```lisp
 (<>
@@ -36,8 +36,7 @@ It's
 ; <a href="/detail" class="m-1">View More</a>
 
 (define-element custom-button (variant)
-  (button `((:class . ,variant)
-            ,@...props)
+  (button `(:class ,variant ,@...props)
     children))
 
 (custom-button :type "submit" :variant "big" :onclick "doSomething()"
