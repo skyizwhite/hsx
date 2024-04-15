@@ -11,12 +11,41 @@ It's
 
 # Differences from Flute
 
-- Added:
-  - React-like fragment `(<> ...)`. It lets you group elements without a wrapper element.
+-  New features:
+  - Fragment `(<> ...)`. It allows you to group elements without a wrapper element.
   - Boolean attributes support (e.g. `checked`, `disabled`). If the value is
     - `nil`: Nothing is rendered.
     - `t`: Only the key is rendered.
     - non-boolean: The key/value pair is rendered.
+  - `...props` alist. It allows you to pass props more flexibly.  
+
+```lisp
+(<>
+  (div)
+  (div))
+
+; <div></div> 
+: <div></div>
+
+(define-element view-more ()
+  (a ...props
+    "View More"))
+
+(view-more :href "/detail" :class "m-1")
+
+; <a href="/detail" class="m-1">View More</a>
+
+(define-element custom-button (variant)
+  (button `((:class . ,variant)
+            ,@...props)
+    children))
+
+(custom-button :type "submit" :variant "big" :onclick "doSomething()"
+  "Submit")
+
+; <button class="big" type="submit" onclick="doSomething()">Submit</button>
+```
+
 - Improved:
   - Element functions are wrapped in macros for natural indentation.
   - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7

@@ -9,6 +9,7 @@
            #:tag
            #:children
            #:attrs
+           #:...props
            #:attrs-alist
            #:make-attrs
            #:copy-attrs
@@ -192,7 +193,7 @@
   style sub summary sup svg table tbody td template textarea tfoot th
   thead |time| title tr track u ul var video wbr)
 
-(defmacro define-element (name (&rest args) &body body)
+(defmacro define-element (name (&rest props) &body body)
   (let ((%name (alx:symbolicate '% name))
         (attrs (gensym "attrs"))
         (children (gensym "children"))
@@ -209,10 +210,17 @@
                         (declare (ignorable tag attrs))
                         (let ((children (and ,raw-children (apply #'%<> ,raw-children))))
                           (declare (ignorable children))
-                          (let ,(mapcar (lambda (arg)
-                                          (list arg `(attr attrs (alx:make-keyword ',arg))))
-                                        args)
-                            (progn ,@body)))))))
+                          (let ,(mapcar (lambda (prop)
+                                          (list prop `(attr attrs (alx:make-keyword ',prop))))
+                                        props)
+                            (let ((...props
+                                    (loop :for (key . value) in (attrs-alist attrs)
+                                          :unless (member key
+                                                          ',(mapcar #'alx:make-keyword
+                                                                    props))
+                                          :collect (cons key value))))
+                              (declare (ignorable ...props))
+                              (progn ,@body))))))))
        (defmacro ,name (&body attrs-and-children)
          `(,',%name ,@attrs-and-children)))))
 
