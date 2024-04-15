@@ -25,7 +25,7 @@ It's
   (div))
 
 ; <div></div> 
-: <div></div>
+; <div></div>
 
 (define-element view-more ()
   (a ...props
