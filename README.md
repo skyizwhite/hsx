@@ -11,7 +11,7 @@ It's
 
 # Differences from Flute
 
--  New features:
+- New features:
   - Fragment `(<> ...)`. It allows you to group elements without a wrapper element.
   - Boolean attributes support (e.g. `checked`, `disabled`). If the value is
     - `nil`: Nothing is rendered.
