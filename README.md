@@ -12,12 +12,12 @@ It's
 # Differences from Flute
 
 - New features:
-  - Fragment `(<> ...)`. It allows you to group elements without a wrapper element.
-  - Boolean attributes support (e.g. `checked`, `disabled`). If the value is
+  - Fragment `(<> ...)`: This allows you to group elements without a wrapper element.
+  - Boolean attributes support (e.g. `checked`, `disabled`): If the value is
     - `nil`: Nothing is rendered.
     - `t`: Only the key is rendered.
     - non-boolean: The key/value pair is rendered.
-  - `...props` alist. It allows you to pass props more flexibly.  
+  - `...props`: If the properties given to a component are not declared with `define-element` macro, they are gathered into `...props` association list. This allows flexible props passing to components.
 
 ```lisp
 (<>
