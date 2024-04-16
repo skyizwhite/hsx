@@ -38,7 +38,7 @@
            #:element-children
            #:user-element-expand-to
            #:h
-           #:get-element))
+           #:get-builtin-element))
 (in-package #:piccolo/elements)
 
 ;;; classes
@@ -283,5 +283,5 @@
 
 ;;; Utility
 
-(defun get-element (name)
-  (find-symbol (concatenate 'string "%" (string-upcase name)) :piccolo))
+(defun get-builtin-element (name)
+  (find-symbol (string (symbolicate '% name)) :piccolo))

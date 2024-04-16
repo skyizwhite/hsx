@@ -46,7 +46,7 @@ It's
 ```
 
 - Improved:
-  - Element functions are wrapped in macros for natural indentation. To manipulate them as function objects, prefix '%' to the element name, or use `get-element` function.
+  - Element functions are wrapped in macros for natural indentation. To manipulate them as function objects, prefix '%' to the element name, or use `get-builtin-element` function.
   - Bugfix. https://github.com/ailisp/flute/issues/5, https://github.com/ailisp/flute/issues/7
 
 ```lisp
@@ -54,10 +54,10 @@ It's
   (funcall as props children))
 
 (define-element dynamic-2 (as)
-  (funcall (get-element as) props children))
+  (funcall (get-builtin-element as) props children))
 
 (dynamic-1 :as #'%span :class "bold" "child")
-(dynamic-2 :as "span" :class "bold" "child")
+(dynamic-2 :as 'span :class "bold" "child")
 
 ; <span class="bold">child</span>
 ```
