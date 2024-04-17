@@ -32,14 +32,12 @@
       (with-output-to-string (s)
         (loop
           :for c :across string
-          :do (write (escape-char c escape-map)
-                     :stream s :escape nil)))
+          :do (write (escape-char c escape-map) :stream s :escape nil)))
       string))
 
 (defun escape-attrs-alist (alist)
   (mapcar (lambda (kv)
-            (cons (car kv)
-                  (escape-string (cdr kv) *attr-escape-map*)))
+            (cons (car kv) (escape-string (cdr kv) *attr-escape-map*)))
           alist))
 
 (defun escape-children (children)

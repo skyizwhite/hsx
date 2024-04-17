@@ -58,7 +58,7 @@
            :accessor element-prefix)))
 
 (defclass user-element (element)
-  ((expand-to :initarg :expander
+  ((expand-to :initarg  :expander
               :accessor user-element-expander)))
 
 (defclass fragment (element) ())
@@ -228,11 +228,10 @@
                                           (list prop `(attr attrs (make-keyword ',prop))))
                                         props)
                             (let ((props
-                                    (loop :for (key . value) in (attrs-alist attrs)
-                                          :unless (member key
-                                                          ',(mapcar #'make-keyword
-                                                                    props))
-                                          :append (list key value))))
+                                    (loop
+                                      :for (key . value) in (attrs-alist attrs)
+                                      :unless (member key ',(mapcar #'make-keyword props))
+                                      :append (list key value))))
                               (declare (ignorable props))
                               (progn ,@body))))))))
        (defmacro ,name (&body attrs-and-children)
