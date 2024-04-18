@@ -37,8 +37,7 @@
            #:element-prefix
            #:element-children
            #:user-element-expand-to
-           #:h
-           #:get-builtin-element))
+           #:h))
 (in-package #:piccolo/elements)
 
 ;;; classes
@@ -279,8 +278,3 @@
           (or (html-element-p node) (fragment-p node)))
         (lambda (node)
           (find-symbol (string node) :piccolo)))))
-
-;;; Utility
-
-(defun get-builtin-element (name)
-  (find-symbol (string (symbolicate '% name)) :piccolo))
