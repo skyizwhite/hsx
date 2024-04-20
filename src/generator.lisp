@@ -1,9 +1,7 @@
 (uiop:define-package #:piccolo/generator
   (:use #:cl)
-  (:import-from #:alexandria
-                #:with-gensyms
-                #:make-keyword
-                #:symbolicate)
+  (:import-from #:piccolo/groups
+                #:self-closing-tag-p)
   (:import-from #:piccolo/elements
                 #:attrs
                 #:attrs-alist
@@ -20,26 +18,6 @@
            #:element-string
            #:elem-str))
 (in-package #:piccolo/generator)
-
-;;; groups of specific tags and attributes
-
-(defun symbols-hash-table (symbols)
-  (let ((ht (make-hash-table)))
-    (mapcar (lambda (sym)
-              (setf (gethash (make-keyword sym) ht) t))
-            symbols)
-    ht))
-
-(defmacro define-group (name &body symbols)
-  (with-gensyms (ht)
-    `(progn
-       (let ((,ht (symbols-hash-table ',symbols)))
-         (defun ,(symbolicate name '-p) (symbol)
-           (gethash (make-keyword (string-upcase symbol)) ,ht))))))
-
-(define-group self-closing-tag
-  area base br col embed hr img input keygen
-  link meta param source track wbr)
 
 ;;; print-object
 

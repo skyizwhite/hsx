@@ -9,6 +9,8 @@
                 #:make-keyword
                 #:plist-alist
                 #:symbolicate)
+  (:import-from #:piccolo/groups
+                #:non-escape-tag-p)
   (:import-from #:piccolo/escape
                 #:escape-attrs-alist
                 #:escape-children
@@ -68,7 +70,9 @@
   (make-instance 'builtin-element
                  :tag tag
                  :attrs attrs
-                 :children (escape-children children)))
+                 :children (if (non-escape-tag-p tag)
+                               children
+                               (escape-children children))))
 
 (defun make-builtin-element-with-prefix (&key tag attrs children prefix)
   (make-instance 'builtin-element-with-prefix
