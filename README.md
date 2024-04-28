@@ -27,6 +27,14 @@ It's
 ; <div></div> 
 ; <div></div>
 
+(script :defer t)
+
+; => <script defer></script>
+
+(script :defer nil)
+
+; => <script></script>
+
 (define-element view-more ()
   (a props
     "View More"))
@@ -35,14 +43,6 @@ It's
 
 ; <a href="/detail" class="m-1">View More</a>
 
-(define-element custom-button (variant)
-  (button `(:class ,variant ,@props)
-    children))
-
-(custom-button :type "submit" :variant "big" :onclick "doSomething()"
-  "Submit")
-
-; <button class="big" type="submit" onclick="doSomething()">Submit</button>
 ```
 
 - Improved:
