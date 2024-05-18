@@ -1,5 +1,7 @@
 # Piccolo
 
+⚠️ **This repository is undergoing a comprehensive overhaul.** (https://github.com/skyizwhite/piccolo/issues/14)
+
 Piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easily composable HTML5 generation library for Common Lisp.
 
 It's
