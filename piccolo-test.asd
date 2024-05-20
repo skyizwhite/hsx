@@ -1,9 +1,5 @@
-(defsystem piccolo-test
-  :author "Bo Yao, skyizwhite"
-  :maintainer "skyizwhite <paku@skyizwhite.dev>"
-  :license "MIT"
-  :depends-on (:piccolo :fiveam)
-  :components ((:module "t"
-                :serial t
-                :components
-                ((:file "piccolo")))))
+(defsystem "piccolo-test"
+  :class :package-inferred-system
+  :pathname "tests"
+  :depends-on ("fiveam")
+  :perform (test-op (op c) (symbol-call :fiveam :run-all-tests)))
