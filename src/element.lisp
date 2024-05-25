@@ -21,6 +21,15 @@
                                 (and children
                                      (list :children (flatten children))))))
 
+(defmethod expand ((elm element))
+  (with-accessors ((kind element-kind)
+                   (props element-props)) elm
+    (if (functionp kind)
+        (apply kind props)
+        elm)))
+
+;;;; utils
+
 (defun flatten (x)
   (labels ((rec (x acc)
              (cond ((null x) acc)
@@ -29,10 +38,3 @@
                        (car x)
                        (rec (cdr x) acc))))))
     (rec x nil)))
-
-(defmethod expand ((elm element))
-  (with-accessors ((kind element-kind)
-                   (props element-props)) elm
-    (if (functionp kind)
-        (apply kind props)
-        (error "element-kind is not a function."))))
