@@ -25,8 +25,7 @@
     (is (equal (element-children elm) (list "child1" "child2")))))
 
 (test hsx-with-props-and-children
-  (test hsx-with-props
-    (let ((elm (div :prop1 "value1" :prop2 "value2"
-                 "child1" "child2")))
-      (is (equal (element-props elm) '(:prop1 "value1" :prop2 "value2")))
-      (is (equal (element-children elm) (list "child1" "child2"))))))
+  (let ((elm (div :prop1 "value1" :prop2 "value2"
+               "child1" "child2")))
+    (is (equal (element-props elm) '(:prop1 "value1" :prop2 "value2")))
+    (is (equal (element-children elm) (list "child1" "child2")))))
