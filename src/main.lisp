@@ -1,4 +1,4 @@
-(defpackage :piccolo
-  (:nicknames #:piccolo/main)
+(defpackage :hsx
+  (:nicknames #:hsx/main)
   (:use #:cl))
-(in-package :piccolo)
+(in-package :hsx)

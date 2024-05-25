@@ -1,10 +1,10 @@
-(defpackage #:piccolo/element
+(defpackage #:hsx/element
   (:use #:cl)
   (:export #:element-kind
            #:element-props
            #:create-element
            #:expand))
-(in-package #:piccolo/element)
+(in-package #:hsx/element)
 
 (defclass element ()
   ((kind

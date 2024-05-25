@@ -1,8 +1,11 @@
-# Piccolo
+# HSX
 
-Piccolo, a fork of [flute](https://github.com/ailisp/flute), is a beautiful, easily composable HTML5 generation library for Common Lisp.
+HSX (hypertext s-expression) is an incredibly simple HTML5 generation library for Common Lisp.
+
+This is a fork project of [flute](https://github.com/ailisp/flute/), created by Bo Yao.
 
 # License
+
 Licensed under MIT License.　
 
 Copyright (c) 2024, skyizwhite.

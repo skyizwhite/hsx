@@ -1,8 +1,8 @@
-(defpackage :piccolo-test/element
+(defpackage :hsx-test/element
   (:use :cl
         :fiveam
-        :piccolo/element))
-(in-package :piccolo-test/element)
+        :hsx/element))
+(in-package :hsx-test/element)
 
 (def-suite create-element)
 
