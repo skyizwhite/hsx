@@ -16,10 +16,10 @@
                                 nil
                                 "Hello,"
                                 inner)))
-    (is (string= (element-kind inner) "span"))
+    (is (string= (element-type inner) "span"))
     (is (equal (element-props inner) `(:class "red")))
     (is (equal (element-children inner) (list "World!")))
-    (is (string= (element-kind outer) "p"))
+    (is (string= (element-type outer) "p"))
     (is (null (element-props outer)))
     (is (equal (element-children outer) (list "Hello," inner)))))
 
@@ -44,10 +44,10 @@
            (outer (create-element #'comp
                                   '(:variant "red")
                                   inner)))
-      (is (eql (element-kind outer) #'comp))
+      (is (eql (element-type outer) #'comp))
       (is (equal (element-props outer) `(:variant "red")))
       (is (equal (element-children outer) (list inner)))
       (let ((expanded-elm (expand outer)))
-        (is (string= (element-kind expanded-elm) "p"))
+        (is (string= (element-type expanded-elm) "p"))
         (is (equal (element-props expanded-elm) `(:class "red")))
         (is (equal (element-children expanded-elm) (list "Hello," inner)))))))

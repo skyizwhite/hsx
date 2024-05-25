@@ -1,6 +1,6 @@
 (defpackage #:hsx/element
   (:use #:cl)
-  (:export #:element-kind
+  (:export #:element-type
            #:element-props
            #:element-children
            #:create-element
@@ -8,9 +8,9 @@
 (in-package #:hsx/element)
 
 (defclass element ()
-  ((kind
-    :reader element-kind
-    :initarg :kind)
+  ((type
+    :reader element-type
+    :initarg :type)
    (props
     :reader element-props
     :initarg :props)
@@ -18,18 +18,18 @@
     :reader element-children
     :initarg :children)))
 
-(defun create-element (kind props &rest children)
+(defun create-element (type props &rest children)
   (make-instance 'element
-                 :kind kind
+                 :type type
                  :props props
                  :children (flatten children)))
 
 (defmethod expand ((elm element))
-  (with-accessors ((kind element-kind)
+  (with-accessors ((type element-type)
                    (props element-props)
                    (children element-children)) elm
-    (if (functionp kind)
-        (apply kind (append props
+    (if (functionp type)
+        (apply type (append props
                             (and children
                                  (list :children children))))
         elm)))
