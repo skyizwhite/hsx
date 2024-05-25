@@ -25,6 +25,16 @@
       (is (string= kind "p"))
       (is (equal props `(:children ("Hello," ,inner)))))))
 
+(test flatten-element-children
+  (let* ((elm (create-element "p"
+                              nil
+                              "a"
+                              nil
+                              (list "b" (list nil "c"))
+                              (cons "d" "e")))
+         (children (getf (element-props elm) :children)))
+    (is (equal children (list "a" "b" "c" "d" "e")))))
+
 (test create-component-element
   (labels ((comp (&key variant children)
              (create-element "p"
