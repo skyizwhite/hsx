@@ -2,6 +2,7 @@
   (:use #:cl)
   (:export #:element-kind
            #:element-props
+           #:element-children
            #:create-element
            #:expand))
 (in-package #:hsx/element)
@@ -12,20 +13,25 @@
     :initarg :kind)
    (props
     :reader element-props
-    :initarg :props)))
+    :initarg :props)
+   (children
+    :reader element-children
+    :initarg :children)))
 
 (defun create-element (kind props &rest children)
   (make-instance 'element
                  :kind kind
-                 :props (append props
-                                (and children
-                                     (list :children (flatten children))))))
+                 :props props
+                 :children (flatten children)))
 
 (defmethod expand ((elm element))
   (with-accessors ((kind element-kind)
-                   (props element-props)) elm
+                   (props element-props)
+                   (children element-children)) elm
     (if (functionp kind)
-        (apply kind props)
+        (apply kind (append props
+                            (and children
+                                 (list :children children))))
         elm)))
 
 ;;;; utils

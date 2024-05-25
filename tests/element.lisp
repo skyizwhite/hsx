@@ -8,7 +8,7 @@
 
 (in-suite create-element)
 
-(test create-html-element
+(test create-builtin-element
   (let* ((inner (create-element "span"
                                 '(:class "red")
                                 "World!"))
@@ -16,14 +16,12 @@
                                 nil
                                 "Hello,"
                                 inner)))
-    (with-accessors ((kind element-kind)
-                     (props element-props)) inner
-      (is (string= kind "span"))
-      (is (equal props `(:class "red" :children ("World!")))))
-    (with-accessors ((kind element-kind)
-                     (props element-props)) outer
-      (is (string= kind "p"))
-      (is (equal props `(:children ("Hello," ,inner)))))))
+    (is (string= (element-kind inner) "span"))
+    (is (equal (element-props inner) `(:class "red")))
+    (is (equal (element-children inner) (list "World!")))
+    (is (string= (element-kind outer) "p"))
+    (is (null (element-props outer)))
+    (is (equal (element-children outer) (list "Hello," inner)))))
 
 (test flatten-element-children
   (let* ((elm (create-element "p"
@@ -31,9 +29,8 @@
                               "a"
                               nil
                               (list "b" (list nil "c"))
-                              (cons "d" "e")))
-         (children (getf (element-props elm) :children)))
-    (is (equal children (list "a" "b" "c" "d" "e")))))
+                              (cons "d" "e"))))
+    (is (equal (element-children elm) (list "a" "b" "c" "d" "e")))))
 
 (test create-component-element
   (labels ((comp (&key variant children)
@@ -47,11 +44,10 @@
            (outer (create-element #'comp
                                   '(:variant "red")
                                   inner)))
-      (with-accessors ((kind element-kind)
-                       (props element-props)) outer
-        (is (eql kind #'comp))
-        (is (equal props `(:variant "red" :children (,inner)))))
-      (with-accessors ((kind element-kind)
-                       (props element-props)) (expand outer)
-        (is (string= kind "p"))
-        (is (equal props `(:class "red" :children ("Hello," ,inner))))))))
+      (is (eql (element-kind outer) #'comp))
+      (is (equal (element-props outer) `(:variant "red")))
+      (is (equal (element-children outer) (list inner)))
+      (let ((expanded-elm (expand outer)))
+        (is (string= (element-kind expanded-elm) "p"))
+        (is (equal (element-props expanded-elm) `(:class "red")))
+        (is (equal (element-children expanded-elm) (list "Hello," inner)))))))
