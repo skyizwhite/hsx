@@ -46,10 +46,7 @@
                "child2"))))
 
 (defcomp comp (&key prop1 prop2 children)
-  (div
-    prop1
-    prop2
-    children))
+  (declare (ignore prop1 prop2 children)))
 
 (test component-hsx
   (is (equal (macroexpand-1
