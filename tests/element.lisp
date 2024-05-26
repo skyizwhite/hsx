@@ -7,7 +7,7 @@
 (def-suite element-test)
 (in-suite element-test)
 
-(test builtin-element
+(test tag-element
   (let ((elm (create-element "p"
                                '(:class "red")
                                "Hello,"
