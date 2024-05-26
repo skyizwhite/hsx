@@ -1,31 +1,63 @@
 (defpackage #:hsx-test/hsx
   (:use #:cl
         #:fiveam
-        #:hsx/element
-        #:hsx/hsx))
+        #:hsx/hsx)
+  (:import-from #:hsx/element
+                #:create-element))
 (in-package #:hsx-test/hsx)
 
-(def-suite builtin-element-hsx)
-(def-suite component-element-hsx)
-(in-suite builtin-element-hsx)
+(def-suite hsx-test)
+(in-suite hsx-test)
 
 (test empty-hsx
-  (let ((elm (div)))
-    (is (null (element-props elm)))
-    (is (null (element-children elm)))))
+  (is (equal (macroexpand-1
+              '(div))
+             '(create-element
+               "div"
+               'nil))))
 
 (test hsx-with-props
-  (let ((elm (div :prop1 "value1" :prop2 "value2")))
-    (is (equal (element-props elm) '(:prop1 "value1" :prop2 "value2")))
-    (is (null (element-children elm)))))
+  (is (equal (macroexpand-1
+              '(div :prop1 "value1" :prop2 "value2"))
+             '(create-element
+               "div"
+               '(:prop1 "value1" :prop2 "value2")))))
 
 (test hsx-with-children
-  (let ((elm (div "child1" "child2")))
-    (is (null (element-props elm)))
-    (is (equal (element-children elm) (list "child1" "child2")))))
+  (is (equal (macroexpand-1
+              '(div
+                "child1"
+                "child2"))
+             '(create-element
+               "div"
+               'nil
+               "child1"
+               "child2"))))
 
 (test hsx-with-props-and-children
-  (let ((elm (div :prop1 "value1" :prop2 "value2"
-               "child1" "child2")))
-    (is (equal (element-props elm) '(:prop1 "value1" :prop2 "value2")))
-    (is (equal (element-children elm) (list "child1" "child2")))))
+  (is (equal (macroexpand-1
+              '(div :prop1 "value1" :prop2 "value2"
+                "child1"
+                "child2"))
+             '(create-element
+               "div"
+               '(:prop1 "value1" :prop2 "value2")
+               "child1"
+               "child2"))))
+
+(defcomp comp (&key prop1 prop2 children)
+  (div
+    prop1
+    prop2
+    children))
+
+(test component-hsx
+  (is (equal (macroexpand-1
+              '(comp :prop1 "value1" :prop2 "value2"
+                "child1"
+                "child2"))
+             '(create-element
+               #'%comp
+               '(:prop1 "value1" :prop2 "value2")
+               "child1"
+               "child2"))))

@@ -26,7 +26,7 @@
                         ',props
                         ,@children))))
 
-(defmacro define-and-export-builtin-elements (&body names)
+(defmacro define-and-export-builtin-elements (&rest names)
   `(progn
      ,@(mapcan (lambda (name)
                  (list `(define-builtin-element ,name)
@@ -34,7 +34,7 @@
                names)))
 
 (define-and-export-builtin-elements
-  a abbr address area article aside audio b base bdi bdo blockquote
+    a abbr address area article aside audio b base bdi bdo blockquote
   body br button canvas caption cite code col colgroup data datalist
   dd del details dfn dialog div dl dt em embed fieldset figcaption
   figure footer form h1 h2 h3 h4 h5 h6 head header html hr i iframe

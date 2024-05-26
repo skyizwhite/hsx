@@ -19,10 +19,13 @@
     :initarg :children)))
 
 (defun create-element (type props &rest children)
-  (make-instance 'element
-                 :type type
-                 :props props
-                 :children (flatten children)))
+  (let ((elm (make-instance 'element
+                            :type type
+                            :props props
+                            :children (flatten children))))
+    (prog1 elm
+      ;dry-run to validate props
+      (expand elm))))
 
 (defmethod expand ((elm element))
   (with-accessors ((type element-type)
@@ -33,8 +36,6 @@
                             (and children
                                  (list :children children))))
         elm)))
-
-;;;; utils
 
 (defun flatten (x)
   (labels ((rec (x acc)
