@@ -32,9 +32,8 @@
                    (props element-props)
                    (children element-children)) elm
     (if (functionp type)
-        (apply type (append props
-                            (and children
-                                 (list :children children))))
+        (apply type
+               (merge-children-into-props props children))
         elm)))
 
 (defun flatten (x)
@@ -45,3 +44,8 @@
                        (car x)
                        (rec (cdr x) acc))))))
     (rec x nil)))
+
+(defun merge-children-into-props (props children)
+  (append props
+          (and children
+               (list :children children))))
