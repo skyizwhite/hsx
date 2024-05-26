@@ -8,7 +8,6 @@
 
 (def-suite hsx-test)
 (in-suite hsx-test)
-
 (test empty-hsx
   (is (equal (macroexpand-1
               '(div))

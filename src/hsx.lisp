@@ -1,10 +1,12 @@
 (uiop:define-package #:hsx/hsx
   (:use #:cl)
   (:import-from #:alexandria
-                #:symbolicate)
+                #:symbolicate
+                #:make-keyword)
   (:import-from #:hsx/element
                 #:create-element)
-  (:export #:defcomp))
+  (:export #:defcomp
+           #:hsx))
 (in-package #:hsx/hsx)
 
 (defun parse-body (body)
@@ -26,10 +28,13 @@
                         ',props
                         ,@children))))
 
+(defparameter *builtin-elements* (make-hash-table))
+
 (defmacro define-and-export-builtin-elements (&rest names)
   `(progn
      ,@(mapcan (lambda (name)
                  (list `(define-builtin-element ,name)
+                       `(setf (gethash (make-keyword ',name) *builtin-elements*) t)
                        `(export ',name)))
                names)))
 
@@ -55,3 +60,29 @@
            `(create-element #',',%name
                             ',props
                             ,@children))))))
+
+(defun builtin-element-p (node)
+  (and (symbolp node)
+       (gethash (make-keyword node) *builtin-elements*)))
+
+(defun modify-first-leaves (tree test result)
+  (if tree
+      (cons (let ((first-node (first tree)))
+              (cond
+                ((listp first-node)
+                 (modify-first-leaves first-node test result))
+                ((funcall test first-node)
+                 (funcall result first-node))
+                (t first-node)))
+            (mapcar (lambda (node)
+                      (if (listp node)
+                          (modify-first-leaves node test result)
+                          node))
+                    (rest tree)))))
+
+(defmacro hsx (&body body)
+  `(progn
+     ,@(modify-first-leaves body
+                            #'builtin-element-p
+                            (lambda (node)
+                              (find-symbol (string node) :hsx/hsx)))))
