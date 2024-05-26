@@ -25,7 +25,7 @@
      (multiple-value-bind (props children)
          (parse-body body)
        `(create-element ,',(string-downcase name)
-                        ',props
+                        (list ,@props)
                         ,@children))))
 
 (defparameter *builtin-elements* (make-hash-table))
@@ -58,7 +58,7 @@
          (multiple-value-bind (props children)
              (parse-body body)
            `(create-element #',',%name
-                            ',props
+                            (list ,@props)
                             ,@children))))))
 
 (defun builtin-element-p (node)

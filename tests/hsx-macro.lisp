@@ -3,7 +3,7 @@
         #:fiveam)
   (:import-from #:hsx/element
                 #:element-type
-                #:element-props)
+                #:element-children)
   (:import-from #:hsx/hsx
                 #:hsx
                 #:defcomp))

@@ -13,14 +13,14 @@
               '(div))
              '(create-element
                "div"
-               'nil))))
+               (list)))))
 
 (test hsx-with-props
   (is (equal (macroexpand-1
               '(div :prop1 "value1" :prop2 "value2"))
              '(create-element
                "div"
-               '(:prop1 "value1" :prop2 "value2")))))
+               (list :prop1 "value1" :prop2 "value2")))))
 
 (test hsx-with-children
   (is (equal (macroexpand-1
@@ -29,7 +29,7 @@
                 "child2"))
              '(create-element
                "div"
-               'nil
+               (list)
                "child1"
                "child2"))))
 
@@ -40,7 +40,7 @@
                 "child2"))
              '(create-element
                "div"
-               '(:prop1 "value1" :prop2 "value2")
+               (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))
 
@@ -54,6 +54,6 @@
                 "child2"))
              '(create-element
                #'%comp
-               '(:prop1 "value1" :prop2 "value2")
+               (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))
