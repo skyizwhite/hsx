@@ -19,6 +19,17 @@
          (parse-body body)
        `(create-element ,',element-type (list ,@props) ,@children))))
 
+(defun parse-body (body)
+  (if (keywordp (first body))
+      (loop :for thing :on body :by #'cddr
+            :for (k v) := thing
+            :when (and (keywordp k) v)
+            :append (list k v) :into props
+            :when (not (keywordp k))
+            :return (values props thing)
+            :finally (return (values props nil)))
+      (values nil body)))
+
 (defparameter *builtin-elements* (make-hash-table))
 
 (defmacro define-and-export-builtin-elements (&body names)
@@ -52,26 +63,14 @@
          ,@body)
        (defhsx ,name (fdefinition ',%name)))))
 
-(defun parse-body (body)
-  (if (keywordp (first body))
-      (loop :for thing :on body :by #'cddr
-            :for (k v) := thing
-            :when (and (keywordp k) v)
-            :append (list k v) :into props
-            :when (not (keywordp k))
-            :return (values props thing)
-            :finally (return (values props nil)))
-      (values nil body)))
-
 
 ;;;; hsx macro to find hsx symbols
 
-(defmacro hsx (&body body)
-  `(progn
-     ,@(modify-first-leaves body
-                            #'builtin-element-p
-                            (lambda (node)
-                              (find-symbol (string node) :hsx/hsx)))))
+(defmacro hsx (form)
+  (modify-first-leaves form
+                       #'builtin-element-p
+                       (lambda (node)
+                         (find-symbol (string node) :hsx/hsx))))
 
 (defun modify-first-leaves (tree test result)
   (if tree
