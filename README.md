@@ -27,7 +27,7 @@ Using the `hsx` macro, you can implement HTML with S-expression.
 </div>
 ```
 
-Elements in HSX are essentially functions, so you can freely compose them and embed CL code to them.
+HSX elements are essentially functions, so you can freely compose them and embed CL code to them.
 
 ```lisp
 (hsx
