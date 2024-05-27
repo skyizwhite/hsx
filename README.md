@@ -56,13 +56,15 @@ Elements in HSX are essentially functions, so you can freely compose them and em
 
 To define a component, just define a function that accepts keyword arguments or property list or both, and define HSX element with `defhsx` macro.
 
+`children` is a special property that accepts children of a component.
+
 ```lisp
 (defhsx card #'%card)
-(defun %card (&key title description)
+(defun %card (&key title children)
   (hsx
     (div
       (h1 title)
-      (p description))))
+      children)))
 
 or
 
@@ -71,9 +73,11 @@ or
   (hsx
     (div
       (h1 (getf props :title))
-      (p  (getf props :description)))))
+      (getf props :children))))
 
-(hsx (card :title "card1" :description "brah brah brah..."))
+(hsx
+  (card :title "card1"
+    (p "brah brah brah...")))
 
           ↓ ↓ ↓
 
@@ -86,11 +90,11 @@ or
 The previous definition can be simplified by using the `defcomp` macro.
 
 ```lisp
-(defcomp card (&key title description)
+(defcomp card (&key title children)
   (hsx
     (div
       (h1 title)
-      (p description))))
+      children)))
 ```
 
 # License
