@@ -1,8 +1,8 @@
-(defpackage :hsx-test/element
-  (:use :cl
-        :fiveam
-        :hsx/element))
-(in-package :hsx-test/element)
+(defpackage #:hsx-test/element
+  (:use #:cl
+        #:fiveam
+        #:hsx/element))
+(in-package #:hsx-test/element)
 
 (def-suite element-test)
 (in-suite element-test)

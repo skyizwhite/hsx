@@ -1,7 +1,7 @@
 (defsystem "hsx"
   :version "0.1.0"
   :description "A beautiful, easily composable HTML5 generation library"
-  :author "Bo Yao, skyizwhite"
+  :author "skyizwhite, Bo Yao"
   :maintainer "skyizwhite <paku@skyizwhite.dev>"
   :license "MIT"
   :long-description #.(uiop:read-file-string

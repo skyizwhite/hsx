@@ -1,7 +1,6 @@
-(defpackage :hsx
+(uiop:define-package :hsx
   (:nicknames #:hsx/main)
-  (:import-from #:hsx/element)
-  (:import-from #:hsx/hsx)
-  (:import-from #:hsx/builtin)
-  (:use #:cl))
+  (:use #:cl)
+  (:use-reexport #:hsx/hsx)
+  (:import-from #:hsx/builtin))
 (in-package :hsx)
