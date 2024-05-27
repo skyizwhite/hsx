@@ -67,23 +67,23 @@
 ;;;; hsx macro to find hsx symbols
 
 (defmacro hsx (form)
-  (modify-first-leaves form
+  (modify-first-of-lists form
                        #'builtin-element-p
                        (lambda (node)
                          (find-symbol (string node) :hsx/hsx))))
 
-(defun modify-first-leaves (tree test result)
+(defun modify-first-of-lists (tree test result)
   (if tree
       (cons (let ((first-node (first tree)))
               (cond
                 ((listp first-node)
-                 (modify-first-leaves first-node test result))
+                 (modify-first-of-lists first-node test result))
                 ((funcall test first-node)
                  (funcall result first-node))
                 (t first-node)))
             (mapcar (lambda (node)
                       (if (listp node)
-                          (modify-first-leaves node test result)
+                          (modify-first-of-lists node test result)
                           node))
                     (rest tree)))))
 
