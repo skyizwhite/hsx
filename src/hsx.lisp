@@ -13,10 +13,11 @@
 ;;;; hsx definitions
 
 (defmacro defhsx (name element-type)
-  `(defmacro ,name (&body body)
-     (multiple-value-bind (props children)
-         (parse-body body)
-       `(create-element ,',element-type (list ,@props) ,@children))))
+  (eval-when (:compile-toplevel :load-toplevel :execute)
+    `(defmacro ,name (&body body)
+       (multiple-value-bind (props children)
+           (parse-body body)
+         `(create-element ,',element-type (list ,@props) ,@children)))))
 
 (defun parse-body (body)
   (if (keywordp (first body))
