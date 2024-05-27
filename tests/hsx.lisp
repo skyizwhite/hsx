@@ -8,6 +8,7 @@
 
 (def-suite hsx-test)
 (in-suite hsx-test)
+
 (test empty-hsx
   (is (equal (macroexpand-1
               '(div))
@@ -44,16 +45,42 @@
                "child1"
                "child2"))))
 
-(defcomp comp (&key prop1 prop2 children)
-  (declare (ignore prop1 prop2 children)))
+(defhsx custom "custom")
 
-(test component-hsx
+(test hsx-for-custom-tag-element
   (is (equal (macroexpand-1
-              '(comp :prop1 "value1" :prop2 "value2"
+              '(custom :prop1 "value1" :prop2 "value2"
                 "child1"
                 "child2"))
              '(create-element
-               #'%comp
+               "custom"
+               (list :prop1 "value1" :prop2 "value2")
+               "child1"
+               "child2"))))
+
+(defun %comp1 (&key prop1 prop2 children)
+  (declare (ignore prop1 prop2 children)))
+(defhsx comp1 #'%comp1)
+
+(defcomp comp2 (&key prop1 prop2 children)
+  (declare (ignore prop1 prop2 children)))
+
+(test hsx-for-component-element
+  (is (equal (macroexpand-1
+              '(comp1 :prop1 "value1" :prop2 "value2"
+                "child1"
+                "child2"))
+             '(create-element
+               #'%comp1
+               (list :prop1 "value1" :prop2 "value2")
+               "child1"
+               "child2")))
+  (is (equal (macroexpand-1
+              '(comp2 :prop1 "value1" :prop2 "value2"
+                "child1"
+                "child2"))
+             '(create-element
+               (fdefinition '%comp2)
                (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))

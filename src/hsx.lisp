@@ -5,27 +5,26 @@
                 #:make-keyword)
   (:import-from #:hsx/element
                 #:create-element)
-  (:export #:defcomp
+  (:export #:defhsx
+           #:defcomp
            #:hsx))
 (in-package #:hsx/hsx)
 
 
 ;;;; hsx definitions
 
-(defparameter *builtin-elements* (make-hash-table))
-
-(defmacro define-builtin-element (name)
+(defmacro defhsx (name element-type)
   `(defmacro ,name (&body body)
      (multiple-value-bind (props children)
          (parse-body body)
-       `(create-element ,',(string-downcase name)
-                        (list ,@props)
-                        ,@children))))
+       `(create-element ,',element-type (list ,@props) ,@children))))
+
+(defparameter *builtin-elements* (make-hash-table))
 
 (defmacro define-and-export-builtin-elements (&body names)
   `(progn
      ,@(mapcan (lambda (name)
-                 (list `(define-builtin-element ,name)
+                 (list `(defhsx ,name ,(string-downcase name))
                        `(setf (gethash (make-keyword ',name) *builtin-elements*) t)
                        `(export ',name)))
                names)))
@@ -51,12 +50,7 @@
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (defun ,%name ,props
          ,@body)
-       (defmacro ,name (&body body)
-         (multiple-value-bind (props children)
-             (parse-body body)
-           `(create-element #',',%name
-                            (list ,@props)
-                            ,@children))))))
+       (defhsx ,name (fdefinition ',%name)))))
 
 (defun parse-body (body)
   (if (keywordp (first body))
