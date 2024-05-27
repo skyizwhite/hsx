@@ -6,10 +6,6 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-10-21"))
-("assoc-utils" .
- (:class qlot/source/ql:source-ql
-  :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
 ("alexandria" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)

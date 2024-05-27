@@ -1,7 +1,4 @@
-(uiop:define-package :piccolo
-  (:nicknames #:piccolo/main)
-  (:use #:cl)
-  (:use-reexport #:piccolo/escape)
-  (:use-reexport #:piccolo/elements)
-  (:use-reexport #:piccolo/generator))
-(in-package :piccolo)
+(defpackage :hsx
+  (:nicknames #:hsx/main)
+  (:use #:cl))
+(in-package :hsx)
