@@ -4,9 +4,7 @@ HSX (hypertext s-expression) is an incredibly simple HTML5 generation library fo
 
 This is a fork project of [flute](https://github.com/ailisp/flute/), originally created by Bo Yao.
 
-# License
-
-Licensed under MIT License.　
+This project is licensed under the terms of the MIT license.
 
 Copyright (c) 2024, skyizwhite.
 
