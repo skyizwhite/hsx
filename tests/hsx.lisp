@@ -1,7 +1,8 @@
 (defpackage #:hsx-test/hsx
   (:use #:cl
         #:fiveam
-        #:hsx/hsx)
+        #:hsx/hsx
+        #:hsx/builtin)
   (:import-from #:hsx/element
                 #:create-element))
 (in-package #:hsx-test/hsx)
