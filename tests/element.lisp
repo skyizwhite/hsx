@@ -9,9 +9,9 @@
 
 (test tag-element
   (let ((elm (create-element "p"
-                               '(:class "red")
-                               "Hello,"
-                               "World")))
+                             '(:class "red")
+                             "Hello,"
+                             "World")))
     (is (string= (element-type elm) "p"))
     (is (equal (element-props elm) '(:class "red")))
     (is (equal (element-children elm) (list "Hello," "World")))))
@@ -35,7 +35,7 @@
   (let* ((elm (create-element #'comp1
                               '(:title "foo")
                               "bar"))
-         (expanded (expand elm)))
+         (expanded (expand-component elm)))
     (is (eql (element-type elm) #'comp1))
     (is (equal (element-props elm) '(:title "foo")))
     (is (equal (element-children elm) (list "bar")))
@@ -53,10 +53,10 @@
                   (getf props :children)))
 
 (test component-element-with-property-list
-  (let* ((elm (create-element #'comp2 
+  (let* ((elm (create-element #'comp2
                               '(:title "foo")
                               "bar"))
-         (expanded (expand elm)))
+         (expanded (expand-component elm)))
     (is (eql (element-type elm) #'comp2))
     (is (equal (element-props elm) '(:title "foo")))
     (is (equal (element-children elm) (list "bar")))
@@ -81,7 +81,7 @@
   (let* ((elm (create-element #'comp3
                               '(:title "foo" :other-key "baz")
                               "bar"))
-         (expanded (expand elm)))
+         (expanded (expand-component elm)))
     (is (eql (element-type elm) #'comp3))
     (is (equal (element-props elm) '(:title "foo" :other-key "baz")))
     (is (equal (element-children elm) (list "bar")))

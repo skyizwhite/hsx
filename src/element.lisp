@@ -4,7 +4,7 @@
            #:element-props
            #:element-children
            #:create-element
-           #:expand))
+           #:expand-component))
 (in-package #:hsx/element)
 
 ;;;; class definitions
@@ -61,21 +61,10 @@
 
 (defmethod create-element-hook ((elm component-element))
   ;dry-run to validate props
-  (expand elm))
+  (expand-component elm))
 
 
 ;;;; methods
-
-(defmethod expand ((elm component-element))
-  (with-accessors ((type element-type)
-                   (props element-props)
-                   (children element-children)) elm
-    (apply type (merge-children-into-props props children))))
-
-(defun merge-children-into-props (props children)
-  (append props
-          (and children
-               (list :children children))))
 
 (defmethod print-object ((elm tag-element) stream)
   (with-accessors ((type element-type)
@@ -117,4 +106,15 @@
                 children))))
 
 (defmethod print-object ((elm component-element) stream)
-  (print-object (expand elm) stream))
+  (print-object (expand-component elm) stream))
+
+(defmethod expand-component ((elm component-element))
+  (with-accessors ((type element-type)
+                   (props element-props)
+                   (children element-children)) elm
+    (apply type (merge-children-into-props props children))))
+
+(defun merge-children-into-props (props children)
+  (append props
+          (and children
+               (list :children children))))
