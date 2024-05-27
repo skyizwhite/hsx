@@ -6,9 +6,9 @@ This is a fork project of [flute](https://github.com/ailisp/flute/), originally 
 
 # Usage
 
-Using the `hsx` macro, you can implement HTML in S-expressions.
+Using the `hsx` macro, you can implement HTML with S-expression.
 
-```
+```lisp
 (hsx
   (div :id "greeting" :class "flex"
     (h1 "Hello World")
@@ -29,7 +29,7 @@ Using the `hsx` macro, you can implement HTML in S-expressions.
 
 Elements in HSX are essentially functions, so you can freely compose them and embed CL code to them.
 
-```
+```lisp
 (hsx
   (div
     (p :id (+ 1 1))
@@ -54,15 +54,24 @@ Elements in HSX are essentially functions, so you can freely compose them and em
 </div>
 ```
 
-To define a component, just define a function that takes keyword arguments or property list or both, and define hsx expression of it with `defhsx` macro.
+To define a component, just define a function that accepts keyword arguments or property list or both, and define HSX element with `defhsx` macro.
 
-```
+```lisp
 (defhsx card #'%card)
 (defun %card (&key title description)
   (hsx
     (div
       (h1 title)
       (p description))))
+
+or
+
+(defhsx card #'%card)
+(defun %card (&rest props)
+  (hsx
+    (div
+      (h1 (getf props :title))
+      (p  (getf props :description)))))
 
 (hsx (card :title "card1" :description "brah brah brah..."))
 
@@ -76,7 +85,7 @@ To define a component, just define a function that takes keyword arguments or pr
 
 The previous definition can be simplified by using the `defcomp` macro.
 
-```
+```lisp
 (defcomp card (&key title description)
   (hsx
     (div
