@@ -39,8 +39,10 @@
 
 ;;;; hsx macro to find hsx symbols
 
-(defmacro hsx (form)
-  (find-builtin-symbols form))
+(defmacro hsx (&body form)
+  (when (not (= (length form) 1))
+    (error "The body of the hsx macro must be a single form."))
+  (find-builtin-symbols (car form)))
 
 (defun find-builtin-symbols (tree)
   (if tree
