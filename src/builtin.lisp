@@ -6,13 +6,10 @@
                 #:defhsx))
 (in-package #:hsx/builtin)
 
-(defparameter *builtin-elements* (make-hash-table))
-
 (defmacro define-and-export-builtin-elements (&rest names)
   `(progn
      ,@(mapcan (lambda (name)
                  (list `(defhsx ,name ,(string-downcase name))
-                       `(setf (gethash (make-keyword ',name) *builtin-elements*) t)
                        `(export ',name)))
                names)))
 
