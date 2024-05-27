@@ -89,7 +89,7 @@
       :for (key value) :on props :by #'cddr
       :do (format stream (if (typep value 'boolean)
                              "~@[ ~a~]"
-                             " ~a=~s")
+                             " ~a=\"~a\"")
                   (string-downcase key)
                   value))))
 

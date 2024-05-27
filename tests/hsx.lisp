@@ -59,9 +59,9 @@
                "child1"
                "child2"))))
 
+(defhsx comp1 #'%comp1)
 (defun %comp1 (&key prop1 prop2 children)
   (declare (ignore prop1 prop2 children)))
-(defhsx comp1 #'%comp1)
 
 (defcomp comp2 (&key prop1 prop2 children)
   (declare (ignore prop1 prop2 children)))
