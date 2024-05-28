@@ -1,12 +1,14 @@
-# HSX (WIP)
+# HSX
 
-HSX (hypertext s-expression) is an incredibly simple HTML5 generation library for Common Lisp.
+⚠️ This project is a work in progress.
 
-This is a fork project of [flute](https://github.com/ailisp/flute/), originally created by Bo Yao.
+HSX (Hypertext S-expression) is a straightforward HTML5 generation library for Common Lisp.
 
-# Usage
+This project is a fork of [flute](https://github.com/ailisp/flute/), originally created by Bo Yao.
 
-Using the `hsx` macro, you can implement HTML with S-expression.
+## Usage
+
+With the `hsx` macro, you can construct HTML using S-expressions.
 
 ```lisp
 (hsx
@@ -14,20 +16,22 @@ Using the `hsx` macro, you can implement HTML with S-expression.
     (h1 "Hello World")
     (p
       "This is"
-      (strong "example!"))))
+      (strong "an example!"))))
+```
 
-          ↓ ↓ ↓
+This code generates the following HTML:
 
+```html
 <div id="greeting" class="flex">
   <h1>Hello World</h1>
-    <p>
-      This is
-      <strong>example!</strong>
-    </p>
+  <p>
+    This is
+    <strong>an example!</strong>
+  </p>
 </div>
 ```
 
-HSX elements are essentially functions, so you can freely compose them and embed CL code to them.
+HSX elements are essentially functions, allowing you to compose them freely and embed Common Lisp code within them.
 
 ```lisp
 (hsx
@@ -40,9 +44,11 @@ HSX elements are essentially functions, so you can freely compose them and embed
     (if t
         (p "true")
         (p "false"))))
+```
 
-          ↓ ↓ ↓
+This generates:
 
+```html
 <div>
   <p id="2"></p>
   <ul>
@@ -54,9 +60,7 @@ HSX elements are essentially functions, so you can freely compose them and embed
 </div>
 ```
 
-To define a component, just define a function that accepts keyword arguments or property list or both, and define HSX element with `defhsx` macro.
-
-`children` is a special property that accepts children of a component.
+To define a component, simply create a function that accepts keyword arguments, property lists, or both, and define the HSX element using the `defhsx` macro. The `children` property accepts the children of a component.
 
 ```lisp
 (defhsx card #'%card)
@@ -65,29 +69,37 @@ To define a component, just define a function that accepts keyword arguments or 
     (div
       (h1 title)
       children)))
+```
 
 or
 
+```lisp
 (defhsx card #'%card)
 (defun %card (&rest props)
   (hsx
     (div
       (h1 (getf props :title))
       (getf props :children))))
+```
 
+This can then be used as follows:
+
+```lisp
 (hsx
   (card :title "card1"
-    (p "brah brah brah...")))
+    (p "Lorem ipsum...")))
+```
 
-          ↓ ↓ ↓
+Which generates:
 
+```html
 <div>
   <h1>card1</h1>
-  <p>brah brah brah...</p>
+  <p>Lorem ipsum...</p>
 </div>
 ```
 
-The previous definition can be simplified by using the `defcomp` macro.
+The previous definition can be simplified using the `defcomp` macro.
 
 ```lisp
 (defcomp card (&key title children)
@@ -97,7 +109,7 @@ The previous definition can be simplified by using the `defcomp` macro.
       children)))
 ```
 
-# License
+## License
 
 This project is licensed under the terms of the MIT license.
 
