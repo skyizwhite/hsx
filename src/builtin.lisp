@@ -2,12 +2,13 @@
   (:use #:cl)
   (:import-from #:alexandria
                 #:make-keyword)
-  (:import-from #:hsx/hsx
+  (:import-from #:hsx/defhsx
                 #:defhsx))
 (in-package #:hsx/builtin)
 
+
 (defmacro define-and-export-builtin-elements (&rest names)
-  `(progn
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
      ,@(mapcan (lambda (name)
                  (list `(defhsx ,name ,(string-downcase name))
                        `(export ',name)))

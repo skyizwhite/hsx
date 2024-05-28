@@ -3,6 +3,6 @@
   :pathname "tests"
   :depends-on ("fiveam"
                "hsx-test/element"
-               "hsx-test/hsx"
-               "hsx-test/hsx-macro")
+               "hsx-test/defhsx"
+               "hsx-test/hsx")
   :perform (test-op (op c) (symbol-call :fiveam :run-all-tests)))
