@@ -13,7 +13,7 @@
                names)))
 
 (define-and-export-builtin-elements
-    ; tag-elements
+    ; tags
     a abbr address area article aside audio b base bdi bdo blockquote
   body br button canvas caption cite code col colgroup data datalist
   dd del details dfn dialog div dl dt em embed fieldset figcaption
@@ -23,7 +23,7 @@
   q rp rt ruby s samp script section select small source span strong
   style sub summary sup svg table tbody td template textarea tfoot th
   thead |time| title tr track u ul var video wbr
-  ; html-tag-element
+  ; html-tag
   html
-  ; fragment-element
+  ; fragment
   <>)

@@ -49,7 +49,7 @@
 
 (deftag custom)
 
-(test hsx-for-custom-tag-element
+(test hsx-for-custom-tag
   (is (equal (macroexpand-1
               '(custom :prop1 "value1" :prop2 "value2"
                 "child1"
@@ -63,7 +63,7 @@
 (defcomp comp (&key prop1 prop2 children)
   (declare (ignore prop1 prop2 children)))
 
-(test hsx-for-component-element
+(test hsx-for-component
   (is (equal (macroexpand-1
               '(comp :prop1 "value1" :prop2 "value2"
                 "child1"

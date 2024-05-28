@@ -8,7 +8,7 @@
 (def-suite element-test)
 (in-suite element-test)
 
-(test tag-element
+(test tag
   (let ((elm (create-element :p
                              '(:class "red")
                              "Hello,"
@@ -32,7 +32,7 @@
                   title
                   children))
 
-(test component-elment-with-keyword-args
+(test component-accepting-keyword-args
   (let* ((elm (create-element #'comp1
                               '(:title "foo")
                               "bar"))
@@ -53,7 +53,7 @@
                   (getf props :title)
                   (getf props :children)))
 
-(test component-element-with-property-list
+(test component-accepting-property-list
   (let* ((elm (create-element #'comp2
                               '(:title "foo")
                               "bar"))
@@ -78,7 +78,7 @@
                   children
                   (getf props :other-key)))
 
-(test component-element-with-keyword-args-and-property-list
+(test component-accepting-keyword-args-and-property-list
   (let* ((elm (create-element #'comp3
                               '(:title "foo" :other-key "baz")
                               "bar"))

@@ -21,22 +21,22 @@
     :reader element-children
     :initarg :children)))
 
-(defclass tag-element (element) ())
+(defclass tag (element) ())
 
-(defclass html-tag-element (tag-element) ())
+(defclass html-tag (tag) ())
 
-(defclass fragment-element (element) ())
+(defclass fragment (element) ())
 
-(defclass component-element (element) ())
+(defclass component (element) ())
 
 
 ;;;; factory
 
 (defun create-element (type props &rest children)
-  (let ((elm (make-instance (cond ((functionp type) 'component-element)
-                                  ((eq type :<>) 'fragment-element)
-                                  ((eq type :html) 'html-tag-element)
-                                  ((keywordp type) 'tag-element)
+  (let ((elm (make-instance (cond ((functionp type) 'component)
+                                  ((eq type :<>) 'fragment)
+                                  ((eq type :html) 'html-tag)
+                                  ((keywordp type) 'tag)
                                   (t (error "element-type must be either a keyword or a function.")))
                             :type type
                             :props props
@@ -55,18 +55,18 @@
 
 (defmethod create-element-hook ((elm element)))
 
-(defmethod create-element-hook ((elm fragment-element))
+(defmethod create-element-hook ((elm fragment))
   (when (element-props elm)
     (error "Cannot pass props to fragment.")))
 
-(defmethod create-element-hook ((elm component-element))
+(defmethod create-element-hook ((elm component))
   ;dry-run to validate props
   (expand-component elm))
 
 
 ;;;; methods
 
-(defmethod print-object ((elm tag-element) stream)
+(defmethod print-object ((elm tag) stream)
   (with-accessors ((type element-type)
                    (props element-props)
                    (children element-children)) elm
@@ -94,11 +94,11 @@
                   (string-downcase key)
                   value))))
 
-(defmethod print-object ((elm html-tag-element) stream)
+(defmethod print-object ((elm html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
   (call-next-method))
 
-(defmethod print-object ((elm fragment-element) stream)
+(defmethod print-object ((elm fragment) stream)
   (with-accessors ((children element-children)) elm
     (if children
         (format stream (if (rest children)
@@ -106,10 +106,10 @@
                            "~<~a~:>")
                 children))))
 
-(defmethod print-object ((elm component-element) stream)
+(defmethod print-object ((elm component) stream)
   (print-object (expand-component elm) stream))
 
-(defmethod expand-component ((elm component-element))
+(defmethod expand-component ((elm component))
   (with-accessors ((type element-type)
                    (props element-props)
                    (children element-children)) elm
