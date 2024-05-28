@@ -72,14 +72,16 @@
                    (children element-children)) elm
     (let ((type-str (string-downcase type)))
       (if children
-          (format stream (if (rest children)
-                             "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                             "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
+          (format stream
+                  (if (rest children)
+                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
+                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
                   type-str
                   (props->string props)
                   children
                   type-str)
-          (format stream "<~a~a></~a>"
+          (format stream
+                  "<~a~a></~a>"
                   type-str
                   (props->string props)
                   type-str)))))
@@ -88,11 +90,15 @@
   (with-output-to-string (stream)
     (loop
       :for (key value) :on props :by #'cddr
-      :do (format stream (if (typep value 'boolean)
-                             "~@[ ~a~]"
-                             " ~a=\"~a\"")
-                  (string-downcase key)
-                  value))))
+      :do (let ((key-str (string-downcase key)))
+            (if (typep value 'boolean)
+                (format stream
+                        "~@[ ~a~]"
+                        (and value key-str))
+                (format stream
+                        " ~a=\"~a\""
+                        key-str
+                        value))))))
 
 (defmethod print-object ((elm html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
@@ -101,9 +107,10 @@
 (defmethod print-object ((elm fragment) stream)
   (with-accessors ((children element-children)) elm
     (if children
-        (format stream (if (rest children)
-                           "~<~@{~a~^~:@_~}~:>"
-                           "~<~a~:>")
+        (format stream
+                (if (rest children)
+                    "~<~@{~a~^~:@_~}~:>"
+                    "~<~a~:>")
                 children))))
 
 (defmethod print-object ((elm component) stream)
