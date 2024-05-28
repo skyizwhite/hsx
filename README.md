@@ -10,6 +10,13 @@ This project is a fork of [flute](https://github.com/ailisp/flute/), originally 
 
 With the `hsx` macro, you can construct HTML using S-expressions.
 
+Inline property lists following the element name are interpreted as attributes, and the remaining elements are interpreted as child elements.
+
+When a property is given a boolean value:
+- `t` results in the key being displayed without a value.
+- `nil` results in the property not being displayed at all.
+- Any other type of value results in the key-value pair being displayed.
+
 ```lisp
 (hsx
   (div :id "greeting" :class "flex"
@@ -60,11 +67,30 @@ This generates:
 </div>
 ```
 
-To define a component, simply create a function that accepts keyword arguments, property lists, or both, and define the HSX element using the `defhsx` macro. The `children` property accepts the children of a component.
+You can create custom tags (intended for Web Components) using the `deftag` macro.
 
 ```lisp
-(defhsx card #'%card)
-(defun %card (&key title children)
+(deftag stack)
+```
+
+This can then be used as follows:
+
+```lisp
+(hsx (stack :space "var(--s2)" :recursive t))
+```
+
+Which generates:
+
+```html
+<stack space="var(--s2)" recursive></stack>
+```
+
+You can create HSX components using the `defcomp` macro. Components are essentially functions that accept keyword arguments, a property list, or both.
+
+The `children` property accepts the children of a component.
+
+```lisp
+(defcomp card (&key title children)
   (hsx
     (div
       (h1 title)
@@ -74,8 +100,7 @@ To define a component, simply create a function that accepts keyword arguments, 
 or
 
 ```lisp
-(defhsx card #'%card)
-(defun %card (&rest props)
+(defcomp card (&rest props)
   (hsx
     (div
       (h1 (getf props :title))
@@ -99,20 +124,10 @@ Which generates:
 </div>
 ```
 
-The previous definition can be simplified using the `defcomp` macro.
-
-```lisp
-(defcomp card (&key title children)
-  (hsx
-    (div
-      (h1 title)
-      children)))
-```
-
 ## License
 
 This project is licensed under the terms of the MIT license.
 
-Copyright (c) 2024, skyizwhite.
+© 2024 skyizwhite
 
-Copyright (c) 2018, Bo Yao.
+© 2018 Bo Yao
