@@ -1,4 +1,4 @@
-(uiop:define-package #:hsx/defhsx
+(defpackage #:hsx/defhsx
   (:use #:cl)
   (:import-from #:alexandria
                 #:make-keyword
@@ -11,11 +11,10 @@
 
 
 (defmacro defhsx (name element-type)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (defmacro ,name (&body body)
-       (multiple-value-bind (props children)
-           (parse-body body)
-         `(create-element ,',element-type (list ,@props) ,@children)))))
+  `(defmacro ,name (&body body)
+     (multiple-value-bind (props children)
+         (parse-body body)
+       `(create-element ,',element-type (list ,@props) ,@children))))
 
 (defun parse-body (body)
   (if (keywordp (first body))

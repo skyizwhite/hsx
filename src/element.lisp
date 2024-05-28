@@ -1,9 +1,9 @@
 (defpackage #:hsx/element
   (:use #:cl)
-  (:export #:element-type
+  (:export #:create-element
+           #:element-type
            #:element-props
            #:element-children
-           #:create-element
            #:expand-component))
 (in-package #:hsx/element)
 

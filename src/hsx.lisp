@@ -1,4 +1,4 @@
-(uiop:define-package #:hsx/hsx
+(defpackage #:hsx/hsx
   (:use #:cl)
   (:export #:hsx))
 (in-package #:hsx/hsx)

@@ -6,7 +6,7 @@
 
 
 (defmacro define-and-export-builtin-elements (&rest names)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
+  `(progn
      ,@(mapcan (lambda (name)
                  (list `(deftag ,name)
                        `(export ',name)))
