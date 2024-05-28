@@ -1,10 +1,11 @@
 (uiop:define-package #:hsx/defhsx
   (:use #:cl)
   (:import-from #:alexandria
+                #:make-keyword
                 #:symbolicate)
   (:import-from #:hsx/element
                 #:create-element)
-  (:export #:defhsx
+  (:export #:deftag
            #:defcomp))
 (in-package #:hsx/defhsx)
 
@@ -26,6 +27,10 @@
             :return (values props thing)
             :finally (return (values props nil)))
       (values nil body)))
+  
+(defmacro deftag (name)
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (defhsx ,name ,(make-keyword name))))
 
 (defmacro defcomp (name props &body body)
   (let ((%name (symbolicate '% name)))

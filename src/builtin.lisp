@@ -1,16 +1,14 @@
 (uiop:define-package #:hsx/builtin
   (:use #:cl)
-  (:import-from #:alexandria
-                #:make-keyword)
   (:import-from #:hsx/defhsx
-                #:defhsx))
+                #:deftag))
 (in-package #:hsx/builtin)
 
 
 (defmacro define-and-export-builtin-elements (&rest names)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      ,@(mapcan (lambda (name)
-                 (list `(defhsx ,name ,(string-downcase name))
+                 (list `(deftag ,name)
                        `(export ',name)))
                names)))
 

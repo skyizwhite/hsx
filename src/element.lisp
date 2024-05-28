@@ -30,13 +30,14 @@
 (defclass component-element (element) ())
 
 
-;;;; constructor
+;;;; factory
 
 (defun create-element (type props &rest children)
   (let ((elm (make-instance (cond ((functionp type) 'component-element)
-                                  ((string= type "<>") 'fragment-element)
-                                  ((string= type "html") 'html-tag-element)
-                                  (t 'tag-element))
+                                  ((eq type :<>) 'fragment-element)
+                                  ((eq type :html) 'html-tag-element)
+                                  ((keywordp type) 'tag-element)
+                                  (t (error "element-type must be either a keyword or a function.")))
                             :type type
                             :props props
                             :children (flatten children))))
@@ -69,18 +70,19 @@
   (with-accessors ((type element-type)
                    (props element-props)
                    (children element-children)) elm
-    (if children
-        (format stream (if (rest children)
-                           "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                           "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
-                type
-                (props->string props)
-                children
-                type)
-        (format stream "<~a~a></~a>"
-                type
-                (props->string props)
-                type))))
+    (let ((type-str (string-downcase type)))
+      (if children
+          (format stream (if (rest children)
+                             "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
+                             "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
+                  type-str
+                  (props->string props)
+                  children
+                  type-str)
+          (format stream "<~a~a></~a>"
+                  type-str
+                  (props->string props)
+                  type-str)))))
 
 (defun props->string (props)
   (with-output-to-string (stream)

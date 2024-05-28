@@ -15,14 +15,14 @@
   (is (equal (macroexpand-1
               '(div))
              '(create-element
-               "div"
+               :div
                (list)))))
 
 (test hsx-with-props
   (is (equal (macroexpand-1
               '(div :prop1 "value1" :prop2 "value2"))
              '(create-element
-               "div"
+               :div
                (list :prop1 "value1" :prop2 "value2")))))
 
 (test hsx-with-children
@@ -31,7 +31,7 @@
                 "child1"
                 "child2"))
              '(create-element
-               "div"
+               :div
                (list)
                "child1"
                "child2"))))
@@ -42,12 +42,12 @@
                 "child1"
                 "child2"))
              '(create-element
-               "div"
+               :div
                (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))
 
-(defhsx custom "custom")
+(deftag custom)
 
 (test hsx-for-custom-tag-element
   (is (equal (macroexpand-1
@@ -55,34 +55,21 @@
                 "child1"
                 "child2"))
              '(create-element
-               "custom"
+               :custom
                (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))
 
-(defhsx comp1 #'%comp1)
-(defun %comp1 (&key prop1 prop2 children)
-  (declare (ignore prop1 prop2 children)))
-
-(defcomp comp2 (&key prop1 prop2 children)
+(defcomp comp (&key prop1 prop2 children)
   (declare (ignore prop1 prop2 children)))
 
 (test hsx-for-component-element
   (is (equal (macroexpand-1
-              '(comp1 :prop1 "value1" :prop2 "value2"
+              '(comp :prop1 "value1" :prop2 "value2"
                 "child1"
                 "child2"))
              '(create-element
-               #'%comp1
-               (list :prop1 "value1" :prop2 "value2")
-               "child1"
-               "child2")))
-  (is (equal (macroexpand-1
-              '(comp2 :prop1 "value1" :prop2 "value2"
-                "child1"
-                "child2"))
-             '(create-element
-               (fdefinition '%comp2)
+               (fdefinition '%comp)
                (list :prop1 "value1" :prop2 "value2")
                "child1"
                "child2"))))
