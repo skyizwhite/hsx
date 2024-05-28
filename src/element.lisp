@@ -21,13 +21,11 @@
     :reader element-children
     :initarg :children)))
 
-(defclass builtin-element (element) ())
-
-(defclass tag-element (builtin-element) ())
+(defclass tag-element (element) ())
 
 (defclass html-tag-element (tag-element) ())
 
-(defclass fragment-element (builtin-element) ())
+(defclass fragment-element (element) ())
 
 (defclass component-element (element) ())
 
