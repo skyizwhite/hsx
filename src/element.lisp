@@ -4,7 +4,8 @@
            #:element-type
            #:element-props
            #:element-children
-           #:expand-component))
+           #:expand-component
+           #:render))
 (in-package #:hsx/element)
 
 
@@ -33,16 +34,16 @@
 ;;;; factory
 
 (defun create-element (type props &rest children)
-  (let ((elm (make-instance (cond ((functionp type) 'component)
-                                  ((eq type :<>) 'fragment)
-                                  ((eq type :html) 'html-tag)
-                                  ((keywordp type) 'tag)
-                                  (t (error "element-type must be either a keyword or a function.")))
-                            :type type
-                            :props props
-                            :children (flatten children))))
-    (create-element-hook elm)
-    elm))
+  (let ((element (make-instance (cond ((functionp type) 'component)
+                                      ((eq type :<>) 'fragment)
+                                      ((eq type :html) 'html-tag)
+                                      ((keywordp type) 'tag)
+                                      (t (error "element-type must be either a keyword or a function.")))
+                                :type type
+                                :props props
+                                :children (flatten children))))
+    (create-element-hook element)
+    element))
 
 (defun flatten (x)
   (labels ((rec (x acc)
@@ -53,23 +54,23 @@
                        (rec (cdr x) acc))))))
     (rec x nil)))
 
-(defmethod create-element-hook ((elm element)))
+(defmethod create-element-hook ((element element)))
 
-(defmethod create-element-hook ((elm fragment))
-  (when (element-props elm)
+(defmethod create-element-hook ((element fragment))
+  (when (element-props element)
     (error "Cannot pass props to fragment.")))
 
-(defmethod create-element-hook ((elm component))
+(defmethod create-element-hook ((element component))
   ;dry-run to validate props
-  (expand-component elm))
+  (expand-component element))
 
 
 ;;;; methods
 
-(defmethod print-object ((elm tag) stream)
+(defmethod print-object ((element tag) stream)
   (with-accessors ((type element-type)
                    (props element-props)
-                   (children element-children)) elm
+                   (children element-children)) element
     (let ((type-str (string-downcase type)))
       (if children
           (format stream
@@ -100,12 +101,12 @@
                         key-str
                         value))))))
 
-(defmethod print-object ((elm html-tag) stream)
+(defmethod print-object ((element html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
   (call-next-method))
 
-(defmethod print-object ((elm fragment) stream)
-  (with-accessors ((children element-children)) elm
+(defmethod print-object ((element fragment) stream)
+  (with-accessors ((children element-children)) element
     (if children
         (format stream
                 (if (rest children)
@@ -113,16 +114,20 @@
                     "~<~a~:>")
                 children))))
 
-(defmethod print-object ((elm component) stream)
-  (print-object (expand-component elm) stream))
+(defmethod print-object ((element component) stream)
+  (print-object (expand-component element) stream))
 
-(defmethod expand-component ((elm component))
+(defmethod expand-component ((element component))
   (with-accessors ((type element-type)
                    (props element-props)
-                   (children element-children)) elm
+                   (children element-children)) element
     (apply type (merge-children-into-props props children))))
 
 (defun merge-children-into-props (props children)
   (append props
           (and children
                (list :children children))))
+
+(defmethod render ((element element) &key minify)
+  (with-output-to-string (stream)
+    (write element :stream stream :pretty (not minify))))
