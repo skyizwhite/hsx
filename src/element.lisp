@@ -26,7 +26,7 @@
 
 (defclass html-tag (tag) ())
 
-(defclass fragment (element) ())
+(defclass fragment (tag) ())
 
 (defclass component (element) ())
 

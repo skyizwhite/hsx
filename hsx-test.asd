@@ -4,5 +4,6 @@
   :depends-on ("fiveam"
                "hsx-test/element"
                "hsx-test/defhsx"
-               "hsx-test/hsx")
+               "hsx-test/hsx"
+               "hsx-test/renderer")
   :perform (test-op (op c) (symbol-call :fiveam :run-all-tests)))

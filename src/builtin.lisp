@@ -5,14 +5,14 @@
 (in-package #:hsx/builtin)
 
 
-(defmacro define-and-export-builtin-elements (&rest names)
+(defmacro define-builtin-tags (&rest names)
   `(progn
      ,@(mapcan (lambda (name)
                  (list `(deftag ,name)
                        `(export ',name)))
                names)))
 
-(define-and-export-builtin-elements
+(define-builtin-tags
     ; tags
     a abbr address area article aside audio b base bdi bdo blockquote
   body br button canvas caption cite code col colgroup data datalist
