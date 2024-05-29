@@ -41,11 +41,7 @@
     (is (equal (element-props elm) '(:title "foo")))
     (is (equal (element-children elm) (list "bar")))
     (is (eq (element-type expanded) :div))
-    (is (equal (element-children expanded) (list "foo" "bar")))
-    (signals error
-      (create-element #'comp1
-                      '(:title "foo" :other-key "baz")
-                      "bar"))))
+    (is (equal (element-children expanded) (list "foo" "bar")))))
 
 (defun comp2 (&rest props)
   (create-element :div
@@ -71,13 +67,6 @@
                   children
                   (getf props :other-key)))
 
-(defun comp4 (&rest props &key title children)
-  (create-element :div
-                  nil
-                  title
-                  children
-                  (getf props :other-key)))
-
 (test component-accepting-keyword-args-and-property-list
   (let* ((elm (create-element #'comp3
                               '(:title "foo" :other-key "baz")
@@ -87,8 +76,4 @@
     (is (equal (element-props elm) '(:title "foo" :other-key "baz")))
     (is (equal (element-children elm) (list "bar")))
     (is (eq (element-type expanded) :div))
-    (is (equal (element-children expanded) (list "foo" "bar" "baz")))
-    (signals error
-      (create-element #'comp4
-                      '(:title "foo" :other-key "baz")
-                      "bar"))))
+    (is (equal (element-children expanded) (list "foo" "bar" "baz")))))

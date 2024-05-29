@@ -34,16 +34,14 @@
 ;;;; factory
 
 (defun create-element (type props &rest children)
-  (let ((element (make-instance (cond ((functionp type) 'component)
-                                      ((eq type :<>) 'fragment)
-                                      ((eq type :html) 'html-tag)
-                                      ((keywordp type) 'tag)
-                                      (t (error "element-type must be either a keyword or a function.")))
-                                :type type
-                                :props props
-                                :children (flatten children))))
-    (create-element-hook element)
-    element))
+  (make-instance (cond ((functionp type) 'component)
+                       ((eq type :<>) 'fragment)
+                       ((eq type :html) 'html-tag)
+                       ((keywordp type) 'tag)
+                       (t (error "element-type must be either a keyword or a function.")))
+                 :type type
+                 :props props
+                 :children (flatten children)))
 
 (defun flatten (x)
   (labels ((rec (x acc)
@@ -53,16 +51,6 @@
                        (car x)
                        (rec (cdr x) acc))))))
     (rec x nil)))
-
-(defmethod create-element-hook ((element element)))
-
-(defmethod create-element-hook ((element fragment))
-  (when (element-props element)
-    (error "Cannot pass props to fragment.")))
-
-(defmethod create-element-hook ((element component))
-  ;dry-run to validate props
-  (expand-component element))
 
 
 ;;;; methods
