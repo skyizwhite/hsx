@@ -4,7 +4,6 @@
         #:hsx/element))
 (in-package #:hsx-test/element)
 
-
 (def-suite element-test)
 (in-suite element-test)
 
@@ -13,9 +12,9 @@
                              '(:class "red")
                              "Hello,"
                              "World")))
-    (is (eq (element-type elm) :p))
-    (is (equal (element-props elm) '(:class "red")))
-    (is (equal (element-children elm) (list "Hello," "World")))))
+    (is (eq :p (element-type elm)))
+    (is (equal '(:class "red") (element-props elm)))
+    (is (equal (list "Hello," "World") (element-children elm)))))
 
 (test flatten-children
   (let* ((elm (create-element :p
@@ -24,7 +23,7 @@
                               nil
                               (list "b" (list nil "c"))
                               (cons "d" "e"))))
-    (is (equal (element-children elm) (list "a" "b" "c" "d" "e")))))
+    (is (equal (list "a" "b" "c" "d" "e") (element-children elm)))))
 
 (defun comp1 (&key title children)
   (create-element :div
@@ -37,11 +36,11 @@
                               '(:title "foo")
                               "bar"))
          (expanded (expand-component elm)))
-    (is (eq (element-type elm) #'comp1))
-    (is (equal (element-props elm) '(:title "foo")))
-    (is (equal (element-children elm) (list "bar")))
-    (is (eq (element-type expanded) :div))
-    (is (equal (element-children expanded) (list "foo" "bar")))))
+    (is (eq #'comp1 (element-type elm)))
+    (is (equal '(:title "foo") (element-props elm)))
+    (is (equal (list "bar") (element-children elm)))
+    (is (eq :div (element-type expanded)))
+    (is (equal (list "foo" "bar") (element-children expanded)))))
 
 (defun comp2 (&rest props)
   (create-element :div
@@ -54,11 +53,11 @@
                               '(:title "foo")
                               "bar"))
          (expanded (expand-component elm)))
-    (is (eq (element-type elm) #'comp2))
-    (is (equal (element-props elm) '(:title "foo")))
-    (is (equal (element-children elm) (list "bar")))
-    (is (eq (element-type expanded) :div))
-    (is (equal (element-children expanded) (list "foo" "bar")))))
+    (is (eq #'comp2 (element-type elm)))
+    (is (equal '(:title "foo") (element-props elm)))
+    (is (equal (list "bar") (element-children elm)))
+    (is (eq :div (element-type expanded)))
+    (is (equal (list "foo" "bar") (element-children expanded)))))
 
 (defun comp3 (&rest props &key title children &allow-other-keys)
   (create-element :div
@@ -72,8 +71,8 @@
                               '(:title "foo" :other-key "baz")
                               "bar"))
          (expanded (expand-component elm)))
-    (is (eq (element-type elm) #'comp3))
-    (is (equal (element-props elm) '(:title "foo" :other-key "baz")))
-    (is (equal (element-children elm) (list "bar")))
-    (is (eq (element-type expanded) :div))
-    (is (equal (element-children expanded) (list "foo" "bar" "baz")))))
+    (is (eq #'comp3 (element-type elm)))
+    (is (equal '(:title "foo" :other-key "baz") (element-props elm)))
+    (is (equal (list "bar") (element-children elm)))
+    (is (eq :div (element-type expanded)))
+    (is (equal (list "foo" "bar" "baz") (element-children expanded)))))
