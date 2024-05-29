@@ -9,7 +9,6 @@
            #:defcomp))
 (in-package #:hsx/defhsx)
 
-
 (defmacro defhsx (name element-type)
   `(defmacro ,name (&body body)
      (multiple-value-bind (props children)

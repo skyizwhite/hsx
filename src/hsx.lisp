@@ -3,7 +3,6 @@
   (:export #:hsx))
 (in-package #:hsx/hsx)
 
-
 (defmacro hsx (&body form)
   (when (not (= (length form) 1))
     (error "The body of the hsx macro must be a single form."))

@@ -4,7 +4,6 @@
                 #:deftag))
 (in-package #:hsx/builtin)
 
-
 (defmacro define-builtin-tags (&rest names)
   `(progn
      ,@(mapcan (lambda (name)

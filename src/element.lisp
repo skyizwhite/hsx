@@ -8,7 +8,6 @@
            #:render))
 (in-package #:hsx/element)
 
-
 ;;;; class definitions
 
 (defclass element ()
@@ -29,7 +28,6 @@
 (defclass fragment (tag) ())
 
 (defclass component (element) ())
-
 
 ;;;; factory
 
@@ -52,8 +50,11 @@
                        (rec (cdr x) acc))))))
     (rec x nil)))
 
-
 ;;;; methods
+
+(defmethod render ((element element) &key minify)
+  (with-output-to-string (stream)
+    (write element :stream stream :pretty (not minify))))
 
 (defmethod print-object ((element tag) stream)
   (with-accessors ((type element-type)
@@ -115,7 +116,3 @@
   (append props
           (and children
                (list :children children))))
-
-(defmethod render ((element element) &key minify)
-  (with-output-to-string (stream)
-    (write element :stream stream :pretty (not minify))))
