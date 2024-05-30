@@ -1,6 +1,11 @@
 (defpackage #:hsx/element
   (:use #:cl)
-  (:export #:create-element
+  (:export #:element
+           #:tag
+           #:html-tag
+           #:fragment
+           #:component
+           #:create-element
            #:element-type
            #:element-props
            #:element-children
@@ -31,7 +36,7 @@
 
 ;;;; factory
 
-(defun create-element (type props &rest children)
+(defun create-element (type props children)
   (make-instance (cond ((functionp type) 'component)
                        ((eq type :<>) 'fragment)
                        ((eq type :html) 'html-tag)

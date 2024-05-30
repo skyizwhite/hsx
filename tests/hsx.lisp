@@ -9,16 +9,18 @@
 (in-suite hsx-test)
 
 (test find-symbols
-  (is (equal '(hsx/builtin:div
+  (is (equal '(hsx/builtin:div '(:div "div")
                div
                (hsx/builtin:div
-                div
-                (hsx/builtin:div))
-               div)
+                 'div
+                 (hsx/builtin:div)
+                 :div)
+               "div")
              (macroexpand-1
-              '(hsx (div
+              '(hsx (div '(:div "div")
                       div
                       (div
-                        div
-                        (div))
-                      div))))))
+                        'div
+                        (div)
+                        :div)
+                      "div"))))))

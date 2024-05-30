@@ -4,71 +4,49 @@
         #:hsx/defhsx
         #:hsx/builtin)
   (:import-from #:hsx/element
-                #:create-element))
+                #:element-props
+                #:element-children))
 (in-package #:hsx-test/defhsx)
 
 (def-suite defhsx-test)
 (in-suite defhsx-test)
 
 (test empty-hsx
-  (is (equal '(create-element
-               :div
-               (list))
-             (macroexpand-1
-              '(div)))))
+  (let ((elm (div)))
+    (is (null (element-props elm)))
+    (is (null (element-children elm)))))
 
-(test hsx-with-props
-  (is (equal '(create-element
-               :div
-               (list :prop1 "value1" :prop2 "value2"))
-             (macroexpand-1
-              '(div :prop1 "value1" :prop2 "value2")))))
+(test hsx-with-static-props
+  (let ((elm (div :prop1 "value1" :prop2 "value2")))
+    (is (equal '(:prop1 "value1" :prop2 "value2")
+               (element-props elm)))
+    (is (null (element-children elm)))))
+
+(test hsx-with-dynamic-props
+  (let* ((props '(:prop1 "value1" :prop2 "value2"))
+         (elm (div props)))
+    (is (equal props (element-props elm)))
+    (is (null (element-children elm)))))
 
 (test hsx-with-children
-  (is (equal '(create-element
-               :div
-               (list)
+  (let ((elm (div
                "child1"
-               "child2")
-             (macroexpand-1
-              '(div
-                "child1"
-                "child2")))))
+               "child2")))
+    (is (null (element-props elm)))
+    (is (equal (list "child1" "child2") (element-children elm)))))
 
-(test hsx-with-props-and-children
-  (is (equal '(create-element
-               :div
-               (list :prop1 "value1" :prop2 "value2")
+(test hsx-with-static-props-and-children
+  (let ((elm (div :prop1 "value1" :prop2 "value2"
                "child1"
-               "child2")
-             (macroexpand-1
-              '(div :prop1 "value1" :prop2 "value2"
-                "child1"
-                "child2")))))
+               "child2")))
+    (is (equal '(:prop1 "value1" :prop2 "value2")
+               (element-props elm)))
+    (is (equal (list "child1" "child2") (element-children elm)))))
 
-(deftag custom)
-
-(test hsx-for-custom-tag
-  (is (equal '(create-element
-               :custom
-               (list :prop1 "value1" :prop2 "value2")
+(test hsx-with-dynamic-props-and-children
+  (let* ((props '(:prop1 "value1" :prop2 "value2"))
+         (elm (div props
                "child1"
-               "child2")
-             (macroexpand-1
-              '(custom :prop1 "value1" :prop2 "value2"
-                "child1"
-                "child2")))))
-
-(defcomp comp (&key prop1 prop2 children)
-  (declare (ignore prop1 prop2 children)))
-
-(test hsx-for-component
-  (is (equal '(create-element
-               (fdefinition '%comp)
-               (list :prop1 "value1" :prop2 "value2")
-               "child1"
-               "child2")
-             (macroexpand-1
-              '(comp :prop1 "value1" :prop2 "value2"
-                "child1"
-                "child2")))))
+               "child2")))
+    (is (equal props (element-props elm)))
+    (is (equal (list "child1" "child2") (element-children elm)))))

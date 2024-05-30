@@ -7,8 +7,8 @@
 (in-package :hsx-test/renderer)
 (in-readtable mstrings:mstring-syntax)
 
-(def-suite renderer)
-(in-suite renderer)
+(def-suite renderer-test)
+(in-suite renderer-test)
 
 (test empty-tag
   (is (string= "<div></div>"

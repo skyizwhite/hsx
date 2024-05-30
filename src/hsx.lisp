@@ -10,7 +10,9 @@
 
 (defun find-builtin-symbols (node)
   (if (atom node)
-      (or (find-symbol (string node) :hsx/builtin)
+      (or (and (symbolp node)
+               (not (keywordp node))
+               (find-symbol (string node) :hsx/builtin))
           node)
       (cons (find-builtin-symbols (car node))
             (mapcar (lambda (n)
