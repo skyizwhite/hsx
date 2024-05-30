@@ -9,22 +9,20 @@
            #:defcomp))
 (in-package #:hsx/defhsx)
 
+(defmacro defhsx (name element-type)
+  `(defmacro ,name (&body body)
+     `(%create-element ,',element-type ,@body)))
+
 (defun %create-element (type &rest body)
   (multiple-value-bind (props children)
       (parse-body body)
     (create-element type props children)))
 
-(defmacro defhsx (name element-type)
-  `(defmacro ,name (&body body)
-     `(%create-element ,',element-type ,@body)))
-
 (defun parse-body (body)
-  (cond (; plist
-         (and (listp (first body))
+  (cond ((and (listp (first body))
               (keywordp (first (first body))))
          (values (first body) (rest body)))
-        (; inline-plist
-         (keywordp (first body))
+        ((keywordp (first body))
          (loop :for thing :on body :by #'cddr
                :for (k v) := thing
                :when (and (keywordp k) v)

@@ -1,9 +1,11 @@
 (defpackage #:hsx-test/renderer
   (:use #:cl
         #:fiveam
-        #:hsx
-        #:named-readtables)
-  (:import-from #:mstrings))
+        #:named-readtables
+        #:hsx/builtin)
+  (:import-from #:mstrings)
+  (:import-from #:hsx/element
+                #:render))
 (in-package :hsx-test/renderer)
 (in-readtable mstrings:mstring-syntax)
 
@@ -12,47 +14,44 @@
 
 (test empty-tag
   (is (string= "<div></div>"
-               (render (hsx (div))))))
+               (render (div)))))
 
 (test tag-with-props
   (is (string= "<div prop1=\"value1\" prop2></div>"
-               (render (hsx (div :prop1 "value1" :prop2 t :prop3 nil))))))
+               (render (div :prop1 "value1" :prop2 t :prop3 nil)))))
 
 (test tag-with-children
   (is (string= "<p>foo</p>"
-               (render (hsx (p "foo")))))
+               (render (p "foo"))))
   (is (string= #M"<p>
                  \  <span>foo</span>
                  \</p>"
-               (render (hsx (p
-                              (span "foo"))))))
+               (render (p
+                         (span "foo")))))
   (is (string= #M"<p>
                  \  foo
                  \  <span>bar</span>
                  \</p>"
-               (render (hsx (p
-                              "foo"
-                              (span "bar")))))))
+               (render (p
+                         "foo"
+                         (span "bar"))))))
 
 (test tag-with-props-and-children
   (is (string=  "<p prop1=\"value1\" prop2>foo</p>"
-                (render (hsx
-                          (p :prop1 "value1" :prop2 t :prop3 nil
-                            "foo")))))
+                (render (p :prop1 "value1" :prop2 t :prop3 nil
+                          "foo"))))
   (is (string= #M"<p prop1=\"value1\" prop2>
                  \  foo
                  \  <span>bar</span>
                  \</p>"
-               (render (hsx
-                         (p :prop1 "value1" :prop2 t :prop3 nil
-                           "foo"
-                           (span "bar")))))))
+               (render (p :prop1 "value1" :prop2 t :prop3 nil
+                         "foo"
+                         (span "bar"))))))
 
 (test fragment
-  (let ((frg (hsx
-               (<>
-                 (li "bar")
-                 (li "baz")))))
+  (let ((frg (<>
+               (li "bar")
+               (li "baz"))))
     (is (string= #M"<li>bar</li>
                     <li>baz</li>"
                  (render frg)))
@@ -62,10 +61,9 @@
                    \  <li>baz</li>
                    \  <li>brah</li>
                    \</ul>"
-                 (render (hsx
-                           (ul
-                             (li "foo")
-                             frg
-                             (li "brah"))))))))
+                 (render (ul
+                           (li "foo")
+                           frg
+                           (li "brah")))))))
 
 ;; TODO: Add escaping test
