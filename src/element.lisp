@@ -63,9 +63,10 @@
     (let ((type-str (string-downcase type)))
       (if children
           (format stream
-                  (if (rest children)
-                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
+                  (if (and (null (rest children))
+                           (typep (first children) 'string))
+                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>"
+                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>")
                   type-str
                   (props->string props)
                   children

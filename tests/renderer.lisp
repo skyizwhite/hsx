@@ -19,29 +19,34 @@
                (render (hsx (div :prop1 "value1" :prop2 t :prop3 nil))))))
 
 (test tag-with-children
-  (is (string= "<p>Hello, World!</p>"
-               (render (hsx (p "Hello, World!")))))
+  (is (string= "<p>foo</p>"
+               (render (hsx (p "foo")))))
   (is (string= #M"<p>
-                 \  Hello,
-                 \  <span>World!</span>
+                 \  <span>foo</span>
                  \</p>"
                (render (hsx (p
-                              "Hello,"
-                              (span "World!")))))))
+                              (span "foo"))))))
+  (is (string= #M"<p>
+                 \  foo
+                 \  <span>bar</span>
+                 \</p>"
+               (render (hsx (p
+                              "foo"
+                              (span "bar")))))))
 
 (test tag-with-props-and-children
-  (is (string=  "<p prop1=\"value1\" prop2>Hello, World!</p>"
+  (is (string=  "<p prop1=\"value1\" prop2>foo</p>"
                 (render (hsx
                           (p :prop1 "value1" :prop2 t :prop3 nil
-                            "Hello, World!")))))
+                            "foo")))))
   (is (string= #M"<p prop1=\"value1\" prop2>
-                 \  Hello,
-                 \  <span>World!</span>
+                 \  foo
+                 \  <span>bar</span>
                  \</p>"
                (render (hsx
                          (p :prop1 "value1" :prop2 t :prop3 nil
-                           "Hello,"
-                           (span "World!")))))))
+                           "foo"
+                           (span "bar")))))))
 
 (test fragment
   (let ((frg (hsx
