@@ -67,6 +67,24 @@ This generates:
 </div>
 ```
 
+The fragment `<>` allows you to group multiple elements without introducing additional wrappers.
+
+```lisp
+(hsx
+  (<>
+    (h1 "Title")
+    (p "This is a paragraph.")
+    (p "This is another paragraph.")))
+```
+
+This generates:
+
+```html
+<h1>Title</h1>
+<p>This is a paragraph.</p>
+<p>This is another paragraph.</p>
+```
+
 You can create custom tags (intended for Web Components) using the `deftag` macro.
 
 ```lisp
@@ -122,6 +140,14 @@ Which generates:
   <h1>card1</h1>
   <p>Lorem ipsum...</p>
 </div>
+```
+
+To output HSX as an HTML string, use the `render` method. By default, pretty-printing is enabled, but you can disable it by enabling the `minify` option.
+
+```lisp
+(render (hsx ...))
+; or
+(render (hsx ...) :minify t)
 ```
 
 ## License
