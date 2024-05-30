@@ -10,7 +10,7 @@ This project is a fork of [flute](https://github.com/ailisp/flute/), originally 
 
 With the `hsx` macro, you can construct HTML using S-expressions.
 
-Inline property lists following the element name are interpreted as attributes, and the remaining elements are interpreted as child elements.
+The property list (inline form is also available) following the element name is interpreted as attributes, while the remaining elements are interpreted as child elements.
 
 When a property is given a boolean value:
 - `t` results in the key being displayed without a value.
@@ -23,7 +23,8 @@ When a property is given a boolean value:
     (h1 "Hello World")
     (p
       "This is"
-      (strong "an example!"))))
+      (strong '(:class "red")
+        "an example!"))))
 ```
 
 This code generates the following HTML:
@@ -33,7 +34,7 @@ This code generates the following HTML:
   <h1>Hello World</h1>
   <p>
     This is
-    <strong>an example!</strong>
+    <strong class="red">an example!</strong>
   </p>
 </div>
 ```
