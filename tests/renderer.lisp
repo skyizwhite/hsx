@@ -65,5 +65,3 @@
                            (li "foo")
                            frg
                            (li "brah")))))))
-
-;; TODO: Add escaping test

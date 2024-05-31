@@ -1,5 +1,8 @@
 (defpackage #:hsx/element
   (:use #:cl)
+  (:import-from #:hsx/escaper
+                #:escape-html-attribute
+                #:escape-html-text-content)
   (:export #:element
            #:tag
            #:html-tag
@@ -74,7 +77,11 @@
                       "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>")
                   type-str
                   (props->string props)
-                  children
+                  (mapcar (lambda (child)
+                            (if (stringp child)
+                                (escape-html-text-content child)
+                                child))
+                          children)
                   type-str)
           (format stream
                   "<~a~a></~a>"
@@ -94,7 +101,7 @@
                 (format stream
                         " ~a=\"~a\""
                         key-str
-                        value))))))
+                        (escape-html-attribute value)))))))
 
 (defmethod print-object ((element html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
