@@ -3,10 +3,8 @@
   (:export #:hsx))
 (in-package #:hsx/hsx)
 
-(defmacro hsx (&body form)
-  (when (not (= (length form) 1))
-    (error "The body of the hsx macro must be a single form."))
-  (find-builtin-symbols (car form)))
+(defmacro hsx (form)
+  (find-builtin-symbols form))
 
 (defun find-builtin-symbols (node)
   (if (atom node)
