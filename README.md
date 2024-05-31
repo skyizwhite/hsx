@@ -1,6 +1,6 @@
 # HSX
 
-⚠️ This project is a work in progress.
+⚠️ This project is a work in progress. [Roadmap](https://github.com/skyizwhite/hsx/issues/14)
 
 HSX (Hypertext S-expression) is a straightforward HTML5 generation library for Common Lisp.
 
