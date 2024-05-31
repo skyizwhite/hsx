@@ -13,4 +13,4 @@
                (#:hsx-test . #:hsx-test/hsx)
                (#:escaper-test . #:hsx-test/escaper)
                (#:renderer-test . #:hsx-test/renderer))
-  :num-checks 37)
+  :num-checks 36)
