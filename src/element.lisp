@@ -3,6 +3,8 @@
   (:import-from #:hsx/escaper
                 #:escape-html-attribute
                 #:escape-html-text-content)
+  (:import-from #:hsx/group
+                #:self-closing-tag-p)
   (:export #:element
            #:tag
            #:html-tag
@@ -84,7 +86,9 @@
                           children)
                   type-str)
           (format stream
-                  "<~a~a></~a>"
+                  (if (self-closing-tag-p type)
+                      "<~a~a>"
+                      "<~a~a></~a>")
                   type-str
                   (props->string props)
                   type-str)))))

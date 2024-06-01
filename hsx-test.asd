@@ -7,10 +7,12 @@
                "hsx-test/defhsx"
                "hsx-test/hsx"
                "hsx-test/escaper"
-               "hsx-test/renderer")
+               "hsx-test/renderer"
+               "hsx-test/group")
   :test-names ((#:element-test . #:hsx-test/element)
                (#:defhsx-test . #:hsx-test/defhsx)
                (#:hsx-test . #:hsx-test/hsx)
                (#:escaper-test . #:hsx-test/escaper)
-               (#:renderer-test . #:hsx-test/renderer))
-  :num-checks 37)
+               (#:renderer-test . #:hsx-test/renderer)
+               (#:group-test . #:hsx-test/group))
+  :num-checks 41)

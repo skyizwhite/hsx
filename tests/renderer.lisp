@@ -48,6 +48,10 @@
                          "foo"
                          (span "bar"))))))
 
+(test self-closing-tag
+  (is (string= "<img src=\"/background.png\">"
+               (render (img :src "/background.png")))))
+
 (test fragment
   (let ((frg (<>
                (li "bar")
