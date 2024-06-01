@@ -4,7 +4,8 @@
                 #:make-keyword
                 #:symbolicate)
   (:export #:defgroup
-           #:self-closing-tag-p))
+           #:self-closing-tag-p
+           #:non-escaping-tag-p))
 (in-package #:hsx/group)
 
 (defun make-keyword-hash-table (symbols)
@@ -24,3 +25,6 @@
 (defgroup self-closing-tag
   area base br col embed hr img input keygen
   link meta param source track wbr)
+
+(defgroup non-escaping-tag
+  script style)

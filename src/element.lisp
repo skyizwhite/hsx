@@ -4,7 +4,8 @@
                 #:escape-html-attribute
                 #:escape-html-text-content)
   (:import-from #:hsx/group
-                #:self-closing-tag-p)
+                #:self-closing-tag-p
+                #:non-escaping-tag-p)
   (:export #:element
            #:tag
            #:html-tag
@@ -80,7 +81,8 @@
                   type-str
                   (props->string props)
                   (mapcar (lambda (child)
-                            (if (stringp child)
+                            (if (and (not (non-escaping-tag-p type))
+                                     (stringp child))
                                 (escape-html-text-content child)
                                 child))
                           children)
