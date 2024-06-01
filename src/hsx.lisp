@@ -1,5 +1,6 @@
 (defpackage #:hsx/hsx
   (:use #:cl)
+  (:import-from #:hsx/builtin)
   (:export #:hsx))
 (in-package #:hsx/hsx)
 

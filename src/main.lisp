@@ -4,7 +4,6 @@
         #:hsx/element
         #:hsx/defhsx
         #:hsx/hsx)
-  (:import-from #:hsx/builtin)
   (:export #:hsx
            #:deftag
            #:defcomp
