@@ -5,7 +5,6 @@
         #:hsx/defhsx
         #:hsx/hsx)
   (:export #:hsx
-           #:deftag
            #:defcomp
            #:render))
 (in-package :hsx)

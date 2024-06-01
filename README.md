@@ -86,24 +86,6 @@ This generates:
 <p>This is another paragraph.</p>
 ```
 
-You can create custom tags (intended for Web Components) using the `deftag` macro.
-
-```lisp
-(deftag stack)
-```
-
-This can then be used as follows:
-
-```lisp
-(hsx (stack :space "var(--s2)" :recursive t))
-```
-
-Which generates:
-
-```html
-<stack space="var(--s2)" recursive></stack>
-```
-
 You can create HSX components using the `defcomp` macro. Components are essentially functions that accept keyword arguments, a property list, or both.
 
 The `children` property accepts the children of a component.
