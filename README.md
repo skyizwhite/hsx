@@ -125,12 +125,9 @@ Which generates:
 </div>
 ```
 
-To output HSX as an HTML string, use the `render` method. By default, pretty-printing is enabled, but you can disable it by enabling the `minify` option.
-
+To output HSX as an HTML string, use the `render-to-string` method.
 ```lisp
-(render (hsx ...))
-; or
-(render (hsx ...) :minify t)
+(render-to-string (hsx ...))
 ```
 
 ## License

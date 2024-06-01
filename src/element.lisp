@@ -16,7 +16,7 @@
            #:element-props
            #:element-children
            #:expand-component
-           #:render))
+           #:render-to-string))
 (in-package #:hsx/element)
 
 ;;;; class definitions
@@ -63,9 +63,9 @@
 
 ;;;; methods
 
-(defmethod render ((element element) &key minify)
+(defmethod render-to-string ((element element) &key pretty)
   (with-output-to-string (stream)
-    (write element :stream stream :pretty (not minify))))
+    (write element :stream stream :pretty pretty)))
 
 (defmethod print-object ((element tag) stream)
   (with-accessors ((type element-type)

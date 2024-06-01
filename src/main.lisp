@@ -6,5 +6,5 @@
         #:hsx/hsx)
   (:export #:hsx
            #:defcomp
-           #:render))
+           #:render-to-string))
 (in-package :hsx)

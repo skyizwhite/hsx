@@ -5,7 +5,7 @@
         #:hsx/builtin)
   (:import-from #:mstrings)
   (:import-from #:hsx/element
-                #:render))
+                #:render-to-string))
 (in-package :hsx-test/renderer)
 (in-readtable mstrings:mstring-syntax)
 
@@ -14,43 +14,54 @@
 
 (test empty-tag
   (is (string= "<div></div>"
-               (render (div)))))
+               (render-to-string (div)))))
 
 (test tag-with-props
   (is (string= "<div prop1=\"value1\" prop2></div>"
-               (render (div :prop1 "value1" :prop2 t :prop3 nil)))))
+               (render-to-string
+                (div :prop1 "value1" :prop2 t :prop3 nil)))))
 
 (test tag-with-children
   (is (string= "<p>foo</p>"
-               (render (p "foo"))))
+               (render-to-string (p "foo") :pretty t)))
   (is (string= #M"<p>
                  \  <span>foo</span>
                  \</p>"
-               (render (p
-                         (span "foo")))))
+               (render-to-string
+                (p
+                  (span "foo"))
+                :pretty t)))
   (is (string= #M"<p>
                  \  foo
                  \  <span>bar</span>
                  \</p>"
-               (render (p
-                         "foo"
-                         (span "bar"))))))
+               (render-to-string
+                (p
+                  "foo"
+                  (span "bar"))
+                :pretty t))))
 
 (test tag-with-props-and-children
   (is (string=  "<p prop1=\"value1\" prop2>foo</p>"
-                (render (p :prop1 "value1" :prop2 t :prop3 nil
-                          "foo"))))
+                (render-to-string
+                 (p :prop1 "value1" :prop2 t :prop3 nil
+                   "foo")
+                 :pretty t)))
   (is (string= #M"<p prop1=\"value1\" prop2>
                  \  foo
                  \  <span>bar</span>
                  \</p>"
-               (render (p :prop1 "value1" :prop2 t :prop3 nil
-                         "foo"
-                         (span "bar"))))))
+               (render-to-string 
+                (p :prop1 "value1" :prop2 t :prop3 nil
+                  "foo"
+                  (span "bar"))
+                :pretty t))))
 
 (test self-closing-tag
   (is (string= "<img src=\"/background.png\">"
-               (render (img :src "/background.png")))))
+               (render-to-string
+                (img :src "/background.png")
+                :pretty t))))
 
 (test fragment
   (let ((frg (<>
@@ -58,14 +69,16 @@
                (li "baz"))))
     (is (string= #M"<li>bar</li>
                     <li>baz</li>"
-                 (render frg)))
+                 (render-to-string frg :pretty t)))
     (is (string= #M"<ul>
                    \  <li>foo</li>
                    \  <li>bar</li>
                    \  <li>baz</li>
                    \  <li>brah</li>
                    \</ul>"
-                 (render (ul
-                           (li "foo")
-                           frg
-                           (li "brah")))))))
+                 (render-to-string
+                  (ul
+                    (li "foo")
+                    frg
+                    (li "brah"))
+                  :pretty t)))))
