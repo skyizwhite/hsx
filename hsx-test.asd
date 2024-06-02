@@ -15,4 +15,4 @@
                (#:escaper-test . #:hsx-test/escaper)
                (#:renderer-test . #:hsx-test/renderer)
                (#:group-test . #:hsx-test/group))
-  :num-checks 41)
+  :num-checks 42)
