@@ -37,6 +37,10 @@
      (defhsx ,name ,(make-keyword name))))
 
 (defmacro defcomp (name props &body body)
+  (unless (or (null props)
+              (member '&key props)
+              (member '&rest props))
+    (error "Component properties must be declared with either &key, &rest, or both."))
   (let ((%name (symbolicate '% name)))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (defun ,%name ,props
