@@ -43,15 +43,15 @@
 ;;;; factory
 
 (defun create-element (type props children)
-  (make-instance (cond ((functionp type) 'component)
-                       ((eq type :<>) 'fragment)
-                       ((eq type :html) 'html-tag)
-                       ((keywordp type) 'tag)
-                       (t (error "element-type must be either a keyword or a function.")))
-                 :type type
-                 :props props
-                 :children (flatten children)))
-
+  (make-instance 
+   (cond ((functionp type) 'component)
+         ((eq type :<>) 'fragment)
+         ((eq type :html) 'html-tag)
+         ((keywordp type) 'tag)
+         (t (error "element-type must be a keyword or a function.")))
+   :type type
+   :props props
+   :children (flatten children)))
 (defun flatten (x)
   (labels ((rec (x acc)
              (cond ((null x) acc)
