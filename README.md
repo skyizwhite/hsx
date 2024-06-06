@@ -10,6 +10,8 @@ This project is a fork of [flute](https://github.com/ailisp/flute/), originally 
 
 With the `hsx` macro, you can construct HTML using S-expressions.
 
+The role of the `hsx` macro is to detect symbols of built-in elements and import the corresponding functions on demand. It is not needed when invoking user components defined with the `defcomp` macro.
+
 The property list (inline form is also available) following the element name is interpreted as attributes, while the remaining elements are interpreted as child elements.
 
 When a property is given a boolean value:
