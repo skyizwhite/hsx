@@ -6,5 +6,9 @@
         #:hsx/hsx)
   (:export #:hsx
            #:defcomp
-           #:render-to-string))
+           #:render-to-string
+           #:element-type
+           #:element-props
+           #:element-children
+           #:expand-component))
 (in-package :hsx)
