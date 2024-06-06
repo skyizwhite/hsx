@@ -4,12 +4,10 @@
   :pathname "tests"
   :depends-on ("fiveam"
                "hsx-test/element"
-               "hsx-test/defhsx"
                "hsx-test/hsx"
                "hsx-test/escaper"
                "hsx-test/group")
   :test-names ((#:element-test . #:hsx-test/element)
-               (#:defhsx-test . #:hsx-test/defhsx)
                (#:hsx-test . #:hsx-test/hsx)
                (#:escaper-test . #:hsx-test/escaper)
                (#:group-test . #:hsx-test/group))

@@ -1,6 +1,6 @@
 (defpackage #:hsx-test/element
   (:use #:cl
-        #:fiveam        
+        #:fiveam
         #:hsx/element)
   (:import-from #:named-readtables
                 #:in-readtable)

@@ -2,8 +2,8 @@
   (:nicknames #:hsx/main)
   (:use #:cl
         #:hsx/element
-        #:hsx/defhsx
         #:hsx/hsx)
+  (:import-from #:hsx/builtin)
   (:export #:hsx
            #:defcomp
            #:render-to-string
