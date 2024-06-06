@@ -6,9 +6,5 @@
   (:import-from #:hsx/builtin)
   (:export #:hsx
            #:defcomp
-           #:render-to-string
-           #:element-type
-           #:element-props
-           #:element-children
-           #:expand-component))
+           #:render-to-string))
 (in-package :hsx)
