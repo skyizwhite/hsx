@@ -71,31 +71,27 @@
   (with-accessors ((type element-type)
                    (props element-props)
                    (children element-children)) element
-    (let ((type-str (string-downcase type)))
+    (let ((type-str (string-downcase type))
+          (props-str (render-props props)))
       (if children
           (format stream
-                  (if (and (null (rest children))
-                           (typep (first children) 'string))
-                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>"
-                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>")
+                  (if (or (rest children)
+                          (typep (first children) 'element))
+                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
+                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
                   type-str
-                  (props->string props)
-                  (mapcar (lambda (child)
-                            (if (and (not (non-escaping-tag-p type))
-                                     (stringp child))
-                                (escape-html-text-content child)
-                                child))
-                          children)
+                  props-str
+                  (escape-children type children)
                   type-str)
           (format stream
                   (if (self-closing-tag-p type)
                       "<~a~a>"
                       "<~a~a></~a>")
                   type-str
-                  (props->string props)
+                  props-str
                   type-str)))))
 
-(defun props->string (props)
+(defun render-props (props)
   (with-output-to-string (stream)
     (loop
       :for (key value) :on props :by #'cddr
@@ -108,6 +104,14 @@
                         " ~a=\"~a\""
                         key-str
                         (escape-html-attribute value)))))))
+
+(defun escape-children (type children)
+  (mapcar (lambda (child)
+            (if (and (not (non-escaping-tag-p type))
+                     (stringp child))
+                (escape-html-text-content child)
+                child))
+          children))
 
 (defmethod print-object ((element html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
