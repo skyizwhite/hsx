@@ -1,6 +1,6 @@
 (defsystem "hsx"
   :version "0.1.0"
-  :description "A beautiful, easily composable HTML5 generation library"
+  :description "Hypertext S-expression"
   :author "skyizwhite, Bo Yao"
   :maintainer "skyizwhite <paku@skyizwhite.dev>"
   :license "MIT"
