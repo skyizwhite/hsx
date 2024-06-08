@@ -1,141 +1,143 @@
 # HSX
 
-⚠️ This project is a work in progress. [Roadmap](https://github.com/skyizwhite/hsx/issues/14)
+HSX (Hypertext S-expression) is a simple and powerful HTML5 generation library for Common Lisp, forked from [flute](https://github.com/ailisp/flute/), originally created by Bo Yao.
 
-HSX (Hypertext S-expression) is a straightforward HTML5 generation library for Common Lisp.
+## Introduction
 
-This project is a fork of [flute](https://github.com/ailisp/flute/), originally created by Bo Yao.
+HSX allows you to generate HTML using S-expressions, providing a more Lisp-friendly way to create web content. By using the `hsx` macro, you can define HTML elements and their attributes in a concise and readable manner.
 
-## Usage
+## Getting Started
 
-With the `hsx` macro, you can construct HTML using S-expressions.
+### Basic Usage
 
-The role of the `hsx` macro is to detect symbols of built-in elements and import the corresponding functions on demand. It is not needed when invoking user components defined with the `defcomp` macro.
-
-The property list (inline form is also available) following the element name is interpreted as attributes, while the remaining elements are interpreted as child elements.
-
-When a property is given a boolean value:
-- `t` results in the key being displayed without a value.
-- `nil` results in the property not being displayed at all.
-- Any other type of value results in the key-value pair being displayed.
+Use the `hsx` macro to create HTML elements. Attributes are specified using a property list following the element name, and child elements are nested directly within.
 
 ```lisp
 (hsx
-  (div :id "greeting" :class "flex"
-    (h1 "Hello World")
-    (p
-      "This is"
-      (strong '(:class "red")
-        "an example!"))))
+  (div :id "example" :class "container"
+    (h1 "Welcome to HSX")
+    (p "This is an example paragraph.")))
 ```
 
-This code generates the following HTML:
+This generates:
 
 ```html
-<div id="greeting" class="flex">
-  <h1>Hello World</h1>
-  <p>
-    This is
-    <strong class="red">an example!</strong>
-  </p>
+<div id="example" class="container">
+  <h1>Welcome to HSX</h1>
+  <p>This is an example paragraph.</p>
 </div>
 ```
 
-HSX elements are essentially functions, allowing you to compose them freely and embed Common Lisp code within them.
+## Examples
+
+### Dynamic Content
+
+HSX allows embedding Common Lisp code directly within your HTML structure, making it easy to generate dynamic content.
 
 ```lisp
 (hsx
   (div
-    (p :id (+ 1 1))
+    (p :id (format nil "id-~a" (random 100)))
     (ul
-      (loop
-        :for i :from 1 :to 3
-        :collect (li (format nil "item~a" i))))
-    (if t
-        (p "true")
-        (p "false"))))
+      (loop :for i :from 1 :to 5 :collect (li (format nil "Item ~a" i))))
+    (if (> (random 10) 5)
+        (p "Condition met!")
+        (p "Condition not met!"))))
 ```
 
-This generates:
+This might generate:
 
 ```html
 <div>
-  <p id="2"></p>
+  <p id="id-42"></p>
   <ul>
-    <li>item1</li>
-    <li>item2</li>
-    <li>item3</li>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+    <li>Item 4</li>
+    <li>Item 5</li>
   </ul>
-  <p>true</p>
+  <p>Condition not met!</p>
 </div>
 ```
 
-The fragment `<>` allows you to group multiple elements without introducing additional wrappers.
+### Using Fragments
+
+To group multiple elements without adding an extra wrapper, use the fragment `<>`.
 
 ```lisp
 (hsx
   (<>
-    (h1 "Title")
-    (p "This is a paragraph.")
-    (p "This is another paragraph.")))
+    (h1 "Grouped Elements")
+    (p "First paragraph.")
+    (p "Second paragraph.")))
 ```
 
 This generates:
 
 ```html
-<h1>Title</h1>
-<p>This is a paragraph.</p>
-<p>This is another paragraph.</p>
+<h1>Grouped Elements</h1>
+<p>First paragraph.</p>
+<p>Second paragraph.</p>
 ```
 
-You can create HSX components using the `defcomp` macro. Components are essentially functions that accept keyword arguments, a property list, or both.
+## Creating Components
 
-The `children` property accepts the children of a component.
+You can define reusable components with the `defcomp` macro. Components are functions that can take keyword arguments and properties.
 
 ```lisp
 (defcomp card (&key title children)
   (hsx
-    (div
+    (div :class "card"
       (h1 title)
       children)))
 ```
 
-or
+Or using a property list:
 
 ```lisp
 (defcomp card (&rest props)
   (hsx
-    (div
+    (div :class "card"
       (h1 (getf props :title))
       (getf props :children))))
 ```
 
-This can then be used as follows:
+Usage example:
 
 ```lisp
 (hsx
-  (card :title "card1"
-    (p "Lorem ipsum...")))
+  (card :title "Card Title"
+    (p "This is a card component.")))
 ```
 
-Which generates:
+Generates:
 
 ```html
-<div>
-  <h1>card1</h1>
-  <p>Lorem ipsum...</p>
+<div class="card">
+  <h1>Card Title</h1>
+  <p>This is a card component.</p>
 </div>
 ```
 
-To output HSX as an HTML string, use the `render-to-string` method.
+## Rendering HTML
+
+To render HSX to an HTML string, use the `render-to-string` function.
+
 ```lisp
-(render-to-string (hsx ...))
+(render-to-string
+  (hsx
+    (div :class "content"
+      (h1 "Rendered to String")
+      (p "This HTML is generated as a string."))))
 ```
 
 ## License
 
-This project is licensed under the terms of the MIT license.
+This project is licensed under the MIT License.
 
 © 2024 skyizwhite
 
 © 2018 Bo Yao
+
+Feel free to contribute to the project and report any issues or feature requests on the [GitHub repository](https://github.com/skyizwhite/hsx).
