@@ -52,6 +52,7 @@
    :type type
    :props props
    :children (flatten children)))
+
 (defun flatten (x)
   (labels ((rec (x acc)
              (cond ((null x) acc)
