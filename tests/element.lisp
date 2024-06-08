@@ -48,7 +48,7 @@
                                  :pretty t)))
   (is (string= #M"<p>
                  \  <span>foo</span>
-                 \</p>"
+                  </p>"
                (render-to-string (create-element :p
                                                  nil
                                                  (list (create-element :span
@@ -58,7 +58,7 @@
   (is (string= #M"<p>
                  \  foo
                  \  <span>bar</span>
-                 \</p>"
+                  </p>"
                (render-to-string (create-element :p
                                                  nil
                                                  (list "foo"
@@ -78,7 +78,7 @@
   (is (string= #M"<p prop1=\"value1\" prop2>
                  \  foo
                  \  <span>bar</span>
-                 \</p>"
+                  </p>"
                (render-to-string  (create-element :p
                                                   (list :prop1 "value1"
                                                         :prop2 t
@@ -127,7 +127,7 @@
                    \  <li>bar</li>
                    \  <li>baz</li>
                    \  <li>brah</li>
-                   \</ul>"
+                    </ul>"
                  (render-to-string (create-element :ul
                                                    nil
                                                    (list (create-element :li
