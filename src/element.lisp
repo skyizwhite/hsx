@@ -96,6 +96,22 @@
   (with-slots (type props) element
     (format stream "<~a~a>" (string-downcase type) (render-props props))))
 
+(defmethod print-object ((element html-tag) stream)
+  (format stream "<!DOCTYPE html>~%")
+  (call-next-method))
+
+(defmethod print-object ((element fragment) stream)
+  (with-slots (children) element
+    (if children
+        (format stream
+                (if (rest children)
+                    "~<~@{~a~^~:@_~}~:>"
+                    "~<~a~:>")
+                (render-children element)))))
+
+(defmethod print-object ((element component) stream)
+  (print-object (expand-component element) stream))
+
 (defun render-props (props)
   (with-output-to-string (stream)
     (loop
@@ -119,22 +135,6 @@
 
 (defmethod render-children ((element non-escaping-tag))
   (element-children element))
-
-(defmethod print-object ((element html-tag) stream)
-  (format stream "<!DOCTYPE html>~%")
-  (call-next-method))
-
-(defmethod print-object ((element fragment) stream)
-  (with-slots (children) element
-    (if children
-        (format stream
-                (if (rest children)
-                    "~<~@{~a~^~:@_~}~:>"
-                    "~<~a~:>")
-                children))))
-
-(defmethod print-object ((element component) stream)
-  (print-object (expand-component element) stream))
 
 (defmethod expand-component ((element component))
   (with-slots (type props children) element
