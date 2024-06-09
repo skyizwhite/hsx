@@ -15,6 +15,8 @@
 (test element-class
   (is (typep (create-element :div nil nil) 'tag))
   (is (typep (create-element :html nil nil) 'html-tag))
+  (is (typep (create-element :img nil nil) 'self-closing-tag))
+  (is (typep (create-element :style nil nil) 'non-escaping-tag))
   (is (typep (create-element :<> nil nil) 'fragment))
   (is (typep (create-element (lambda ()) nil nil) 'component))
   (signals error (create-element "div" nil nil)))

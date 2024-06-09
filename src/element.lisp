@@ -9,6 +9,8 @@
   (:export #:element
            #:tag
            #:html-tag
+           #:self-closing-tag
+           #:non-escaping-tag
            #:fragment
            #:component
            #:create-element
@@ -36,6 +38,10 @@
 
 (defclass html-tag (tag) ())
 
+(defclass self-closing-tag (tag) ())
+
+(defclass non-escaping-tag (tag) ())
+
 (defclass fragment (tag) ())
 
 (defclass component (element) ())
@@ -47,6 +53,8 @@
    (cond ((functionp type) 'component)
          ((eq type :<>) 'fragment)
          ((eq type :html) 'html-tag)
+         ((self-closing-tag-p type) 'self-closing-tag)
+         ((non-escaping-tag-p type) 'non-escaping-tag)
          ((keywordp type) 'tag)
          (t (error "element-type must be a keyword or a function.")))
    :type type
@@ -69,9 +77,7 @@
     (write element :stream stream :pretty pretty)))
 
 (defmethod print-object ((element tag) stream)
-  (with-accessors ((type element-type)
-                   (props element-props)
-                   (children element-children)) element
+  (with-slots (type props children) element
     (let ((type-str (string-downcase type))
           (props-str (render-props props)))
       (if children
@@ -82,15 +88,13 @@
                       "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
                   type-str
                   props-str
-                  (escape-children type children)
+                  (render-children element)
                   type-str)
-          (format stream
-                  (if (self-closing-tag-p type)
-                      "<~a~a>"
-                      "<~a~a></~a>")
-                  type-str
-                  props-str
-                  type-str)))))
+          (format stream "<~a~a></~a>" type-str props-str type-str)))))
+
+(defmethod print-object ((element self-closing-tag) stream)
+  (with-slots (type props) element
+    (format stream "<~a~a>" (string-downcase type) (render-props props))))
 
 (defun render-props (props)
   (with-output-to-string (stream)
@@ -106,20 +110,22 @@
                         key-str
                         (escape-html-attribute value)))))))
 
-(defun escape-children (type children)
+(defmethod render-children ((element tag))
   (mapcar (lambda (child)
-            (if (and (not (non-escaping-tag-p type))
-                     (stringp child))
+            (if (stringp child)
                 (escape-html-text-content child)
                 child))
-          children))
+          (element-children element)))
+
+(defmethod render-children ((element non-escaping-tag))
+  (element-children element))
 
 (defmethod print-object ((element html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
   (call-next-method))
 
 (defmethod print-object ((element fragment) stream)
-  (with-accessors ((children element-children)) element
+  (with-slots (children) element
     (if children
         (format stream
                 (if (rest children)
@@ -131,9 +137,7 @@
   (print-object (expand-component element) stream))
 
 (defmethod expand-component ((element component))
-  (with-accessors ((type element-type)
-                   (props element-props)
-                   (children element-children)) element
+  (with-slots (type props children) element
     (apply type (merge-children-into-props props children))))
 
 (defun merge-children-into-props (props children)

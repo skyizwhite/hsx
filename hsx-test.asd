@@ -11,4 +11,4 @@
                (#:hsx-test . #:hsx-test/hsx)
                (#:escaper-test . #:hsx-test/escaper)
                (#:group-test . #:hsx-test/group))
-  :num-checks 42)
+  :num-checks 44)
