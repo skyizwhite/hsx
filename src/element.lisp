@@ -139,10 +139,8 @@
   (element-children element))
 
 (defmethod expand-component ((element component))
-  (with-slots (type props children) element
-    (apply type (merge-children-into-props props children))))
+  (apply (element-type element) (element-props-with-children element)))
 
-(defun merge-children-into-props (props children)
-  (append props
-          (and children
-               (list :children children))))
+(defmethod element-props-with-children ((element component))
+  (with-slots (props children) element
+    (append props (and children (list :children children)))))
