@@ -77,45 +77,47 @@
     (write element :stream stream :pretty pretty)))
 
 (defmethod print-object ((element tag) stream)
-  (with-slots (type props children) element
-    (let ((type-str (string-downcase type))
-          (props-str (render-props props)))
-      (if children
-          (format stream
-                  (if (or (rest children)
-                          (typep (first children) 'element))
-                      "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
-                      "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
-                  type-str
-                  props-str
-                  (render-children element)
-                  type-str)
-          (format stream "<~a~a></~a>" type-str props-str type-str)))))
+  (let ((type (render-type element))
+        (props (render-props element))
+        (children (render-children element)))
+    (if children
+        (format stream
+                (if (or (rest children)
+                        (typep (first children) 'element))
+                    "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
+                    "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
+                type
+                props
+                children
+                type)
+        (format stream "<~a~a></~a>" type props type))))
 
 (defmethod print-object ((element self-closing-tag) stream)
-  (with-slots (type props) element
-    (format stream "<~a~a>" (string-downcase type) (render-props props))))
+  (format stream "<~a~a>" (render-type element) (render-props element)))
 
 (defmethod print-object ((element html-tag) stream)
   (format stream "<!DOCTYPE html>~%")
   (call-next-method))
 
 (defmethod print-object ((element fragment) stream)
-  (with-slots (children) element
+  (let ((children (render-children element)))
     (if children
         (format stream
                 (if (rest children)
                     "~<~@{~a~^~:@_~}~:>"
                     "~<~a~:>")
-                (render-children element)))))
+                children))))
 
 (defmethod print-object ((element component) stream)
   (print-object (expand-component element) stream))
 
-(defun render-props (props)
+(defmethod render-type ((element tag))
+  (string-downcase (element-type element)))
+
+(defmethod render-props ((element tag))
   (with-output-to-string (stream)
     (loop
-      :for (key value) :on props :by #'cddr
+      :for (key value) :on (element-props element) :by #'cddr
       :do (let ((key-str (string-downcase key)))
             (if (typep value 'boolean)
                 (format stream
