@@ -13,6 +13,7 @@
 ;;;; hsx macro
 
 (defmacro hsx (form)
+  "Detect built-in HSX elements and automatically import them."
   (find-builtin-symbols form))
 
 (defun find-builtin-symbols (node)
@@ -58,6 +59,9 @@
      (defhsx ,name ,(make-keyword name))))
 
 (defmacro defcomp (name props &body body)
+  "Define a function component for use in HSX.
+The props must be declared with either &key or &rest (or both).
+The body must return an HSX element."
   (unless (or (null props)
               (member '&key props)
               (member '&rest props))

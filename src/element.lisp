@@ -72,6 +72,9 @@
 
 ;;;; methods
 
+(defgeneric render-to-string (element &key pretty)
+  (:documentation "Render an HSX element to a string."))
+
 (defmethod render-to-string ((element element) &key pretty)
   (with-output-to-string (stream)
     (write element :stream stream :pretty pretty)))
