@@ -2,8 +2,7 @@
   :defsystem-depends-on ("fiveam-asdf")
   :class :package-inferred-fiveam-tester-system
   :pathname "tests"
-  :depends-on ("fiveam"
-               "hsx-test/element"
+  :depends-on ("hsx-test/element"
                "hsx-test/hsx"
                "hsx-test/escaper"
                "hsx-test/group")
