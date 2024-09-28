@@ -1,4 +1,4 @@
 ql alexandria
 ql mstrings
-github fukamachi/rove
-github Shinmera/dissect ; workaround
+github rove fukamachi/rove
+github dissect Shinmera/dissect ; workaround
