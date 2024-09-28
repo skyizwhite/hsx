@@ -2,10 +2,6 @@
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
   :version "2023-10-21"))
-("fiveam-asdf" .
- (:class qlot/source/ql:source-ql
-  :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
 ("alexandria" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
@@ -14,3 +10,11 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-10-21"))
+("rove" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "fukamachi/rove" :ref nil :branch nil :tag nil)
+  :version "github-cacea7331c10fe9d8398d104b2dfd579bf7ea353"))
+("dissect" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "Shinmera/dissect" :ref nil :branch nil :tag nil)
+  :version "github-a70cabcd748cf7c041196efd711e2dcca2bbbb2c"))

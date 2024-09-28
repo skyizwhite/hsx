@@ -1,13 +1,9 @@
 (defsystem "hsx-test"
-  :defsystem-depends-on ("fiveam-asdf")
-  :class :package-inferred-fiveam-tester-system
+  :class :package-inferred-system
   :pathname "tests"
-  :depends-on ("hsx-test/element"
-               "hsx-test/hsx"
+  :depends-on ("rove"
+               "hsx-test/element"
                "hsx-test/escaper"
-               "hsx-test/group")
-  :test-names ((#:element-test . #:hsx-test/element)
-               (#:hsx-test . #:hsx-test/hsx)
-               (#:escaper-test . #:hsx-test/escaper)
-               (#:group-test . #:hsx-test/group))
-  :num-checks 44)
+               "hsx-test/group"
+               "hsx-test/hsx")
+  :perform (test-op (o c) (symbol-call :rove :run c :style :dot)))
