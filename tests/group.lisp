@@ -1,16 +1,14 @@
 (defpackage #:hsx-test/group
   (:use #:cl
-        #:fiveam
+        #:rove
         #:hsx/group))
 (in-package #:hsx-test/group)
-
-(def-suite group-test)
-(in-suite group-test)
 
 (defgroup fruit
   apple banana orange)
 
-(test defgroup
-  (is (hash-table-p *fruit*))
-  (is (fruit-p :apple))
-  (is (not (fruit-p :tomato))))
+(deftest group-test
+  (testing "defgroup"
+    (ok (hash-table-p *fruit*))
+    (ok (fruit-p :apple))
+    (ng (fruit-p :tomato))))

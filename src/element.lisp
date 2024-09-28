@@ -49,7 +49,7 @@
 ;;;; factory
 
 (defun create-element (type props children)
-  (make-instance 
+  (make-instance
    (cond ((functionp type) 'component)
          ((eq type :<>) 'fragment)
          ((eq type :html) 'html-tag)

