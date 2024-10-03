@@ -1,4 +1,4 @@
-(defpackage #:hsx/hsx
+(defpackage #:hsx/dsl
   (:use #:cl)
   (:import-from #:alexandria
                 #:make-keyword
@@ -8,7 +8,7 @@
   (:export #:hsx
            #:deftag
            #:defcomp))
-(in-package #:hsx/hsx)
+(in-package #:hsx/dsl)
 
 ;;;; hsx macro
 

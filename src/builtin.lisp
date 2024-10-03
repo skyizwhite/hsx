@@ -1,6 +1,6 @@
 (uiop:define-package #:hsx/builtin
   (:use #:cl)
-  (:import-from #:hsx/hsx
+  (:import-from #:hsx/dsl
                 #:deftag))
 (in-package #:hsx/builtin)
 

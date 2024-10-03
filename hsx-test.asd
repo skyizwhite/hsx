@@ -4,5 +4,5 @@
   :depends-on ("rove"
                "hsx-test/utils"
                "hsx-test/element"
-               "hsx-test/hsx")
+               "hsx-test/dsl")
   :perform (test-op (o c) (symbol-call :rove :run c :style :dot)))

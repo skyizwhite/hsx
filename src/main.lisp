@@ -2,7 +2,7 @@
   (:nicknames #:hsx/main)
   (:use #:cl
         #:hsx/element
-        #:hsx/hsx)
+        #:hsx/dsl)
   (:import-from #:hsx/builtin)
   (:export #:hsx
            #:defcomp

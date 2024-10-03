@@ -1,16 +1,16 @@
-(defpackage #:hsx-test/hsx
+(defpackage #:hsx-test/dsl
   (:use #:cl
         #:rove
-        #:hsx/hsx
+        #:hsx/dsl
         #:hsx/builtin)
   (:import-from #:hsx/element
                 #:element-props
                 #:element-children))
-(in-package #:hsx-test/hsx)
+(in-package #:hsx-test/dsl)
 
-(deftest hsx-test
+(deftest dsl-test
   (testing "find-symbols"
-    (ok (expands 
+    (ok (expands
          '(hsx (div '(:div "div")
                  div
                  (div
