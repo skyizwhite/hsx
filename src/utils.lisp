@@ -29,25 +29,25 @@
   (or (gethash char escape-map)
       char))
 
-(defun escape-string (string escape-map)
-  (if (stringp string)
-      (with-output-to-string (s)
+(defun escape-string (str escape-map)
+  (if (stringp str)
+      (with-output-to-string (out)
         (loop
-          :for c :across string
-          :do (write (escape-char c escape-map) :stream s :escape nil)))
-      string))
+          :for c :across str
+          :do (write (escape-char c escape-map) :stream out :escape nil)))
+      str))
 
-(defun escape-html-text-content (text)
-  (escape-string text *text-content-escape-map*))
+(defun escape-html-text-content (str)
+  (escape-string str *text-content-escape-map*))
 
-(defun escape-html-attribute (text)
-  (escape-string text *attribute-escape-map*))
+(defun escape-html-attribute (str)
+  (escape-string str *attribute-escape-map*))
 
-(defun minify (input-string)
+(defun minify (str)
   (with-output-to-string (out)
     (let ((previous-space-p nil))
       (loop
-        :for char :across input-string
+        :for char :across str
         :do (cond
               ((whitespace-p char)
                (unless previous-space-p
