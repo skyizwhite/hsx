@@ -46,15 +46,16 @@
 (defun minify (input-string)
   (with-output-to-string (out)
     (let ((previous-space-p nil))
-      (loop for char across input-string do
-               (cond
-                 ((whitespace-p char)
-                  (unless previous-space-p
-                    (write-char #\Space out))
-                  (setf previous-space-p t))
-                 (t
-                  (write-char char out)
-                  (setf previous-space-p nil)))))))
+      (loop
+        :for char :across input-string
+        :do (cond
+              ((whitespace-p char)
+               (unless previous-space-p
+                 (write-char #\Space out))
+               (setf previous-space-p t))
+              (t
+               (write-char char out)
+               (setf previous-space-p nil)))))))
 
 (defun whitespace-p (char)
   (member char '(#\Space #\Newline #\Tab #\Return) :test #'char=))
