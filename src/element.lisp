@@ -1,8 +1,9 @@
 (defpackage #:hsx/element
   (:use #:cl)
-  (:import-from #:hsx/escaper
+  (:import-from #:hsx/utils
                 #:escape-html-attribute
-                #:escape-html-text-content)
+                #:escape-html-text-content
+                #:minify)
   (:import-from #:hsx/group
                 #:self-closing-tag-p
                 #:non-escaping-tag-p)
@@ -118,18 +119,19 @@
   (string-downcase (element-type element)))
 
 (defmethod render-props ((element tag))
-  (with-output-to-string (stream)
-    (loop
-      :for (key value) :on (element-props element) :by #'cddr
-      :do (let ((key-str (string-downcase key)))
-            (if (typep value 'boolean)
-                (format stream
-                        "~@[ ~a~]"
-                        (and value key-str))
-                (format stream
-                        " ~a=\"~a\""
-                        key-str
-                        (escape-html-attribute value)))))))
+  (minify
+   (with-output-to-string (stream)
+     (loop
+       :for (key value) :on (element-props element) :by #'cddr
+       :do (let ((key-str (string-downcase key)))
+             (if (typep value 'boolean)
+                 (format stream
+                         "~@[ ~a~]"
+                         (and value key-str))
+                 (format stream
+                         " ~a=\"~a\""
+                         key-str
+                         (escape-html-attribute value))))))))
 
 (defmethod render-children ((element tag))
   (mapcar (lambda (child)

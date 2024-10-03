@@ -1,10 +1,11 @@
-(defpackage #:hsx/escaper
+(defpackage #:hsx/utils
   (:use #:cl)
   (:import-from #:alexandria
                 #:alist-hash-table)
   (:export #:escape-html-attribute
-           #:escape-html-text-content))
-(in-package #:hsx/escaper)
+           #:escape-html-text-content
+           #:minify))
+(in-package #:hsx/utils)
 
 (defparameter *text-content-escape-map*
   (alist-hash-table
@@ -22,7 +23,7 @@
    '((#\" . "&quot;"))))
 
 (defun escape-char (char escape-map)
-  (or (gethash char escape-map) 
+  (or (gethash char escape-map)
       char))
 
 (defun escape-string (string escape-map)
@@ -38,3 +39,19 @@
 
 (defun escape-html-attribute (text)
   (escape-string text *attribute-escape-map*))
+
+(defun minify (input-string)
+  (with-output-to-string (out)
+    (let ((previous-space-p nil))
+      (loop for char across input-string do
+               (cond
+                 ((whitespace-p char)
+                  (unless previous-space-p
+                    (write-char #\Space out))
+                  (setf previous-space-p t))
+                 (t
+                  (write-char char out)
+                  (setf previous-space-p nil)))))))
+
+(defun whitespace-p (char)
+  (member char '(#\Space #\Newline #\Tab #\Return) :test #'char=))
