@@ -1,10 +1,11 @@
 (defpackage #:hsx/element
   (:use #:cl)
+  (:import-from #:str
+                #:collapse-whitespaces)
   (:import-from #:hsx/utils
                 #:defgroup
                 #:escape-html-attribute
-                #:escape-html-text-content
-                #:minify)
+                #:escape-html-text-content)
   (:export #:element
            #:tag
            #:html-tag
@@ -126,7 +127,7 @@
   (string-downcase (element-type element)))
 
 (defmethod render-props ((element tag))
-  (minify
+  (collapse-whitespaces
    (with-output-to-string (stream)
      (loop
        :for (key value) :on (element-props element) :by #'cddr

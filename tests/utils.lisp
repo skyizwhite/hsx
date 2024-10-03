@@ -11,16 +11,7 @@
   
   (testing "escape-html-text-content"
     (ok (string= "&amp;&lt;&gt;&quot;&#x27;&#x2F;&grave;&#x3D;"
-                 (escape-html-text-content "&<>\"'/`="))))
-  
-  (testing "minify"
-    ;; Test with Alpine.js
-    (ok (string= (minify "{
-                     open: false,
-                     get isOpen() { return this.open },
-                     toggle() { this.open = ! this.open },
-                 }")
-                 "{ open: false, get isOpen() { return this.open }, toggle() { this.open = ! this.open }, }"))))
+                 (escape-html-text-content "&<>\"'/`=")))))
 
 (defgroup fruit
   apple banana)

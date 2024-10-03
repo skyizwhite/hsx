@@ -6,7 +6,6 @@
                 #:symbolicate)
   (:export #:escape-html-attribute
            #:escape-html-text-content
-           #:minify
            #:defgroup))
 (in-package #:hsx/utils)
 
@@ -42,23 +41,6 @@
 
 (defun escape-html-attribute (str)
   (escape-string str *attribute-escape-map*))
-
-(defun minify (str)
-  (with-output-to-string (out)
-    (let ((previous-space-p nil))
-      (loop
-        :for char :across str
-        :do (cond
-              ((whitespace-p char)
-               (unless previous-space-p
-                 (write-char #\Space out))
-               (setf previous-space-p t))
-              (t
-               (write-char char out)
-               (setf previous-space-p nil)))))))
-
-(defun whitespace-p (char)
-  (member char '(#\Space #\Newline #\Tab #\Return) :test #'char=))
 
 (defun make-keyword-hash-table (symbols)
   (let ((ht (make-hash-table)))

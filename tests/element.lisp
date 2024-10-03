@@ -89,6 +89,7 @@
                                                                           nil
                                                                           "bar")))
                                     :pretty t))))
+
   (testing "self-closing-tag"
     (ok (string= "<img src=\"/background.png\">"
                  (render-to-string (create-element :img
@@ -137,7 +138,18 @@
                                                            (create-element :li
                                                                            nil
                                                                            (list "brah"))))
-                                     :pretty t))))))
+                                     :pretty t)))))
+
+  (testing "minify-props-text"
+    (let ((elm (create-element :div
+                               '(:x-data "{
+                                    open: false,
+                                    get isOpen() { return this.open },
+                                    toggle() { this.open = ! this.open },
+                                }")
+                               nil)))
+      (ok (string= (render-to-string elm)
+                   "<div x-data=\"{ open: false, get isOpen() { return this.open }, toggle() { this.open = ! this.open }, }\"></div>")))))
 
 (defun comp1 (&key prop children)
   (create-element :div

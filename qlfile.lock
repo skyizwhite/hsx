@@ -6,7 +6,7 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-10-21"))
-("mstrings" .
+("cl-str" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-10-21"))
@@ -18,3 +18,7 @@
  (:class qlot/source/github:source-github
   :initargs (:repos "Shinmera/dissect" :ref nil :branch nil :tag nil)
   :version "github-a70cabcd748cf7c041196efd711e2dcca2bbbb2c"))
+("mstrings" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2023-10-21"))
