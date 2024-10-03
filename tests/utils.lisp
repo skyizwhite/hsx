@@ -21,3 +21,19 @@
                      toggle() { this.open = ! this.open },
                  }")
                  "{ open: false, get isOpen() { return this.open }, toggle() { this.open = ! this.open }, }"))))
+
+(defgroup fruit
+  apple banana)
+
+(deftest group-util-test
+  (testing "defgroup"
+    (ok (expands '(defgroup fruit apple banana)
+                 '(progn
+                   (defparameter *fruit*
+                     (hsx/utils::make-keyword-hash-table '(apple banana)))
+                   (defun fruit-p (keyword)
+                     (gethash keyword *fruit*)))))
+    (ok (hash-table-p *fruit*))
+    (ok (fboundp 'fruit-p))
+    (ok (fruit-p :apple))
+    (ng (fruit-p :tomato))))

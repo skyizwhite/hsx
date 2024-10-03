@@ -1,12 +1,10 @@
 (defpackage #:hsx/element
   (:use #:cl)
   (:import-from #:hsx/utils
+                #:defgroup
                 #:escape-html-attribute
                 #:escape-html-text-content
                 #:minify)
-  (:import-from #:hsx/group
-                #:self-closing-tag-p
-                #:non-escaping-tag-p)
   (:export #:element
            #:tag
            #:html-tag
@@ -21,6 +19,15 @@
            #:expand-component
            #:render-to-string))
 (in-package #:hsx/element)
+
+;;; tag group definitions
+
+(defgroup self-closing-tag
+  area base br col embed hr img input
+  link meta param source track wbr)
+
+(defgroup non-escaping-tag
+  script style)
 
 ;;;; class definitions
 
