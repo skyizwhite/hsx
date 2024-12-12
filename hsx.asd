@@ -1,5 +1,5 @@
 (defsystem "hsx"
-  :version "0.3.0"
+  :version "0.4.0"
   :description "Hypertext S-expression"
   :author "skyizwhite, Bo Yao"
   :maintainer "skyizwhite <paku@skyizwhite.dev>"
