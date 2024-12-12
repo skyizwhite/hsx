@@ -1,6 +1,14 @@
 # HSX
 
-HSX (Hypertext S-expression) is a simple yet powerful HTML5 generation library for Common Lisp. It was forked from [flute](https://github.com/ailisp/flute/).
+HSX (Hypertext S-expression) is a simple yet powerful HTML5 generation library for Common Lisp.
+
+This project is a fork of [ailisp/flute](https://github.com/ailisp/flute/).
+
+## Warning
+
+This software is still ALPHA quality. The APIs likely change.
+
+Please check the [release notes](https://github.com/skyizwhite/hsx/releases).
 
 ## Introduction
 
