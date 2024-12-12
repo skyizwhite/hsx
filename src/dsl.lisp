@@ -16,18 +16,27 @@
   "Detect built-in HSX elements and automatically import them."
   (find-builtin-symbols form))
 
-(defun find-builtin-symbols (node)
-  (if (atom node)
-      (or (and (symbolp node)
-               (not (keywordp node))
-               (find-symbol (string node) :hsx/builtin))
-          node)
-      (cons (find-builtin-symbols (car node))
-            (mapcar (lambda (n)
-                      (if (listp n)
-                          (find-builtin-symbols n)
-                          n))
-                    (cdr node)))))
+(defun get-builtin-symbol (sym)
+  (multiple-value-bind (builtin-sym kind)
+      (find-symbol (string sym) :hsx/builtin)
+    (and (eq kind :external) builtin-sym)))
+
+(defun find-builtin-symbols (form)
+  (check-type form cons)
+  (let* ((head (first form))
+         (tail (rest form))
+         (well-formed-p (listp tail))
+         (builtin-sym (and (symbolp head)
+                           (not (keywordp head))
+                           (get-builtin-symbol head))))
+    (if (and well-formed-p builtin-sym)
+        (cons builtin-sym
+              (mapcar (lambda (sub-form)
+                        (if (consp sub-form)
+                            (find-builtin-symbols sub-form)
+                            sub-form))
+                      tail))
+        form)))
 
 ;;;; defhsx macro
 
