@@ -39,10 +39,12 @@ HSX allows embedding Common Lisp code directly within your HTML structure, makin
   (div
     (p :id (format nil "id-~a" (random 100)))
     (ul
-      (loop :for i :from 1 :to 5 :collect (li (format nil "Item ~a" i))))
+      (loop
+        :for i :from 1 :to 5 :collect
+        (hsx (li (format nil "Item ~a" i)))))
     (if (> (random 10) 5)
-        (p "Condition met!")
-        (p "Condition not met!"))))
+        (hsx (p "Condition met!"))
+        (hsx (p "Condition not met!")))))
 ```
 
 This might generate:
