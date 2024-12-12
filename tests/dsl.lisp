@@ -8,33 +8,34 @@
                 #:element-children))
 (in-package #:hsx-test/dsl)
 
-(deftest find-builtin-symbols-test
-  (testing "normal-cases"
+(defcomp ~comp1 (&key children)
+  (hsx (div children)))
+
+(deftest detect-elements-test
+  (testing "detect-tags"
     (ok (expands '(hsx (div div div))
                  '(hsx/builtin:div div div)))
     (ok (expands '(hsx (div (div div (div))))
                  '(hsx/builtin:div
                    (hsx/builtin:div
                      div
-                     (hsx/builtin:div)))))
-    (ok (expands '(hsx (div
-                         (labels ((div () "div"))
-                           (hsx (div)))))
-                 '(hsx/builtin:div
-                   (labels ((div () "div"))
-                     (hsx (div)))))))
+                     (hsx/builtin:div))))))
 
-  (testing "ignore-cases"
+  (testing "detect-components"
+    (ok (expands '(hsx (~comp1 (div)))
+                 '(~comp1 (hsx/builtin:div)))))
+
+  (testing "ignore-malformed-form"
     (ok (expands '(hsx (div . div))
                  '(div . div)))
     (ok (expands '(hsx ((div)))
-                 '((div))))
-    (ok (expands '(hsx (div
-                         (labels ((div () "div"))
-                           (div))))
-                 '(hsx/builtin:div
-                   (labels ((div () "div"))
-                     (div)))))))
+                 '((div)))))
+
+  (testing "ignore-cl-form"
+    (ok (expands '(hsx (labels ((div () "div"))
+                         (div)))
+                 '(labels ((div () "div"))
+                   (div))))))
 
 (deftest dsl-test
   (testing "empty-hsx"
