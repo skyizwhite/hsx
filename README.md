@@ -6,19 +6,15 @@ This project is a fork of [ailisp/flute](https://github.com/ailisp/flute/).
 
 ## Warning
 
-This software is still ALPHA quality. The APIs likely change.
+This software is still in ALPHA quality. The APIs are likely to change.
 
-Please check the [release notes](https://github.com/skyizwhite/hsx/releases).
-
-## Introduction
-
-HSX allows you to generate HTML using S-expressions, providing a more Lisp-friendly way to create web content. By using the `hsx` macro, you can define HTML elements and their attributes in a concise and readable manner.
+Please check the [release notes](https://github.com/skyizwhite/hsx/releases) for updates.
 
 ## Getting Started
 
 ### Basic Usage
 
-Use the `hsx` macro to create HTML elements. Attributes are specified using a property list following the element name, and child elements are nested directly within.
+Use the `hsx` macro to create HTML elements. Attributes are specified using a property list after the element name, and child elements are nested directly inside.
 
 ```lisp
 (hsx
@@ -36,11 +32,18 @@ This generates:
 </div>
 ```
 
-## Examples
+To convert an HSX object into an HTML string, use the `render-to-string` function:
 
-### Dynamic Content
+```lisp
+(render-to-string
+  (hsx ...))
+```
 
-HSX allows embedding Common Lisp code directly within your HTML structure, making it easy to generate dynamic content.
+### Embedding Content
+
+HSX allows you to embed Common Lisp forms directly within your HTML structure.
+
+When working with HSX elements inside embedded Lisp forms, you should use the `hsx` macro again.
 
 ```lisp
 (hsx
@@ -91,22 +94,22 @@ This generates:
 <p>Second paragraph.</p>
 ```
 
-## Creating Components
+### Creating Components
 
-You can define reusable components with the `defcomp` macro. Components are functions that can take keyword arguments and properties.
+You can define reusable components using the `defcomp` macro. Component names must begin with a tilde (`~`). Properties should be declared using `&key`, `&rest`, or both. The body must return an HSX element.
 
 ```lisp
-(defcomp card (&key title children)
+(defcomp ~card (&key title children)
   (hsx
     (div :class "card"
       (h1 title)
       children)))
 ```
 
-Or using a property list:
+Alternatively, you can use a property list:
 
 ```lisp
-(defcomp card (&rest props)
+(defcomp ~card (&rest props)
   (hsx
     (div :class "card"
       (h1 (getf props :title))
@@ -117,7 +120,7 @@ Usage example:
 
 ```lisp
 (hsx
-  (card :title "Card Title"
+  (~card :title "Card Title"
     (p "This is a card component.")))
 ```
 
@@ -128,18 +131,6 @@ Generates:
   <h1>Card Title</h1>
   <p>This is a card component.</p>
 </div>
-```
-
-## Rendering HTML
-
-To render HSX to an HTML string, use the `render-to-string` function.
-
-```lisp
-(render-to-string
-  (hsx
-    (div :class "content"
-      (h1 "Rendered to String")
-      (p "This HTML is generated as a string."))))
 ```
 
 ## License
