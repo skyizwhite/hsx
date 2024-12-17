@@ -16,7 +16,7 @@
   "Detect HSX elements and automatically import them."
   (detect-elements form))
 
-(defun get-builtin-symbol (sym)
+(defun detect-builtin-symbol (sym)
   (multiple-value-bind (builtin-sym kind)
       (find-symbol (string sym) :hsx/builtin)
     (and (eq kind :external) builtin-sym)))
@@ -24,7 +24,7 @@
 (defun start-with-tilde-p (sym)
   (string= "~" (subseq (string sym) 0 1)))
 
-(defun get-component-symbol (sym)
+(defun detect-component-symbol (sym)
   (and (start-with-tilde-p sym) sym))
 
 (defun detect-elements (form)
@@ -34,8 +34,8 @@
          (well-formed-p (listp tail))
          (detected-sym (and (symbolp head)
                             (not (keywordp head))
-                            (or (get-builtin-symbol head)
-                                (get-component-symbol head)))))
+                            (or (detect-builtin-symbol head)
+                                (detect-component-symbol head)))))
     (if (and well-formed-p detected-sym)
         (cons detected-sym
               (mapcar (lambda (sub-form)
@@ -75,16 +75,16 @@
      (defhsx ,name ,(make-keyword name))))
 
 (defmacro defcomp (~name props &body body)
-  "Define a function component for HSX.
+  "Define an HSX function component.
 The component name must start with a tilde (~).
-Properties must be declared using &key, &rest, or both.
-The body must return an HSX element."
+Component properties must be declared using &key, &rest, or both.
+The body of the component must produce a valid HSX element."
   (unless (start-with-tilde-p ~name)
     (error "The component name must start with a tilde (~~)."))
   (unless (or (null props)
               (member '&key props)
               (member '&rest props))
-    (error "Component properties must be declared with either &key, &rest, or both."))
+    (error "Component properties must be declared using &key, &rest, or both."))
   (let ((%name (symbolicate '% ~name)))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (defun ,%name ,props
