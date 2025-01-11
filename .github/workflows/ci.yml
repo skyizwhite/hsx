@@ -1,4 +1,4 @@
-name: 'test'
+name: 'CI'
 
 on:
   push:
@@ -7,15 +7,15 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         lisp:
           - sbcl-bin
           - ccl-bin
-          
+
     env:
       LISP: ${{ matrix.lisp }}
 

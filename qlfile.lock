@@ -1,24 +1,24 @@
 ("quicklisp" .
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2023-10-21"))
+  :version "2024-10-12"))
 ("alexandria" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
+  :version "ql-2024-10-12"))
 ("cl-str" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
+  :version "ql-2024-10-12"))
 ("rove" .
- (:class qlot/source/github:source-github
-  :initargs (:repos "fukamachi/rove" :ref nil :branch nil :tag nil)
-  :version "github-cacea7331c10fe9d8398d104b2dfd579bf7ea353"))
+ (:class qlot/source/git:source-git
+  :initargs (:remote-url "https://github.com/fukamachi/rove")
+  :version "git-cacea7331c10fe9d8398d104b2dfd579bf7ea353"))
 ("dissect" .
- (:class qlot/source/github:source-github
-  :initargs (:repos "Shinmera/dissect" :ref nil :branch nil :tag nil)
-  :version "github-a70cabcd748cf7c041196efd711e2dcca2bbbb2c"))
+ (:class qlot/source/git:source-git
+  :initargs (:remote-url "https://github.com/Shinmera/dissect")
+  :version "git-a70cabcd748cf7c041196efd711e2dcca2bbbb2c"))
 ("mstrings" .
- (:class qlot/source/ql:source-ql
-  :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
+ (:class qlot/source/git:source-git
+  :initargs (:remote-url "https://git.sr.ht/~shunter/mstrings")
+  :version "git-7a94c070141c7cd03bbd3648b17724c3bf143393"))

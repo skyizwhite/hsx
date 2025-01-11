@@ -1,0 +1,70 @@
+name: 'CI'
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: docker
+
+    strategy:
+      matrix:
+        lisp:
+          - sbcl-bin
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.roswell
+            /usr/local/bin/ros
+            /usr/local/etc/roswell/
+            qlfile
+            qlfile.lock
+            .qlot
+            ~/.cache/common-lisp/
+          key: roswell-${{ runner.os }}-${{ matrix.lisp }}-${{ hashFiles('qlfile', 'qlfile.lock', '*.asd') }}
+
+      - name: Install Roswell
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        env:
+          LISP: ${{ matrix.lisp }}
+        run: |
+          curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
+
+      - name: Install Qlot
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        run: |
+          ros install fukamachi/qlot
+
+      - name: Install dependencies
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        run: |
+          PATH="~/.roswell/bin:$PATH"
+          qlot install
+          qlot exec ros install hsx
+
+      - name: Save cache
+        id: save-cache
+        uses: actions/cache/save@v4
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            ~/.roswell
+            /usr/local/bin/ros
+            /usr/local/etc/roswell/
+            qlfile
+            qlfile.lock
+            .qlot
+            ~/.cache/common-lisp/
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+
+      - name: Run tests
+        run: .qlot/bin/rove hsx.asd

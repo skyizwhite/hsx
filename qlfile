@@ -1,6 +1,6 @@
 ql alexandria
 ql cl-str
 
-github rove fukamachi/rove
-github dissect Shinmera/dissect ; workaround
-ql mstrings
+git rove https://github.com/fukamachi/rove
+git dissect https://github.com/Shinmera/dissect ; workaround
+git mstrings https://git.sr.ht/~shunter/mstrings

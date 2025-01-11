@@ -1,6 +1,7 @@
 # HSX
 
-HSX (Hypertext S-expression) is a simple and powerful HTML (Living Standard) generation library for Common Lisp.
+HSX (Hypertext S-expression) is a simple and powerful HTML (Living Standard)
+generation library for Common Lisp.
 
 This project is a fork of [ailisp/flute](https://github.com/ailisp/flute/).
 
@@ -8,13 +9,16 @@ This project is a fork of [ailisp/flute](https://github.com/ailisp/flute/).
 
 This software is still in ALPHA quality. The APIs are likely to change.
 
-Please check the [release notes](https://github.com/skyizwhite/hsx/releases) for updates.
+Please check the [release notes](https://code.skyizwhite.dev/paku/hsx/releases)
+for updates.
 
 ## Getting Started
 
 ### Basic Usage
 
-Use the `hsx` macro to create HTML elements. Attributes are specified using a property list after the element name, and child elements are nested directly inside.
+Use the `hsx` macro to create HTML elements. Attributes are specified using a
+property list after the element name, and child elements are nested directly
+inside.
 
 ```lisp
 (hsx
@@ -32,7 +36,8 @@ This generates:
 </div>
 ```
 
-To convert an HSX object into an HTML string, use the `render-to-string` function:
+To convert an HSX object into an HTML string, use the `render-to-string`
+function:
 
 ```lisp
 (render-to-string
@@ -43,7 +48,8 @@ To convert an HSX object into an HTML string, use the `render-to-string` functio
 
 HSX allows you to embed Common Lisp forms directly within your HTML structure.
 
-When working with HSX elements inside embedded Lisp forms, you should use the `hsx` macro again.
+When working with HSX elements inside embedded Lisp forms, you should use the
+`hsx` macro again.
 
 ```lisp
 (hsx
@@ -76,7 +82,8 @@ This might generate:
 
 ### Using Fragments
 
-To group multiple elements without adding an extra wrapper, use the fragment `<>`.
+To group multiple elements without adding an extra wrapper, use the fragment
+`<>`.
 
 ```lisp
 (hsx
@@ -96,7 +103,9 @@ This generates:
 
 ### Creating Components
 
-You can define reusable components using the `defcomp` macro. Component names must begin with a tilde (`~`). Properties should be declared using `&key`, `&rest`, or both. The body must return an HSX element.
+You can define reusable components using the `defcomp` macro. Component names
+must begin with a tilde (`~`). Properties should be declared using `&key`,
+`&rest`, or both. The body must return an HSX element.
 
 ```lisp
 (defcomp ~card (&key title children)
@@ -140,5 +149,3 @@ This project is licensed under the MIT License.
 © 2024 skyizwhite
 
 © 2018 Bo Yao
-
-Feel free to contribute to the project and report any issues or feature requests on the [GitHub repository](https://github.com/skyizwhite/hsx).
