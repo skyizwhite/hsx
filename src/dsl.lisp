@@ -10,13 +10,13 @@
            #:defcomp))
 (in-package #:hsx/dsl)
 
-;;;; hsx macro
+;;; hsx macro
 
 (defmacro hsx (form)
   "Detect HSX elements and automatically import them."
   (detect-elements form))
 
-(defun detect-builtin-symbol (sym)
+(defun detect-builtin-element (sym)
   (multiple-value-bind (builtin-sym kind)
       (find-symbol (string sym) :hsx/builtin)
     (and (eq kind :external) builtin-sym)))
@@ -24,19 +24,17 @@
 (defun start-with-tilde-p (sym)
   (string= "~" (subseq (string sym) 0 1)))
 
-(defun detect-component-symbol (sym)
+(defun detect-component (sym)
   (and (start-with-tilde-p sym) sym))
 
 (defun detect-elements (form)
-  (check-type form cons)
   (let* ((head (first form))
          (tail (rest form))
-         (well-formed-p (listp tail))
          (detected-sym (and (symbolp head)
                             (not (keywordp head))
-                            (or (detect-builtin-symbol head)
-                                (detect-component-symbol head)))))
-    (if (and well-formed-p detected-sym)
+                            (or (detect-builtin-element head)
+                                (detect-component head)))))
+    (if (and (listp tail) detected-sym)
         (cons detected-sym
               (mapcar (lambda (sub-form)
                         (if (consp sub-form)
@@ -45,9 +43,10 @@
                       tail))
         form)))
 
-;;;; defhsx macro
+;;; defhsx macro
 
 (defmacro defhsx (name element-type)
+  ; Use a macro instead of a function to enable semantic indentation similar to HTML.
   `(defmacro ,name (&body body)
      `(%create-element ,',element-type ,@body)))
 
