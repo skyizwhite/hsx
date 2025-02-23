@@ -1,8 +1,8 @@
 (defsystem "hsx"
   :version "0.4.0"
   :description "Simple and powerful HTML generation library."
-  :author "skyizwhite, Bo Yao"
-  :maintainer "skyizwhite <paku@skyizwhite.dev>"
+  :author "Akira Tempaku, Bo Yao"
+  :maintainer "Akira Tempaku <paku@skyizwhite.dev>"
   :license "MIT"
   :long-description #.(uiop:read-file-string
                        (uiop:subpathname *load-pathname* "README.md"))

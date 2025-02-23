@@ -146,6 +146,6 @@ Generates:
 
 This project is licensed under the MIT License.
 
-© 2024 skyizwhite
+© 2024 Akira Tempaku
 
 © 2018 Bo Yao
