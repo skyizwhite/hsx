@@ -168,6 +168,8 @@ Or loop:
 ## 📄 License
 
 MIT License
-	•	© 2024 Akira Tempaku
-	•	© 2018 Bo Yao (original [flute](https://github.com/ailisp/flute) project)
+
+© 2024 Akira Tempaku
+
+© 2018 Bo Yao (original [flute](https://github.com/ailisp/flute) project)
  
