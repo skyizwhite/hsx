@@ -1,6 +1,6 @@
 # HSX – Hypertext S-expression
 
-**HSX** is a lightweight and expressive HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax via S-expressions.
+**HSX** is a lightweight and expressive HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax.
 
 > 🚧 **ALPHA NOTICE:**  
 > This library is still in early development. APIs may change.  
@@ -35,19 +35,13 @@ Is internally transformed (by macro expansion) into:
 
 This is made possible via the hsx macro, which detects HTML tags and components, then rewrites them using create-element. Tags are converted to keywords (e.g., div → :div), and custom components (starting with ~) are passed as functions.
 
-This uniform representation allows rendering, manipulation, and analysis of the HTML structure in a Lisp-friendly way.
-
-
 ## 🚀 Quick Example
 
 ```lisp
 (hsx
   (div :id "main" :class "container"
     (h1 "Hello, HSX!")
-    (p "This is a simple paragraph.")
-    (ul
-      (loop for i from 1 to 3 collect
-        (hsx (li (format nil "Item ~a" i)))))))
+    (p "This is a simple paragraph.")))
 ```
 
 Generates:
@@ -56,11 +50,6 @@ Generates:
 <div id="main" class="container">
   <h1>Hello, HSX!</h1>
   <p>This is a simple paragraph.</p>
-  <ul>
-    <li>Item 1</li>
-    <li>Item 2</li>
-    <li>Item 3</li>
-  </ul>
 </div>
 ```
 
@@ -73,7 +62,7 @@ Use `render-to-string` to convert an HSX structure to a string of HTML:
   (hsx ...))
 ``` 
 
-## 🔐 Escaping Behavior
+## 🔐 Escaping text
 
 All elements automatically escape special characters in content to prevent XSS and HTML injection:
 
@@ -175,10 +164,6 @@ Or loop:
     (loop :for item :in todo-list :collect
       (hsx (li item))))))
 ```
-
-## 🏷️ Built-in Tags
-
-All standard HTML5 tags (and a few extras like `<>`, `raw!`) are automatically defined and exported from the hsx package. You don’t need to declare them manually.
 
 ## 📄 License
 
