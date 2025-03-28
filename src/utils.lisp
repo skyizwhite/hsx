@@ -5,8 +5,7 @@
                 #:make-keyword
                 #:symbolicate)
   (:export #:escape-html-attribute
-           #:escape-html-text-content
-           #:defgroup))
+           #:escape-html-text-content))
 (in-package #:hsx/utils)
 
 (defparameter *text-content-escape-map*
@@ -41,18 +40,3 @@
 
 (defun escape-html-attribute (str)
   (escape-string str *attribute-escape-map*))
-
-(defun make-keyword-hash-table (symbols)
-  (let ((ht (make-hash-table)))
-    (mapcar (lambda (sym)
-              (setf (gethash (make-keyword sym) ht) t))
-            symbols)
-    ht))
-
-(defmacro defgroup (name &body symbols)
-  (let ((param-name (symbolicate '* name '*))
-        (pred-name (symbolicate name '-p)))
-    `(progn
-       (defparameter ,param-name (make-keyword-hash-table ',symbols))
-       (defun ,pred-name (keyword)
-         (gethash keyword ,param-name)))))

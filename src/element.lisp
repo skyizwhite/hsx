@@ -3,15 +3,14 @@
   (:import-from #:str
                 #:collapse-whitespaces)
   (:import-from #:hsx/utils
-                #:defgroup
-                #:escape-html-attribute
-                #:escape-html-text-content)
+                #:escape-html-text-content
+                #:escape-html-attribute)
   (:export #:element
            #:tag
            #:html-tag
            #:self-closing-tag
-           #:non-escaping-tag
            #:fragment
+           #:raw-fragment
            #:component
            #:create-element
            #:element-type
@@ -23,12 +22,10 @@
 
 ;;; tag group definitions
 
-(defgroup self-closing-tag
-  area base br col embed hr img input
-  link meta param source track wbr)
-
-(defgroup non-escaping-tag
-  script style)
+(deftype self-closing-tag-sym ()
+  '(member
+    :area :base :br :col :embed :hr :img :input
+    :link :meta :param :source :track :wbr))
 
 ;;;; class definitions
 
@@ -49,9 +46,9 @@
 
 (defclass self-closing-tag (tag) ())
 
-(defclass non-escaping-tag (tag) ())
-
 (defclass fragment (tag) ())
+
+(defclass raw-fragment (fragment) ())
 
 (defclass component (element) ())
 
@@ -61,9 +58,9 @@
   (make-instance
    (cond ((functionp type) 'component)
          ((eq type :<>) 'fragment)
+         ((eq type :raw!) 'raw-fragment)
          ((eq type :html) 'html-tag)
-         ((self-closing-tag-p type) 'self-closing-tag)
-         ((non-escaping-tag-p type) 'non-escaping-tag)
+         ((typep type 'self-closing-tag-sym) 'self-closing-tag)
          ((keywordp type) 'tag)
          (t (error "element-type must be a keyword or a function.")))
    :type type
@@ -95,7 +92,7 @@
     (if children
         (format stream
                 (if (or (rest children)
-                        (typep (first children) 'element))
+                        (typep (first children) '(and element (not fragment))))
                     "~@<<~a~a>~2I~:@_~<~@{~a~^~:@_~}~:>~0I~:@_</~a>~:>"
                     "~@<<~a~a>~2I~:_~<~a~^~:@_~:>~0I~_</~a>~:>")
                 type
@@ -148,7 +145,7 @@
                 child))
           (element-children element)))
 
-(defmethod render-children ((element non-escaping-tag))
+(defmethod render-children ((element raw-fragment))
   (element-children element))
 
 (defmethod expand-component ((element component))

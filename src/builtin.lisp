@@ -20,4 +20,5 @@
   noscript object ol optgroup option output p param picture pre progress
   q rp rt ruby s samp script section select small source span strong
   style sub summary sup svg table tbody td template textarea tfoot th
-  thead |time| title tr track u ul var video wbr <>)
+  thead |time| title tr track u ul var video wbr
+  <> raw!)

