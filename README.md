@@ -26,11 +26,17 @@ For example:
 Is internally transformed (by macro expansion) into:
 
 ```lisp
-(create-element :article '(:class "container")
-  (list
-    (create-element :h1 nil (list "Title"))
-    (create-element :p nil (list "Paragraph"))
-    (create-element #'~share-button '(:service :x) (list))))
+(create-element :article
+                (list :class "container")
+                (list (create-element :h1
+                                      (list)
+                                      (list "Title"))
+                      (create-element :p
+                                      (list)
+                                      (list "Paragraph"))
+                      (create-element #'~share-button
+                                      (list :service :x)
+                                      (list))))
 ```
 
 This is made possible via the hsx macro, which detects HTML tags and components, then rewrites them using create-element. Tags are converted to keywords (e.g., div → :div), and custom components (starting with ~) are passed as functions.
