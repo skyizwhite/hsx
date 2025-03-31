@@ -1,8 +1,8 @@
 # HSX – Hypertext S-expression
 
-**HSX** is a lightweight and expressive HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax.
+**HSX** is a simple and powerful HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax.
 
-> 🚧 **ALPHA NOTICE:**  
+> 🚧 **BETA NOTICE:**  
 > This library is still in early development. APIs may change.  
 > See [release notes](https://github.com/skyizwhite/hsx/releases) for details.
 
@@ -38,8 +38,6 @@ Is internally transformed (by macro expansion) into:
                                       (list :service :x)
                                       (list))))
 ```
-
-This is made possible via the hsx macro, which detects HTML tags and components, then rewrites them using create-element. Tags are converted to keywords (e.g., div → :div), and custom components (starting with ~) are passed as functions.
 
 ## 🚀 Quick Example
 
