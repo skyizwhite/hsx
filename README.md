@@ -2,6 +2,8 @@
 
 **HSX** is a simple and powerful HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax.
 
+[Practical usage example](https://github.com/skyizwhite/website)
+
 > 🚧 **BETA NOTICE:**  
 > This library is still in early development. APIs may change.  
 > See [release notes](https://github.com/skyizwhite/hsx/releases) for details.
