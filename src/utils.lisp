@@ -5,7 +5,8 @@
                 #:make-keyword
                 #:symbolicate)
   (:export #:escape-html-attribute
-           #:escape-html-text-content))
+           #:escape-html-text-content
+           #:clsx))
 (in-package #:hsx/utils)
 
 (defparameter *text-content-escape-map*
@@ -40,3 +41,6 @@
 
 (defun escape-html-attribute (str)
   (escape-string str *attribute-escape-map*))
+
+(defun clsx (&rest strs)
+  (format nil "~{~a~^ ~}" (remove nil strs)))

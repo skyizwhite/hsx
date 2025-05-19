@@ -171,6 +171,10 @@ Or loop:
       (hsx (li item))))))
 ```
 
+## Utils
+
+- `(clsx &rest strs)`: A utility function for constructing class strings conditionally. It removes `nil` from the string list, then joins the remaining strings with spaces.
+
 ## 📄 License
 
 MIT License

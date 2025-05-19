@@ -1,5 +1,5 @@
 (defsystem "hsx"
-  :version "0.5.0"
+  :version "0.6.0"
   :description "Simple and powerful HTML generation library."
   :author "Akira Tempaku, Bo Yao"
   :maintainer "Akira Tempaku <paku@skyizwhite.dev>"
