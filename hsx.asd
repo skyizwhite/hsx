@@ -1,6 +1,6 @@
 (defsystem "hsx"
-  :version "0.6.0"
-  :description "Simple and powerful HTML generation library."
+  :version "1.0.0"
+  :description "Component-oriented HTML DSL"
   :author "Akira Tempaku, Bo Yao"
   :maintainer "Akira Tempaku <paku@skyizwhite.dev>"
   :license "MIT"
