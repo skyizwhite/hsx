@@ -2,5 +2,4 @@ ql alexandria
 ql cl-str
 
 git rove https://github.com/fukamachi/rove
-git dissect https://github.com/Shinmera/dissect ; workaround
 git mstrings https://git.sr.ht/~shunter/mstrings

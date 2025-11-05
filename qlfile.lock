@@ -1,7 +1,7 @@
 ("quicklisp" .
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2024-10-12"))
+  :version "2025-06-22"))
 ("alexandria" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
@@ -9,15 +9,11 @@
 ("cl-str" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("rove" .
  (:class qlot/source/git:source-git
   :initargs (:remote-url "https://github.com/fukamachi/rove")
-  :version "git-cacea7331c10fe9d8398d104b2dfd579bf7ea353"))
-("dissect" .
- (:class qlot/source/git:source-git
-  :initargs (:remote-url "https://github.com/Shinmera/dissect")
-  :version "git-a70cabcd748cf7c041196efd711e2dcca2bbbb2c"))
+  :version "git-1a4474901e7ab49e8184241dd88e74c95233195a"))
 ("mstrings" .
  (:class qlot/source/git:source-git
   :initargs (:remote-url "https://git.sr.ht/~shunter/mstrings")
