@@ -13,7 +13,9 @@
 ;;; hsx macro
 
 (defmacro hsx (form)
-  "Detect HSX elements and automatically import them."
+  "Automatically detect built-in tags and user-defined components.
+All other expressions are evaluated as regular Lisp forms.
+To create HSX elements within a Lisp form, use the `hsx` macro again."
   (detect-elements form))
 
 (defun detect-builtin-element (sym)
@@ -28,25 +30,22 @@
   (and (start-with-tilde-p sym) sym))
 
 (defun detect-elements (form)
-  (let* ((head (first form))
-         (tail (rest form))
-         (detected-sym (and (symbolp head)
-                            (not (keywordp head))
-                            (or (detect-builtin-element head)
-                                (detect-component head)))))
-    (if (and (listp tail) detected-sym)
-        (cons detected-sym
-              (mapcar (lambda (sub-form)
-                        (if (consp sub-form)
-                            (detect-elements sub-form)
-                            sub-form))
-                      tail))
-        form)))
+  (or (and (consp form)
+           (listp (rest form))
+           (let* ((head (first form))
+                  (tail (rest form))
+                  (detected-head (and (symbolp head)
+                                      (not (keywordp head))
+                                      (or (detect-builtin-element head)
+                                          (detect-component head)))))
+             (and detected-head
+                  (cons detected-head (mapcar #'detect-elements tail)))))
+      form))
 
 ;;; defhsx macro
 
 (defmacro defhsx (name element-type)
-  ; Use a macro instead of a function to enable semantic indentation similar to HTML.
+  ; Use a macro instead of a function to allow semantic indentation, similar to HTML.
   `(defmacro ,name (&body body)
      `(%create-element ,',element-type ,@body)))
 
@@ -56,28 +55,38 @@
     (create-element type props children)))
 
 (defun parse-body (body)
-  (cond ((and (listp (first body))
-              (keywordp (first (first body))))
-         (values (first body) (rest body)))
-        ((keywordp (first body))
-         (loop :for thing :on body :by #'cddr
-               :for (k v) := thing
-               :when (and (keywordp k) v)
-               :append (list k v) :into props
-               :when (not (keywordp k))
-               :return (values props thing)
-               :finally (return (values props nil))))
-        (t (values nil body))))
+  (cond
+    ; body has props as a normal plist
+    ((plist-p (first body))
+     (values (first body) (rest body)))
+    ; body has props as an inline plist
+    ((keywordp (first body))
+     (loop :for thing :on body :by #'cddr
+           :for (k v) := thing
+           :when (and (keywordp k) v)
+           :append (list k v) :into props
+           :when (not (keywordp k))
+           :return (values props thing)
+           :finally (return (values props nil))))
+    ; body has no props
+    (t (values nil body))))
+
+(defun plist-p (obj)
+  (and (listp obj)
+       (evenp (length obj))
+       (loop :for (key _) :on obj :by #'cddr
+             :always (symbolp key))))
 
 (defmacro deftag (name)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (defhsx ,name ,(make-keyword name))))
 
 (defmacro defcomp (~name props &body body)
-  "Define an HSX function component.
-The component name must start with a tilde (~).
-Component properties must be declared using &key, &rest, or both.
-The body of the component must produce a valid HSX element."
+  "Define an HSX component:
+- name: must begin with a tilde (~)
+- props: must be declared using &key, &rest, or both
+         the `children` key receives the component’s child elements
+- body: must return a valid HSX element"
   (unless (start-with-tilde-p ~name)
     (error "The component name must start with a tilde (~~)."))
   (unless (or (null props)
@@ -86,6 +95,5 @@ The body of the component must produce a valid HSX element."
     (error "Component properties must be declared using &key, &rest, or both."))
   (let ((%name (symbolicate '% ~name)))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
-       (defun ,%name ,props
-         ,@body)
+       (defun ,%name ,props ,@body)
        (defhsx ,~name (fdefinition ',%name)))))

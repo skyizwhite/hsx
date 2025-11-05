@@ -43,4 +43,6 @@
   (escape-string str *attribute-escape-map*))
 
 (defun clsx (&rest strs)
+  "Constructing class strings conditionally.
+It removes `nil` from the string list, then joins the remaining strings with spaces."
   (format nil "~{~a~^ ~}" (remove nil strs)))
