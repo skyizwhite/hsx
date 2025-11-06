@@ -18,7 +18,7 @@ All other expressions are evaluated as regular Lisp forms.
 To create HSX elements within a Lisp form, use the `hsx` macro again."
   (detect-elements form))
 
-(defun detect-builtin-element (sym)
+(defun detect-tag (sym)
   (multiple-value-bind (builtin-sym kind)
       (find-symbol (string sym) :hsx/builtin)
     (and (eq kind :external) builtin-sym)))
@@ -36,7 +36,7 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
                   (tail (rest form))
                   (detected-head (and (symbolp head)
                                       (not (keywordp head))
-                                      (or (detect-builtin-element head)
+                                      (or (detect-tag head)
                                           (detect-component head)))))
              (and detected-head
                   (cons detected-head (mapcar #'detect-elements tail)))))
