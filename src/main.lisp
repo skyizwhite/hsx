@@ -7,6 +7,7 @@
   (:import-from #:hsx/builtin)
   (:export #:hsx
            #:defcomp
+           #:register-web-components
            #:render-to-string
            #:clsx))
 (in-package :hsx)

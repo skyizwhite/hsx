@@ -1,17 +1,10 @@
 (uiop:define-package #:hsx/builtin
   (:use #:cl)
   (:import-from #:hsx/dsl
-                #:deftag))
+                #:deftags))
 (in-package #:hsx/builtin)
 
-(defmacro define-builtin-tags (&rest names)
-  `(progn
-     ,@(mapcan (lambda (name)
-                 (list `(deftag ,name)
-                       `(export ',name)))
-               names)))
-
-(define-builtin-tags
+(deftags
     a abbr address area article aside audio b base bdi bdo blockquote
   body br button canvas caption cite code col colgroup data datalist
   dd del details dfn dialog div dl dt em embed fieldset figcaption

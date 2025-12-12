@@ -77,3 +77,10 @@
                        "child2"))))
       (ok (equal props (element-props elm)))
       (ok (equal (list "child1" "child2") (element-children elm))))))
+
+(register-web-components c1 c2)
+
+(deftest web-components-test
+  (testing "register-web-components"
+    (ok (expands '(hsx (c1 (c2)))
+                 '(hsx/builtin:c1 (hsx/builtin:c2))))))

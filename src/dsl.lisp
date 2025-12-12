@@ -3,10 +3,13 @@
   (:import-from #:alexandria
                 #:make-keyword
                 #:symbolicate)
+  (:import-from #:hsx/utils
+                #:macro-alias)
   (:import-from #:hsx/element
                 #:create-element)
   (:export #:hsx
-           #:deftag
+           #:deftags
+           #:register-web-components
            #:defcomp))
 (in-package #:hsx/dsl)
 
@@ -77,9 +80,19 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
        (loop :for (key _) :on obj :by #'cddr
              :always (symbolp key))))
 
-(defmacro deftag (name)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (defhsx ,name ,(make-keyword name))))
+(defmacro deftags (&rest names)
+  (let ((pkg (find-package :hsx/builtin)))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (let ((*package* ,pkg))
+         ,@(mapcan
+            (lambda (name)
+              (let ((sym (intern (string name) pkg)))
+                (list
+                 `(defhsx ,sym ,(make-keyword name))
+                 `(export ',sym ',pkg))))
+            names)))))
+
+(macro-alias register-web-components deftags)
 
 (defmacro defcomp (~name props &body body)
   "Define an HSX component:
