@@ -1,5 +1,7 @@
 (defpackage #:hsx/element
   (:use #:cl)
+  (:import-from #:alexandria
+                #:flatten)
   (:import-from #:str
                 #:collapse-whitespaces)
   (:import-from #:hsx/utils
@@ -66,15 +68,6 @@
    :type type
    :props props
    :children (flatten children)))
-
-(defun flatten (x)
-  (labels ((rec (x acc)
-             (cond ((null x) acc)
-                   ((atom x) (cons x acc))
-                   (t (rec
-                       (car x)
-                       (rec (cdr x) acc))))))
-    (rec x nil)))
 
 ;;;; methods
 
