@@ -50,7 +50,7 @@ Expands into:
     (p "This is a simple paragraph.")))
 ```
 
-Renders to:
+↓
 
 ```html
 <div id="main" class="container">
@@ -143,7 +143,7 @@ Combine multiple elements without creating an extra parent tag.
     (li "Two")))
 ```
 
-→
+↓
 
 ```html
 <li>One</li>
@@ -201,9 +201,30 @@ HSX supports both inline plist props and dynamic plist props.
 
 ## Utilities
 
+### `register-web-components`
+
+Makes Web Components usable in HSX.
+
+```lisp
+(register-web-components
+ custom1 custom2)
+
+(hsx
+  (custom1 :prop "val"
+    (custom2)))
+```
+
+↓
+
+```html
+<custom1 prop="val">
+  <custom2></custom2>
+</custom1>
+```
+
 ### `clsx`
 
-Utility for building class strings conditionally.
+Builds class strings conditionally.
 Removes `nil` and joins the remaining strings with spaces.
 
 ```lisp
