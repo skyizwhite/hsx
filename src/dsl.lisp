@@ -83,14 +83,13 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
 (defmacro deftags (&rest names)
   (let ((pkg (find-package :hsx/builtin)))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
-       (let ((*package* ,pkg))
-         ,@(mapcan
-            (lambda (name)
-              (let ((sym (intern (string name) pkg)))
-                (list
-                 `(defhsx ,sym ,(make-keyword name))
-                 `(export ',sym ',pkg))))
-            names)))))
+       ,@(mapcan
+          (lambda (name)
+            (let ((sym (intern (string name) pkg)))
+              (list
+               `(defhsx ,sym ,(make-keyword name))
+               `(export ',sym ',pkg))))
+          names))))
 
 (macro-alias register-web-components deftags)
 
