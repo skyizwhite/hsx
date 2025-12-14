@@ -48,5 +48,5 @@
 It removes `nil` from the string list, then joins the remaining strings with spaces."
   (format nil "~{~a~^ ~}" (remove nil strs)))
 
-(defmacro macro-alias (to macro)
-  `(setf (macro-function ',to) (macro-function ',macro)))
+(defmacro macro-alias (alias origin)
+  `(setf (macro-function ',alias) (macro-function ',origin)))
