@@ -3,28 +3,27 @@
   (:import-from #:alexandria
                 #:make-keyword
                 #:symbolicate)
-  (:import-from #:hsx/utils
-                #:macro-alias)
   (:import-from #:hsx/element
                 #:create-element)
   (:export #:hsx
-           #:deftags
+           #:deftag
            #:register-web-components
+           #:clear-web-components
            #:defcomp))
 (in-package #:hsx/dsl)
 
 ;;; hsx macro
 
 (defmacro hsx (form)
-  "Automatically detect built-in tags and user-defined components.
+  "Automatically detect html tags, registered Web Components, and user-defined HSX components.
 All other expressions are evaluated as regular Lisp forms.
 To create HSX elements within a Lisp form, use the `hsx` macro again."
   (detect-elements form))
 
-(defun detect-tag (sym)
-  (multiple-value-bind (builtin-sym kind)
-      (find-symbol (string sym) :hsx/builtin)
-    (and (eq kind :external) builtin-sym)))
+(defun external-symbol (sym package)
+  (multiple-value-bind (s kind)
+      (find-symbol (string sym) package)
+    (and (eq kind :external) s)))
 
 (defun start-with-tilde-p (sym)
   (string= "~" (subseq (string sym) 0 1)))
@@ -39,7 +38,8 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
                   (tail (rest form))
                   (detected-head (and (symbolp head)
                                       (not (keywordp head))
-                                      (or (detect-tag head)
+                                      (or (external-symbol head :hsx/web-components)
+                                          (external-symbol head :hsx/builtin)
                                           (detect-component head)))))
              (and detected-head
                   (cons detected-head (mapcar #'detect-elements tail)))))
@@ -80,18 +80,23 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
        (loop :for (key _) :on obj :by #'cddr
              :always (symbolp key))))
 
-(defmacro deftags (&rest names)
-  (let ((pkg (find-package :hsx/builtin)))
-    `(eval-when (:compile-toplevel :load-toplevel :execute)
-       ,@(mapcan
-          (lambda (name)
-            (let ((sym (intern (string name) pkg)))
-              (list
-               `(defhsx ,sym ,(make-keyword name))
-               `(export ',sym ',pkg))))
-          names))))
+(defmacro deftag (name)
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (defhsx ,name ,(make-keyword name))))
 
-(macro-alias register-web-components deftags)
+(defmacro register-web-components (&rest names)
+  (let ((pkg (find-package :hsx/web-components)))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       ,@(mapcan (lambda (name)
+                   (let ((sym (intern (string name) pkg)))
+                     (list `(deftag ,sym)
+                           `(export ',sym ',pkg))))
+                 names))))
+
+(defun clear-web-components ()
+  (let ((pkg :hsx/web-components))
+    (do-external-symbols (sym pkg)
+      (unintern sym pkg))))
 
 (defmacro defcomp (~name props &body body)
   "Define an HSX component:

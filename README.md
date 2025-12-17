@@ -222,6 +222,10 @@ Makes Web Components usable in HSX.
 </custom1>
 ```
 
+### `clear-web-components`
+
+Clears all registered Web Components.
+
 ### `clsx`
 
 Builds class strings conditionally.

@@ -6,8 +6,7 @@
                 #:symbolicate)
   (:export #:escape-html-attribute
            #:escape-html-text-content
-           #:clsx
-           #:macro-alias))
+           #:clsx))
 (in-package #:hsx/utils)
 
 (defparameter *text-content-escape-map*
@@ -47,6 +46,3 @@
   "Constructing class strings conditionally.
 It removes `nil` from the string list, then joins the remaining strings with spaces."
   (format nil "~{~a~^ ~}" (remove nil strs)))
-
-(defmacro macro-alias (alias origin)
-  `(setf (macro-function ',alias) (macro-function ',origin)))

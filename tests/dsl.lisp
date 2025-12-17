@@ -3,6 +3,7 @@
         #:rove
         #:hsx/dsl)
   (:import-from #:hsx/builtin)
+  (:import-from #:hsx/web-components)
   (:import-from #:hsx/element
                 #:element-props
                 #:element-children))
@@ -83,4 +84,8 @@
 (deftest web-components-test
   (testing "register-web-components"
     (ok (expands '(hsx (c1 (c2)))
-                 '(hsx/builtin:c1 (hsx/builtin:c2))))))
+                 '(hsx/web-components:c1 (hsx/web-components:c2)))))
+  (testing "clear-web-components"
+    (clear-web-components)
+    (ok (expands '(hsx (c1 (c2)))
+                 '(c1 (c2))))))
