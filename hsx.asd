@@ -1,5 +1,5 @@
 (defsystem "hsx"
-  :version "1.1.1"
+  :version "1.2.0"
   :description "Component-oriented HTML DSL"
   :author "Akira Tempaku, Bo Yao"
   :maintainer "Akira Tempaku <paku@skyizwhite.dev>"
