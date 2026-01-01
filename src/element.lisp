@@ -4,12 +4,15 @@
                 #:flatten)
   (:import-from #:str
                 #:collapse-whitespaces)
+  (:import-from #:cl-minify-css
+                #:minify-css)
   (:import-from #:hsx/utils
                 #:escape-html-text-content
                 #:escape-html-attribute)
   (:export #:element
            #:tag
            #:html-tag
+           #:style-tag
            #:self-closing-tag
            #:fragment
            #:raw-fragment
@@ -46,6 +49,8 @@
 
 (defclass html-tag (tag) ())
 
+(defclass style-tag (tag) ())
+
 (defclass self-closing-tag (tag) ())
 
 (defclass fragment (tag) ())
@@ -62,6 +67,7 @@
          ((eq type :<>) 'fragment)
          ((eq type :raw!) 'raw-fragment)
          ((eq type :html) 'html-tag)
+         ((eq type :style) 'style-tag)
          ((typep type 'self-closing-tag-sym) 'self-closing-tag)
          ((keywordp type) 'tag)
          (t (error "element-type must be a keyword or a function.")))
@@ -137,6 +143,9 @@
                 (escape-html-text-content child)
                 child))
           (element-children element)))
+
+(defmethod render-children ((element style-tag))
+  (mapcar #'minify-css (call-next-method)))
 
 (defmethod render-children ((element raw-fragment))
   (element-children element))

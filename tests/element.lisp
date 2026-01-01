@@ -14,6 +14,7 @@
   (testing "element-class"
     (ok (typep (create-element :div nil nil) 'tag))
     (ok (typep (create-element :html nil nil) 'html-tag))
+    (ok (typep (create-element :style nil nil) 'style-tag))
     (ok (typep (create-element :img nil nil) 'self-closing-tag))
     (ok (typep (create-element :<> nil nil) 'fragment))
     (ok (typep (create-element (lambda ()) nil nil) 'component))
