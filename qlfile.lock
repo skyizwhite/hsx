@@ -1,7 +1,7 @@
 ("quicklisp" .
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2025-06-22"))
+  :version "2026-01-01"))
 ("alexandria" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
@@ -9,7 +9,7 @@
 ("cl-str" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2025-06-22"))
+  :version "ql-2026-01-01"))
 ("cl-minify-css" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
