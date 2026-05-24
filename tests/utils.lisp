@@ -11,4 +11,9 @@
   
   (testing "escape-html-text-content"
     (ok (string= "&amp;&lt;&gt;&quot;&#x27;&#x2F;&grave;&#x3D;"
-                 (escape-html-text-content "&<>\"'/`=")))))
+                 (escape-html-text-content "&<>\"'/`="))))
+
+  (testing "escape-html-attribute under *print-readably*"
+    (ok (string= "en"
+                 (let ((*print-readably* t))
+                   (escape-html-attribute "en"))))))

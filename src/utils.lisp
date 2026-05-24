@@ -33,7 +33,10 @@
       (with-output-to-string (out)
         (loop
           :for c :across str
-          :do (write (escape-char c escape-map) :stream out :escape nil)))
+          :for mapped := (escape-char c escape-map)
+          :do (etypecase mapped
+                (string (write-string mapped out))
+                (character (write-char mapped out)))))
       str))
 
 (defun escape-html-text-content (str)
