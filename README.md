@@ -78,6 +78,25 @@ The special `children` key automatically receives any nested elements.
       children)))
 ```
 
+The special `rest` key gathers every prop that the component does not explicitly
+declare into a plist, just like destructuring props in React. This is handy for
+forwarding arbitrary attributes to the underlying element. Since `rest` is a
+plist, merge it into the element's props with `append` (using the dynamic-props
+form rather than inline keywords):
+
+```lisp
+(defcomp ~button (&key class children rest)
+  (hsx
+    (button (append (list :class (clsx "btn" class)) rest)
+      children)))
+
+;; (~button :type "submit" :data-id "42" "Save")
+;; -> button gets :class "btn", :type "submit", :data-id "42"
+```
+
+Declared props (including `children`) are excluded from `rest`; any prop you do
+not declare flows into it.
+
 ### Step 2: Combine Components
 
 HSX allows composition of components just like JSX.

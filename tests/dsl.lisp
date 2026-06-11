@@ -6,11 +6,22 @@
   (:import-from #:hsx/web-components)
   (:import-from #:hsx/element
                 #:element-props
-                #:element-children))
+                #:element-children
+                #:expand-component))
 (in-package #:hsx-test/dsl)
 
 (defcomp ~comp1 (&key children)
   (hsx (div children)))
+
+(defcomp ~rest-comp (&key id rest)
+  (declare (ignore id))
+  (hsx (div rest)))
+
+(defcomp ~rest-children-comp (&key rest)
+  (hsx (div rest)))
+
+(defcomp ~rest-with-children-comp (&key children rest)
+  (hsx (div rest children)))
 
 (deftest detect-elements-test
   (testing "detect-tags"
@@ -78,3 +89,27 @@
                        "child2"))))
       (ok (equal props (element-props elm)))
       (ok (equal (list "child1" "child2") (element-children elm))))))
+
+(deftest rest-prop-test
+  (testing "collects-undeclared-props"
+    (let* ((elm (hsx (~rest-comp :id "x" :a "1" :b "2")))
+           (div (expand-component elm)))
+      (ok (equal '(:a "1" :b "2") (element-props div)))))
+
+  (testing "empty-rest-when-all-props-declared"
+    (let* ((elm (hsx (~rest-comp :id "x")))
+           (div (expand-component elm)))
+      (ok (null (element-props div)))))
+
+  (testing "undeclared-children-flow-into-rest"
+    (let* ((elm (hsx (~rest-children-comp :a "1"
+                       "child")))
+           (div (expand-component elm)))
+      (ok (equal '(:a "1" :children ("child")) (element-props div)))))
+
+  (testing "declared-children-excluded-from-rest"
+    (let* ((elm (hsx (~rest-with-children-comp :a "1"
+                       "child")))
+           (div (expand-component elm)))
+      (ok (equal '(:a "1") (element-props div)))
+      (ok (equal (list "child") (element-children div))))))

@@ -98,11 +98,56 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
     (do-external-symbols (sym pkg)
       (unintern sym pkg))))
 
+(defun key-var-keyword (spec)
+  "Return the keyword name of a &key lambda-list variable SPEC, which may be a
+plain symbol, `(var default)`, or `((:keyword var) default)`."
+  (let ((name (if (consp spec) (first spec) spec)))
+    (if (consp name)
+        (first name)
+        (make-keyword name))))
+
+(defun rest-prop-symbol-p (sym)
+  "True if SYM is the special `rest` prop (a plain symbol named REST), as opposed
+to the &rest lambda-list keyword."
+  (and (symbolp sym)
+       (not (member sym lambda-list-keywords))
+       (string= (symbol-name sym) "REST")))
+
+(defun parse-prop-keys (props)
+  "Inspect a component props lambda list and return (values declared-keywords
+uses-rest-p). DECLARED-KEYWORDS holds the keyword name of every &key variable
+except the special `rest` prop; USES-REST-P is true when `rest` is declared."
+  (let ((key-pos (position '&key props))
+        (uses-rest nil)
+        (kws '()))
+    (when key-pos
+      (loop :for x :in (nthcdr (1+ key-pos) props)
+            :until (member x lambda-list-keywords)
+            :do (if (rest-prop-symbol-p x)
+                    (setf uses-rest t)
+                    (push (key-var-keyword x) kws))))
+    (values (nreverse kws) uses-rest)))
+
+(defun keep-props (plist keys)
+  "Return a fresh plist with only the entries of PLIST whose key is in KEYS."
+  (loop :for (k v) :on plist :by #'cddr
+        :when (member k keys)
+        :append (list k v)))
+
+(defun remove-props (plist keys)
+  "Return a fresh plist with only the entries of PLIST whose key is not in KEYS."
+  (loop :for (k v) :on plist :by #'cddr
+        :unless (member k keys)
+        :append (list k v)))
+
 (defmacro defcomp (~name props &body body)
   "Define an HSX component:
 - name: must begin with a tilde (~)
 - props: must be declared using &key, &rest, or both
          the `children` key receives the component’s child elements
+         the special `rest` key, declared in the &key section, receives every
+         prop not explicitly declared, gathered into a plist (like React's
+         `...rest`)
 - body: must return a valid HSX element"
   (unless (start-with-tilde-p ~name)
     (error "The component name must start with a tilde (~~)."))
@@ -111,6 +156,17 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
               (member '&rest props))
     (error "Component properties must be declared using &key, &rest, or both."))
   (let ((%name (symbolicate '% ~name)))
-    `(eval-when (:compile-toplevel :load-toplevel :execute)
-       (defun ,%name ,props ,@body)
-       (defhsx ,~name (fdefinition ',%name)))))
+    (multiple-value-bind (declared-keys uses-rest) (parse-prop-keys props)
+      (if uses-rest
+          (let ((%impl (symbolicate '%% ~name)))
+            `(eval-when (:compile-toplevel :load-toplevel :execute)
+               (defun ,%impl ,props ,@body)
+               (defun ,%name (&rest all-props)
+                 (apply #',%impl
+                        (nconc (keep-props all-props ',declared-keys)
+                               (list :rest (remove-props all-props
+                                                          ',declared-keys)))))
+               (defhsx ,~name (fdefinition ',%name))))
+          `(eval-when (:compile-toplevel :load-toplevel :execute)
+             (defun ,%name ,props ,@body)
+             (defhsx ,~name (fdefinition ',%name)))))))
