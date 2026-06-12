@@ -61,6 +61,31 @@ Expands into:
 
 ---
 
+## Comparison with cl-who and spinneret
+
+[cl-who](https://github.com/edicl/cl-who) and
+[spinneret](https://github.com/ruricolist/spinneret) are both **compile-time
+macros**: they expand an s-expression that is written literally at the call site
+into Lisp code that writes HTML strings to a stream. Static parts are folded into
+string literals at macro-expansion time, and only the dynamic parts remain as
+runtime code.
+
+HSX takes a different approach inspired by React/JSX. HSX builds a
+**runtime tree of element objects**, which `render-to-string` then renders. This
+makes elements first-class values you can return, store, and compose — at the
+cost of doing the work at runtime instead of compile time.
+
+| | cl-who | spinneret | HSX |
+| --- | :---: | :---: | :---: |
+| Rendering model | compile-time → stream code | compile-time → stream code | runtime element tree |
+| Auto-escaping by default | ✗ (manual) | ✓ | ✓ |
+| Components | ✗ | `deftag` | `defcomp` |
+| Elements as values | ✗ | partial | ✓ |
+| Fragments (no wrapper tag) | ✗ | ✗ | ✓ |
+| Attribute validation | ✗ | ✓ | ✗ |
+
+---
+
 ## Basic Usage
 
 ### Step 1: Create a Component
