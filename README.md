@@ -1,6 +1,6 @@
 # HSX – HTML S-expression
 
-HSX is a declarative, component-oriented HTML DSL for Common Lisp.
+HSX is a declarative, component-oriented way to write HTML in Common Lisp.
 It lets you describe HTML structures and reusable components directly in Lisp, safely render them to HTML strings, and seamlessly integrate with your web applications.
 
 → [Example Project](https://github.com/skyizwhite/website)
