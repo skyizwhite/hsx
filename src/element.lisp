@@ -30,7 +30,7 @@
 (deftype self-closing-tag-sym ()
   '(member
     :area :base :br :col :embed :hr :img :input
-    :link :meta :param :source :track :wbr))
+    :link :meta :source :track :wbr))
 
 ;;;; class definitions
 
