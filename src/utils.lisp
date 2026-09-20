@@ -22,7 +22,8 @@
 
 (defparameter *attribute-escape-map*
   (alist-hash-table
-   '((#\" . "&quot;"))))
+   '((#\& . "&amp;")
+     (#\" . "&quot;"))))
 
 (defun escape-char (char escape-map)
   (or (gethash char escape-map)
