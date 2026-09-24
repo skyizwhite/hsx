@@ -140,16 +140,14 @@
                                                   nil
                                                   "alert('<< Do not embed user-generated contents here! >>')"))))))
   
-  (testing "minify-props-text"
-    (let ((elm (create-element :div
-                               '(:x-data "{
-                                    open: false,
-                                    get isOpen() { return this.open },
-                                    toggle() { this.open = ! this.open },
-                                }")
+  (testing "preserve-whitespace-in-props"
+    (let ((elm (create-element :input
+                               (list :type "hidden"
+                                     :value (format nil "<p>a</p>~%<p>b</p>")
+                                     :title (format nil "a  b~Cc" #\Tab))
                                nil)))
       (ok (string= (render-to-string elm)
-                   "<div x-data=\"{ open: false, get isOpen() { return this.open }, toggle() { this.open = ! this.open }, }\"></div>")))))
+                   (format nil "<input type=\"hidden\" value=\"<p>a</p>~%<p>b</p>\" title=\"a  b~Cc\">" #\Tab))))))
 
 (defun comp1 (&key prop children)
   (create-element :div

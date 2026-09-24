@@ -2,8 +2,6 @@
   (:use #:cl)
   (:import-from #:alexandria
                 #:flatten)
-  (:import-from #:str
-                #:collapse-whitespaces)
   (:import-from #:cl-minify-css
                 #:minify-css)
   (:import-from #:hsx/utils
@@ -123,19 +121,18 @@
   (string-downcase (element-type element)))
 
 (defmethod render-props ((element tag))
-  (collapse-whitespaces
-   (with-output-to-string (stream)
-     (loop
-       :for (key value) :on (element-props element) :by #'cddr
-       :do (let ((key-str (string-downcase key)))
-             (if (typep value 'boolean)
-                 (format stream
-                         "~@[ ~a~]"
-                         (and value key-str))
-                 (format stream
-                         " ~a=\"~a\""
-                         key-str
-                         (escape-html-attribute value))))))))
+  (with-output-to-string (stream)
+    (loop
+      :for (key value) :on (element-props element) :by #'cddr
+      :do (let ((key-str (string-downcase key)))
+            (if (typep value 'boolean)
+                (format stream
+                        "~@[ ~a~]"
+                        (and value key-str))
+                (format stream
+                        " ~a=\"~a\""
+                        key-str
+                        (escape-html-attribute value)))))))
 
 (defmethod render-children ((element tag))
   (mapcar (lambda (child)
