@@ -29,16 +29,14 @@
   (or (gethash char escape-map)
       char))
 
-(defun escape-string (str escape-map)
-  (if (stringp str)
-      (with-output-to-string (out)
-        (loop
-          :for c :across str
-          :for mapped := (escape-char c escape-map)
-          :do (etypecase mapped
-                (string (write-string mapped out))
-                (character (write-char mapped out)))))
-      str))
+(defun escape-string (obj escape-map)
+  (with-output-to-string (out)
+    (loop
+      :for c :across (if (stringp obj) obj (princ-to-string obj))
+      :for mapped := (escape-char c escape-map)
+      :do (etypecase mapped
+            (string (write-string mapped out))
+            (character (write-char mapped out))))))
 
 (defun escape-html-text-content (str)
   (escape-string str *text-content-escape-map*))

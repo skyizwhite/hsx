@@ -115,7 +115,10 @@
                 children))))
 
 (defmethod print-object ((element component) stream)
-  (print-object (expand-component element) stream))
+  (let ((result (expand-component element)))
+    (cond ((typep result 'element) (print-object result stream))
+          ((null result))
+          (t (write-string (escape-html-text-content result) stream)))))
 
 (defmethod render-type ((element tag))
   (string-downcase (element-type element)))
@@ -136,9 +139,9 @@
 
 (defmethod render-children ((element tag))
   (mapcar (lambda (child)
-            (if (stringp child)
-                (escape-html-text-content child)
-                child))
+            (if (typep child 'element)
+                child
+                (escape-html-text-content child)))
           (element-children element)))
 
 (defmethod render-children ((element style-tag))

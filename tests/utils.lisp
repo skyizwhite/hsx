@@ -19,6 +19,11 @@
     (ok (string= "&amp;&lt;&gt;&quot;&#x27;&#x2F;&grave;&#x3D;"
                  (escape-html-text-content "&<>\"'/`="))))
 
+  (testing "escape-non-string-values"
+    (ok (string= "&lt;b&gt;" (escape-html-text-content '|<b>|)))
+    (ok (string= "&quot;x" (escape-html-attribute '|"x|)))
+    (ok (string= "42" (escape-html-text-content 42))))
+
   (testing "escape-html-attribute under *print-readably*"
     (ok (string= "en"
                  (let ((*print-readably* t))
