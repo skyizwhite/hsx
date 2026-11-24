@@ -10,6 +10,8 @@
                 #:expand-component))
 (in-package #:hsx-test/dsl)
 
+(register-web-components my-element)
+
 (defcomp ~comp1 (&key children)
   (hsx (div children)))
 
@@ -37,17 +39,32 @@
     (ok (expands '(hsx (~comp1 (div)))
                  '(~comp1 (hsx/builtin:div)))))
 
-  (testing "ignore-malformed-form"
-    (ok (expands '(hsx (div . div))
-                 '(div . div)))
+  (testing "detect-web-components"
+    (ok (expands '(hsx (my-element (div)))
+                 '(hsx/web-components:my-element (hsx/builtin:div)))))
+
+  (testing "distinguish-escaped-tags-from-cl-symbols"
+    (ok (expands '(hsx (div (|time| "t") (time "t")))
+                 '(hsx/builtin:div (hsx/builtin:|time| "t") (time "t")))))
+
+  (testing "reject-dotted-element-form"
+    (ok (signals (macroexpand-1 '(hsx (div . div)))))
+    (ok (signals (macroexpand-1 '(hsx (div div . div)))))
+    (ok (signals (macroexpand-1 '(hsx (div (div . div)))))))
+
+  (testing "ignore-non-element-form"
     (ok (expands '(hsx ((div)))
-                 '((div)))))
+                 '((div))))
+    (ok (expands '(hsx (div (cons . div)))
+                 '(hsx/builtin:div (cons . div)))))
 
   (testing "ignore-cl-form"
     (ok (expands '(hsx (labels ((div () "div"))
                          (div)))
                  '(labels ((div () "div"))
-                   (div))))))
+                   (div))))
+    (ok (expands '(hsx (div (if t (div) (div))))
+                 '(hsx/builtin:div (if t (div) (div)))))))
 
 (deftest dsl-test
   (testing "empty-hsx"

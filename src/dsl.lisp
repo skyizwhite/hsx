@@ -2,6 +2,7 @@
   (:use #:cl)
   (:import-from #:alexandria
                 #:make-keyword
+                #:proper-list-p
                 #:symbolicate)
   (:import-from #:hsx/element
                 #:create-element)
@@ -31,19 +32,20 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
 (defun detect-component (sym)
   (and (start-with-tilde-p sym) sym))
 
+(defun detect-element-symbol (head)
+  (and (symbolp head)
+       (not (keywordp head))
+       (or (external-symbol head :hsx/web-components)
+           (external-symbol head :hsx/builtin)
+           (detect-component head))))
+
 (defun detect-elements (form)
-  (or (and (consp form)
-           (listp (rest form))
-           (let* ((head (first form))
-                  (tail (rest form))
-                  (detected-head (and (symbolp head)
-                                      (not (keywordp head))
-                                      (or (external-symbol head :hsx/web-components)
-                                          (external-symbol head :hsx/builtin)
-                                          (detect-component head)))))
-             (and detected-head
-                  (cons detected-head (mapcar #'detect-elements tail)))))
-      form))
+  (let ((element (and (consp form)
+                      (detect-element-symbol (first form)))))
+    (cond ((null element) form)
+          ((proper-list-p form)
+           (cons element (mapcar #'detect-elements (rest form))))
+          (t (error "Malformed HSX element form (not a proper list): ~S" form)))))
 
 ;;; defhsx macro
 
