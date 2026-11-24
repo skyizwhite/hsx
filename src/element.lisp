@@ -136,9 +136,9 @@
 
 (defmethod render-children ((element tag))
   (mapcar (lambda (child)
-            (if (stringp child)
-                (escape-html-text-content child)
-                child))
+            (if (typep child 'element)
+                child
+                (escape-html-text-content child)))
           (element-children element)))
 
 (defmethod render-children ((element style-tag))

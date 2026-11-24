@@ -139,7 +139,18 @@
                                   (create-element :raw!
                                                   nil
                                                   "alert('<< Do not embed user-generated contents here! >>')"))))))
-  
+
+  (testing "escape-non-string-values"
+    (ok (string= "<div>&lt;script&gt;x&lt;&#x2F;script&gt;</div>"
+                 (render-to-string
+                  (create-element :div nil (list '|<script>x</script>|)))))
+    (ok (string= "<div title=\"&quot;>x\"></div>"
+                 (render-to-string
+                  (create-element :div (list :title '|">x|) nil))))
+    (ok (string= "<div data-n=\"42\">1.5</div>"
+                 (render-to-string
+                  (create-element :div (list :data-n 42) (list 1.5))))))
+
   (testing "preserve-whitespace-in-props"
     (let ((elm (create-element :input
                                (list :type "hidden"
