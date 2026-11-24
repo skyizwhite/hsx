@@ -14,7 +14,6 @@
   (testing "element-class"
     (ok (typep (create-element :div nil nil) 'tag))
     (ok (typep (create-element :html nil nil) 'html-tag))
-    (ok (typep (create-element :style nil nil) 'style-tag))
     (ok (typep (create-element :img nil nil) 'self-closing-tag))
     (ok (typep (create-element :<> nil nil) 'fragment))
     (ok (typep (create-element (lambda ()) nil nil) 'component))
@@ -138,7 +137,14 @@
                                   nil
                                   (create-element :raw!
                                                   nil
-                                                  "alert('<< Do not embed user-generated contents here! >>')"))))))
+                                                  "alert('<< Do not embed user-generated contents here! >>')")))))
+    (ok (string= "<style>a > b { content: \"x\" }</style>"
+                 (render-to-string
+                  (create-element :style
+                                  nil
+                                  (create-element :raw!
+                                                  nil
+                                                  "a > b { content: \"x\" }"))))))
 
   (testing "escape-non-string-values"
     (ok (string= "<div>&lt;script&gt;x&lt;&#x2F;script&gt;</div>"
