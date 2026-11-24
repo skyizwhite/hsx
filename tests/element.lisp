@@ -199,4 +199,26 @@
                                                  '(:prop "value" :other-key "other")
                                                  (list "child")))))
       (ok (eq :div (element-type elm)))
-      (ok (equal (list "value" "child" "other") (element-children elm))))))
+      (ok (equal (list "value" "child" "other") (element-children elm)))))
+
+  (testing "escape-non-element-component-result"
+    (ok (string= "<div>&lt;b&gt;x&lt;&#x2F;b&gt;</div>"
+                 (render-to-string
+                  (create-element :div nil
+                                  (list (create-element (lambda (&key prop) prop)
+                                                        '(:prop "<b>x</b>")
+                                                        nil))))))
+    (ok (string= "<div>&lt;i&gt;</div>"
+                 (render-to-string
+                  (create-element :div nil
+                                  (list (create-element (lambda () '|<i>|) nil nil))))))
+    (ok (string= "<div></div>"
+                 (render-to-string
+                  (create-element :div nil
+                                  (list (create-element (lambda () nil) nil nil))))))
+    (ok (string= "<div title=\"&quot;>x\"></div>"
+                 (render-to-string
+                  (create-element (lambda (&key title)
+                                    (create-element :div (list :title title) nil))
+                                  '(:title "\">x")
+                                  nil))))))

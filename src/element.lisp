@@ -115,7 +115,10 @@
                 children))))
 
 (defmethod print-object ((element component) stream)
-  (print-object (expand-component element) stream))
+  (let ((result (expand-component element)))
+    (cond ((typep result 'element) (print-object result stream))
+          ((null result))
+          (t (write-string (escape-html-text-content result) stream)))))
 
 (defmethod render-type ((element tag))
   (string-downcase (element-type element)))
