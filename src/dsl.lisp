@@ -10,7 +10,8 @@
            #:deftag
            #:register-web-components
            #:clear-web-components
-           #:defcomp))
+           #:defcomp
+           #:malformed-hsx-form))
 (in-package #:hsx/dsl)
 
 ;;; hsx macro
@@ -39,13 +40,17 @@ To create HSX elements within a Lisp form, use the `hsx` macro again."
            (external-symbol head :hsx/builtin)
            (detect-component head))))
 
+(define-condition malformed-hsx-form (simple-error) ())
+
 (defun detect-elements (form)
   (let ((element (and (consp form)
                       (detect-element-symbol (first form)))))
     (cond ((null element) form)
           ((proper-list-p form)
            (cons element (mapcar #'detect-elements (rest form))))
-          (t (error "Malformed HSX element form (not a proper list): ~S" form)))))
+          (t (error 'malformed-hsx-form
+                    :format-control "Malformed HSX element form (not a proper list): ~S"
+                    :format-arguments (list form))))))
 
 ;;; defhsx macro
 

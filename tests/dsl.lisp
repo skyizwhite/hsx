@@ -48,9 +48,12 @@
                  '(hsx/builtin:div (hsx/builtin:|time| "t") (time "t")))))
 
   (testing "reject-dotted-element-form"
-    (ok (signals (macroexpand-1 '(hsx (div . div)))))
-    (ok (signals (macroexpand-1 '(hsx (div div . div)))))
-    (ok (signals (macroexpand-1 '(hsx (div (div . div)))))))
+    (ok (signals (macroexpand-1 '(hsx (div . div)))
+                 'malformed-hsx-form))
+    (ok (signals (macroexpand-1 '(hsx (div div . div)))
+                 'malformed-hsx-form))
+    (ok (signals (macroexpand-1 '(hsx (div (div . div))))
+                 'malformed-hsx-form)))
 
   (testing "ignore-non-element-form"
     (ok (expands '(hsx ((div)))
