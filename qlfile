@@ -1,5 +1,4 @@
 ql alexandria
-ql cl-minify-css
 
 git rove https://github.com/fukamachi/rove
 git mstrings https://git.sr.ht/~shunter/mstrings

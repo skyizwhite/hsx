@@ -206,6 +206,14 @@ If you need to insert raw, unescaped HTML, you can do so — but use it only wit
   (script (raw! "alert('unsafe if user-generated!')")))
 ```
 
+Use `raw!` for inline CSS as well, so characters such as `>` and quotes are kept as-is.
+HSX does not minify CSS; if you want it minified, do it before passing the string to `raw!`.
+
+```lisp
+(hsx
+  (style (raw! "nav > a { color: red; }")))
+```
+
 ---
 
 ## Expressions and Logic
